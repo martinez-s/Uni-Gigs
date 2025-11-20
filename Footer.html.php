@@ -1,5 +1,5 @@
 <footer>
-    <div id="Footer_Responsive" class="container-fluid bg-dark mt-5">
+    <div id="Footer_Responsive" class="container-fluid bg-dark">
         <div class="row text-align-center p-5 d-lg-none">
             <div class="accordion" id="accordionPanelsStayOpenExample">
             <div class="accordion-item mb-2">
@@ -42,7 +42,7 @@
         </div>
     </div>
     <div>
-        <div class="container-fluid">
+        <div id="Footer_Large" class="container-fluid">
             <div class="row bg-dark text-white text-center p-5 d-none d-lg-flex">
                 <div class="col-lg-4">
                     <p class="h3">Uni-Gigs</p>
@@ -76,6 +76,9 @@
                     <div class="mb-2">
                         <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
                     </div>
+                </div>
+                <div class="mt-3">
+                    <p>copyright</p>
                 </div>
             </div>
         </div>

@@ -1,0 +1,17 @@
+.navbar-custom {
+    background-color: #2F5597;
+}
+.banner-container {
+    background-color: #2F5597; 
+    color: white;
+    padding: 1rem 0;
+}
+.banner-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+}
+.text-justify {
+  text-align: justify;
+  hyphens: auto;
+}
