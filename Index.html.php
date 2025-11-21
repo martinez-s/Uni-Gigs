@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="styles.css">
     <title>Document</title>
 </head>
@@ -13,7 +14,7 @@
         <div class="container">
             <div class="row align-items-center mt-5">
                 <div class="col-md-6 mb-4 mb-md-0 mt-md-3 mt-5">
-                    <h1>Bienvenido a Uni-Gigs</h1>
+                    <h1 class="Titulo">Bienvenido a Uni-Gigs</h1>
                     <p class="lead text-justify">Uni-Gigs es una plataforma para estudiantes, donde hacemos los trabajos de los demás porque no nos queremos. 
                         Pero hey, al menos pagan por hacerlos.</p>
                     <a href="#" class="btn btn-light btn-lg">REGISTRATE</a>
@@ -25,9 +26,9 @@
         </div>
     </div>
     <div id="Sobre_Nosotros" class="container mb-5">
-        <h2 class="text-center mt-5">Sobre nosotros</h2>
+        <h2 class="Titulo text-center mt-5">Sobre nosotros</h2>
         <div class="row mt-5 mb-5">
-            <div class="col-md-6">
+            <div class="col-md-6 ">
                 <h3>¿Qué es Uni-Gigs?</h3>
                 <p class="text-justify">Uni-Gigs es una plataforma diseñada para conectar a estudiantes que necesitan ayuda con sus tareas académicas con otros estudiantes 
                     dispuestos a ofrecer sus servicios. Nuestra misión es facilitar el intercambio de conocimientos y habilidades entre estudiantes, 
@@ -44,7 +45,7 @@
         </div>
     </div>
     <div id="Funciones" class="container mb-5 mt-5">
-        <h2 class="text-center mt-5">Funciones</h2>
+        <h2 class="Titulo text-center mt-5">Funciones</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3">
             <div class="col">
                 <div class="card h-100 shadow-sm border-0"> <img src="img/Relleno.jpg" class="card-img-top" alt="...">
@@ -87,7 +88,7 @@
         <div class="row">
             <div class="col">
                 <div class="banner-footer text-center text-dark d-flex flex-column justify-content-center align-items-center">
-                    <h2>¿Listo para comenzar?</h2>
+                    <h2 class="Titulo">¿Listo para comenzar?</h2>
                     <p class="lead">Únete a Uni-Gigs hoy mismo y descubre cómo podemos ayudarte a alcanzar tus metas académicas.</p>
                     <a href="#" class="btn btn-dark btn-lg">REGISTRATE</a>
                 </div>
