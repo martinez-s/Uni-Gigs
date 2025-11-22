@@ -1,0 +1,36 @@
+body{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+.conte_log{
+  width: 50%;
+  height: 70%;
+
+}
+.modal_body{
+  width: 90%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn_inicio{
+  width: 100%;
+}
+.inputs{
+  width: 100%;
+}
+label{
+  font-size: 1rem;
+}
+h1{
+  font-size: 1.5rem;
+  text-align: center;
+  padding-bottom: 5%;
+}
+.error{
+  background-color: rgb(166, 68, 68);
+  color: black;
+  padding: 10px;
+}

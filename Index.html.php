@@ -81,7 +81,44 @@
                     </div>
                 </div>
             </div>
-
+        </div>
+    </div>
+    <div class="modal fade" id="modal_login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="container conte_log">
+                    <form action="login.php" method="post">
+                        <h1>INICIA SESIÓN</h1>
+                        <hr>
+                        <?php
+                        if(isset($_GET['error'])){
+                            ?>
+                            <p class="error">
+                            <?php
+                                echo $_GET['error']
+                            ?>
+                            </p>
+                            <?php
+                        }
+                        ?>
+                        <label for="correo">CORREO</label>
+                        <br>
+                        <input type="text" id="correo" name="correo" class="inputs">
+                        <br>
+                        <label for="clave">CONTRASEÑA</label>
+                        <br>
+                        <input type="text" id="clave" name="clave" class="inputs">
+                        <a href="#"><p class="texto_log">¿OLVIDASTE LA CONTRASEÑA?</p></a>
+                        <button type="submit" class="btn_inicio" data-bs-dismiss="modal" >INICIAR</button>
+                        <a href=""><p>¿YA TIENES CUENTA? INICIA SESIÓN</p></a>
+                    </form>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 <?php include 'Footer.html.php'; ?>

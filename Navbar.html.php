@@ -26,7 +26,9 @@
           <a class="nav-link text-white" href="#">Crea una cuenta</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Inicia sesión</a>
+          <a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#modal_login">
+          Inicia sesión
+          </a>
         </li>
       </ul>
     </div>
