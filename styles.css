@@ -44,23 +44,38 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    
 }
 .btn_inicio{
     width: 100%;
+    margin-bottom:15px ;
 }
 .inputs{
     width: 100%;
+    margin-bottom: 10px;
 }
-label{
+.lb_modal{
     font-size: 1rem;
+    margin-bottom: 3px; 
+    margin-top: 5px;
 }
-h1{
+.titu_modal{
     font-size: 1.5rem;
     text-align: center;
-    padding-bottom: 5%;
+    margin-bottom: 20px
 }
-.error{
-    background-color: rgb(166, 68, 68);
+
+.texto_log_cont{
     color: black;
-    padding: 10px;
+    text-align: right;
+    font-size: 0.75rem;
+    text-decoration: none;
+    margin-top: 10px;
+}
+.texto_log_regis{
+    color: black;
+    text-align: center;
+    font-size: 0.75rem;
+    text-decoration: none;
+    margin-top: 15px;
 }

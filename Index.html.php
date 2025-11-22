@@ -93,29 +93,17 @@
                 <div class="modal-body">
                     <div class="container conte_log">
                         <form action="login.php" method="post">
-                            <h1 class="Titulo">INICIA SESIÓN</h1>
-                            <hr>
-                            <?php
-                            if(isset($_GET['error'])){
-                                ?>
-                                <p class="error">
-                                <?php
-                                    echo $_GET['error']
-                                ?>
-                                </p>
-                                <?php
-                            }
-                            ?>
-                            <label for="correo">CORREO</label>
+                            <h1 class="Titulo titu_modal">INICIA SESIÓN</h1>
+                            <label for="correo" class="lb_modal">CORREO</label>
                             <br>
                             <input type="text" id="correo" name="correo" class="inputs">
                             <br>
-                            <label for="clave">CONTRASEÑA</label>
+                            <label for="clave" class="lb_modal">CONTRASEÑA</label>
                             <br>
                             <input type="text" id="clave" name="clave" class="inputs">
-                            <a href="#"><p class="texto_log">¿OLVIDASTE LA CONTRASEÑA?</p></a>
-                            <button type="submit" class="btn_inicio" data-bs-dismiss="modal" >INICIAR</button>
-                            <a href=""><p>¿YA TIENES CUENTA? INICIA SESIÓN</p></a>
+                            <a href="#" class="texto_log_cont"><p >¿OLVIDASTE LA CONTRASEÑA?</p></a>
+                            <button type="submit" class="btn_inicio" >INICIAR</button>
+                            <a href="#" class="texto_log_regis"><p>¿NO TIENES CUENTA? REGISTRATE</p></a>
                         </form>
                     </div>
                 </div>
@@ -137,5 +125,42 @@
     </div>
 <?php include 'Footer.html.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+    // 1. Verificar si la variable 'error' está presente en la URL usando PHP
+        <?php if(isset($_GET['error'])): ?>
+        
+            // Capturamos el mensaje de error de PHP en una variable JavaScript
+            const errorMessage = "<?php echo htmlspecialchars($_GET['error']); ?>";
+
+            // 2. Usamos SweetAlert2 para mostrar el error
+            Swal.fire({
+                icon: "error",
+                title: "Error de inicio de sesión",
+                text: errorMessage, 
+            });
+            var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
+            loginModal.show();
+
+        <?php endif; ?>
+    </script>
+    <script>
+        <?php if(isset($_GET['success'])): ?>
+        
+            // Capturamos el mensaje de error de PHP en una variable JavaScript
+            const successMessage = "<?php echo htmlspecialchars($_GET['success']); ?>";
+
+            // 2. Usamos SweetAlert2 para mostrar el error
+            Swal.fire({
+                icon: "success",
+                title: "Inicio de sesión exitoso",
+                text: successMessage, // Usamos el mensaje dinámico capturado
+                // Puedes mantener o eliminar la línea del footer si no la necesitas
+                // footer: '<a href="#">¿Por qué tengo este problema?</a>' 
+            });
+
+        <?php endif; ?>
+    </script>
+    
 </body>
 </html> 

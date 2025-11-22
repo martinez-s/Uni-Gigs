@@ -16,15 +16,15 @@ if (isset($_POST['correo']) && isset($_POST['clave']))
 
     if(empty($Usuario) && empty($Clave))
     {
-      header("Location: Login.html.php?error=Complete todos los campos");
+      header("Location: Index.html.php?error=Complete todos los campos");
       exit();    
     }
-    if (empty($Usuario)){
-      header("Location: Login.html.php?error=Debe ingresar su correo");
+    elseif (empty($Usuario)){
+      header("Location: Index.html.php?error=Debe ingresar su correo");
       exit();
     }
     elseif (empty($Clave)) {
-      header("Location: Login.html.php?error=Debe ingresar su clave");
+      header("Location: Index.html.php?error=Debe ingresar su clave");
       exit();
     }
     else {
@@ -39,22 +39,22 @@ if (isset($_POST['correo']) && isset($_POST['clave']))
         if($row['correo'] === $Usuario && $row['clave'] === $Clave){
           $_SESSION['correo'] = $row['correo'];
           $_SESSION['id_estudiante'] = $row['id_estudiante'];
-          header("Location: Index.html.php");
+          header("Location: Index.html.php?success= Inicio de sesion exitoso");
           exit();
         }
         else{
-          header("Location: Login.html.php?error= El usuario o la contraseña son incorrectos");
+          header("Location: Index.html.php?error= El usuario o la contraseña son incorrectos");
           exit();
         }
       }
       else {
-        header("Location: Login.html.php?error= El usuario o la contraseña son incorrectos");
+        header("Location: Index.html.php?error= El usuario o la contraseña son incorrectos");
         exit();
       }
     } 
   }
   else {
-    header("Location: Login.html.php");
+    header("Location: Index.html.php?success= Inicio de sesion exitoso");
     exit();
   }
 
