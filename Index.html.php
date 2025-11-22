@@ -92,32 +92,38 @@
                 </div>
                 <div class="modal-body">
                     <div class="container conte_log">
-                    <form action="login.php" method="post">
-                        <h1>INICIA SESIÓN</h1>
-                        <hr>
-                        <?php
-                        if(isset($_GET['error'])){
-                            ?>
-                            <p class="error">
+                        <form action="login.php" method="post">
+                            <h1 class="Titulo">INICIA SESIÓN</h1>
+                            <hr>
                             <?php
-                                echo $_GET['error']
+                            if(isset($_GET['error'])){
+                                ?>
+                                <p class="error">
+                                <?php
+                                    echo $_GET['error']
+                                ?>
+                                </p>
+                                <?php
+                            }
                             ?>
-                            </p>
-                            <?php
-                        }
-                        ?>
-                        <label for="correo">CORREO</label>
-                        <br>
-                        <input type="text" id="correo" name="correo" class="inputs">
-                        <br>
-                        <label for="clave">CONTRASEÑA</label>
-                        <br>
-                        <input type="text" id="clave" name="clave" class="inputs">
-                        <a href="#"><p class="texto_log">¿OLVIDASTE LA CONTRASEÑA?</p></a>
-                        <button type="submit" class="btn_inicio" data-bs-dismiss="modal" >INICIAR</button>
-                        <a href=""><p>¿YA TIENES CUENTA? INICIA SESIÓN</p></a>
-                    </form>
+                            <label for="correo">CORREO</label>
+                            <br>
+                            <input type="text" id="correo" name="correo" class="inputs">
+                            <br>
+                            <label for="clave">CONTRASEÑA</label>
+                            <br>
+                            <input type="text" id="clave" name="clave" class="inputs">
+                            <a href="#"><p class="texto_log">¿OLVIDASTE LA CONTRASEÑA?</p></a>
+                            <button type="submit" class="btn_inicio" data-bs-dismiss="modal" >INICIAR</button>
+                            <a href=""><p>¿YA TIENES CUENTA? INICIA SESIÓN</p></a>
+                        </form>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
     <div id="Registro" class="container-fluid p-5 bg-light">
         <div class="row">
             <div class="col">
