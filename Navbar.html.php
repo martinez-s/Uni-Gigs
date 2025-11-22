@@ -1,7 +1,8 @@
 <nav class="navbar navbar-expand-md fixed-top navbar-custom navbar-dark">
   <div id="Navbar" class="container-fluid">
-    <a class="navbar-brand" href="#">
-      <img src="img/Isotipo_Blanco.png" alt="Logo" width="60" height="48" class="d-inline-block align-text-top">
+    <a class="Titulo navbar-brand text-white" href="#">
+      <img src="img/Isotipo_Blanco.png" alt="Logo" width="60" height="48" class="d-inline-block align-text-center">
+      Uni-Gigs
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -18,12 +19,12 @@
           <a class="nav-link text-white" href="#Funciones">Funciones</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Registro</a>
+          <a class="nav-link text-white" href="#Registro">Registrate</a>
         </li>
       </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Crea una cuenta</a>
+          <a class="nav-link text-white" href="#">Crear una cuenta</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#modal_login">

@@ -1,3 +1,19 @@
+@font-face {
+    font-family: 'Montserrat-Light';
+    src: url('./fonts/Montserrat-Light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Cascadia-Code-Regular';
+    src: url('./fonts/CascadiaCode-Regular.otf') format('opentype');
+}
+
+body {
+    font-family: 'Montserrat-Light', sans-serif;
+}
+.Titulo {
+    font-family: 'Cascadia-Code-Regular', sans-serif;
+}
 .navbar-custom {
     background-color: #2F5597;
 }
