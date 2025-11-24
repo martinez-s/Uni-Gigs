@@ -17,9 +17,6 @@
                     <h1 class="Titulo">Bienvenido a Uni-Gigs</h1>
                     <p class="lead text-justify">Uni-Gigs es una plataforma para estudiantes, donde hacemos los trabajos de los demás porque no nos queremos. 
                         Pero hey, al menos pagan por hacerlos.</p>
-                    <a class="btn btn-light btn-lg" data-bs-toggle="modal" data-bs-target="#modal_registro">
-                    REGISTRATE
-                    </a>
                 </div>
                 <div class="col-md-6 text-center">
                     <img src="img/img_banner.png" class="banner-img img-fluid" alt="Descripción de la imagen">
@@ -87,9 +84,9 @@
         </div>
     </div>
 
-    // Modales de Login y Registro
+<!--     // Modales de Login y Registro
 
-    //Modal Login
+    //Modal Login -->
     <div class="modal fade" id="modal_login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
@@ -117,7 +114,7 @@
         </div>
     </div>
 
-    //Modal Registro 1
+<!--     //Modal Registro 1 -->
     <div class="modal fade" id="modal_registro" aria-hidden="true" aria-labelledby="modal_registro" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
@@ -168,7 +165,7 @@
         </div>
     </div>
 
-    //Modal Registro 2
+<!--     //Modal Registro 2 -->
     <div class="modal fade" id="modal_registro2" aria-hidden="true" aria-labelledby="modal_registro2" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
@@ -198,7 +195,7 @@
             </div>
         </div>
     </div> 
-    //Modal Registro 3
+<!--     //Modal Registro 3 -->
     <div class="modal fade" id="modal_registro3" aria-hidden="true" aria-labelledby="modal_registro3" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-xl">
             <div class="modal-content">
@@ -241,7 +238,7 @@
 
             
 
-    //Hasta aqui modales
+ <!--    //Hasta aqui modales -->
 
     <div id="Registro" class="container-fluid p-5 bg-light">
         <div class="row">
@@ -249,7 +246,9 @@
                 <div class="banner-footer text-center text-dark d-flex flex-column justify-content-center align-items-center">
                     <h2 class="Titulo">¿Listo para comenzar?</h2>
                     <p class="lead">Únete a Uni-Gigs hoy mismo y descubre cómo podemos ayudarte a alcanzar tus metas académicas.</p>
-                    <a href="#" class="btn btn-dark btn-lg">REGISTRATE</a>
+                    <a class="btn btn-dark btn-lg" data-bs-toggle="modal" data-bs-target="#modal_registro">
+                    REGISTRATE
+                    </a>
                 </div>
             </div>
         </div>
