@@ -142,6 +142,14 @@
                 </div>
                 <div class="mt-3 border-top pt-3">
                     <p>&copy; 2025 Uni-Gigs. Todos los derechos reservados.</p>
+                    <p>Av. Concepción Mariño, Sector El Toporo, El Valle del Espíritu Santo, Edo. Nueva Esparta, Venezuela.</p>
+                </div>
+                <div class="d-flex-center">
+                    <a class="text-decoration-none text-white" href="#">Términos y condiciones</a>
+                    <div class="vr mx-3 opacity-100"></div>
+                    <a class="text-decoration-none text-white" href="#">Política de privacidad</a>
+                    <div class="vr mx-3 opacity-100"></div>
+                    <a class="text-decoration-none text-white" href="#">Cookies</a>
                 </div>
             </div>
         </div>

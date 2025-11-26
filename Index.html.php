@@ -246,7 +246,7 @@
                 <div class="banner-footer text-center text-dark d-flex flex-column justify-content-center align-items-center">
                     <h2 class="Titulo">¿Listo para comenzar?</h2>
                     <p class="lead">Únete a Uni-Gigs hoy mismo y descubre cómo podemos ayudarte a alcanzar tus metas académicas.</p>
-                    <a href="#" class="btn btn-dark btn-lg">REGISTRATE</a>
+                    <a class="btn btn-dark btn-lg" data-bs-toggle="modal" data-bs-target="#modal_registro">REGISTRATE</a>
                 </div>
             </div>
         </div>
