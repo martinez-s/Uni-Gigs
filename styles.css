@@ -63,6 +63,13 @@ a{
     margin-top: 15px;
     justify-content: center;
 }
+.btn_fin{
+    width: 50%;
+    margin-bottom:15px;
+    margin-top: 15px;
+    justify-content: center;
+    font-size: 1rem;
+}
 .inputs{
     width: 100%;
     margin-bottom: 10px;
@@ -129,13 +136,26 @@ a{
 #input-imagen-perfil {
     display: none;
 }
+
+
+.contenedor_carnet{
+    width: 50%;
+    flex-direction: column;
+    align-items: center;
+}
+.p_carnet{
+    margin-top: 15px;
+    font-size: 0.7rem;
+    text-align: center;
+    margin-bottom: 5%;
+    width: 100%;
+}
 .imagen_carnet {
-    width: 135px;  
-    height: 160px; 
+    width: 200px;  
+    height: 600px; 
     background-color: #e0e0e0; 
     border-radius: 0%;
-    border: 1px solid #ccc;
-    
+    border: 1px solid #ccc; 
     display: flex; 
     justify-content: center;
     align-items: center;
@@ -157,15 +177,4 @@ a{
 }
 #input-imagen-carnet {
     display: none;
-}
-
-.columna_regis3{
-    padding-top: 3%;
-}
-
-.p_carnet{
-    margin-top: 15px;
-    font-size: 0.5rem;
-    text-align: center;
-    margin-bottom: 5%;
 }
