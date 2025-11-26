@@ -1,3 +1,12 @@
+<?php
+session_start();
+$error_message = $_SESSION['error'] ?? null;
+$success_message = $_SESSION['success'] ?? null; 
+
+unset($_SESSION['error']);
+unset($_SESSION['success']);
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +97,7 @@
 
     //Modal Login -->
     <div class="modal fade" id="modal_login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -116,7 +125,7 @@
 
 <!--     //Modal Registro 1 -->
     <div class="modal fade" id="modal_registro" aria-hidden="true" aria-labelledby="modal_registro" data-bs-backdrop="static" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -167,7 +176,7 @@
 
 <!--     //Modal Registro 2 -->
     <div class="modal fade" id="modal_registro2" aria-hidden="true" aria-labelledby="modal_registro2" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -197,7 +206,7 @@
     </div> 
 <!--     //Modal Registro 3 -->
     <div class="modal fade" id="modal_registro3" aria-hidden="true" aria-labelledby="modal_registro3" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -234,6 +243,7 @@
             </div>
         </div>
     </div>
+    
 
 
             
@@ -261,36 +271,31 @@
 
 <!--     //Scripts que deberia poner en otro archivo -->
     <script>
-
-        <?php if(isset($_GET['error'])): ?>
+        <?php if ($error_message): ?>
         
-
-            const errorMessage = "<?php echo htmlspecialchars($_GET['error']); ?>";
-
+            const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
+        
             Swal.fire({
                 icon: "error",
                 title: "Error de inicio de sesión",
                 text: errorMessage, 
             });
+        
             var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
             loginModal.show();
-
-        <?php endif; ?>
-    </script>
-    <script>
-        <?php if(isset($_GET['success'])): ?>
         
-
-            const successMessage = "<?php echo htmlspecialchars($_GET['success']); ?>";
-
+        <?php endif; ?>
+        
+        <?php if ($success_message): ?>
+        
+            const successMessage = "<?php echo htmlspecialchars($success_message); ?>";
             Swal.fire({
                 icon: "success",
                 title: "Inicio de sesión exitoso",
                 text: successMessage, 
             });
-
+        
         <?php endif; ?>
-    </script>
-    
+    </script>  
 </body>
 </html> 

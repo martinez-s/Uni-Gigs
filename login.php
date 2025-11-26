@@ -1,61 +1,78 @@
 <?php
-session_start();
-include('conect.php');
 
-if (isset($_POST['correo']) && isset($_POST['clave']))
-  {
+session_start();
+
+include('conect.php'); 
+
+const REDIRECT_PAGE = "Index.html.php"; 
+
+const SUCCESS_REDIRECT_PAGE = "aqui.html.php"; 
+
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    
+
     function validate($data){
-      $data = trim($data);
-      $data = stripslashes($data);
-      $data = htmlspecialchars($data);
-      return $data;
+    $data = trim($data);
+    $data = stripslashes($data);
+    $data = htmlspecialchars($data);
+    return $data;
     }
 
     $Usuario = validate($_POST['correo'] ?? '');
     $Clave = validate($_POST['clave'] ?? '');
 
-    if(empty($Usuario) && empty($Clave))
-    {
-      header("Location: Index.html.php?error=Complete todos los campos");
-      exit();    
-    }
-    elseif (empty($Usuario)){
-      header("Location: Index.html.php?error=Debe ingresar su correo");
-      exit();
-    }
-    elseif (empty($Clave)) {
-      header("Location: Index.html.php?error=Debe ingresar su clave");
-      exit();
-    }
-    else {
-      // $Clave = md5($Clave);
-
-      $sql = "Select * from estudiantes where correo = '$Usuario' and clave = '$Clave'";
-      $resultado = $mysqli->query($sql);
-
-      if(mysqli_num_rows($resultado) === 1) 
-      {
-        $row = mysqli_fetch_assoc($resultado);
-        if($row['correo'] === $Usuario && $row['clave'] === $Clave){
-          $_SESSION['correo'] = $row['correo'];
-          $_SESSION['id_estudiante'] = $row['id_estudiante'];
-          header("Location: Index.html.php?success= Inicio de sesion exitoso");
-          exit();
-        }
-        else{
-          header("Location: Index.html.php?error= El usuario o la contraseña son incorrectos");
-          exit();
-        }
-      }
-      else {
-        header("Location: Index.html.php?error= El usuario o la contraseña son incorrectos");
+    if(empty($Usuario) && empty($Clave)) {
+        $_SESSION['error'] = "Complete todos los campos";
+        header("Location: " . REDIRECT_PAGE);
         exit();
-      }
-    } 
-  }
-  else {
-    header("Location: Index.html.php?success= Inicio de sesion exitoso");
+    } elseif (empty($Usuario)) {
+        $_SESSION['error'] = "Debe ingresar su correo";
+        header("Location: " . REDIRECT_PAGE);
+        exit();
+    } elseif (empty($Clave)) {
+        $_SESSION['error'] = "Debe ingresar su clave";
+        header("Location: " . REDIRECT_PAGE);
+        exit();
+    }
+    
+    $sql = "SELECT correo, id_estudiante, clave FROM estudiantes WHERE correo = ?";
+    
+    if ($stmt = $mysqli->prepare($sql)) {
+        
+        $stmt->bind_param("s", $Usuario);
+        
+
+        $stmt->execute();
+        
+        $resultado = $stmt->get_result();
+        
+    if ($resultado->num_rows === 1) {
+            $row = $resultado->fetch_assoc();
+
+            if ($row['clave'] === $Clave) { 
+
+                $_SESSION['correo'] = $row['correo'];
+                $_SESSION['id_estudiante'] = $row['id_estudiante'];
+
+                $_SESSION['success'] = "Inicio de sesión exitoso"; 
+
+                header("Location: aqui.html.php");
+                exit();
+            }
+        }      
+        $_SESSION['error'] = "El usuario o la contraseña son incorrectos";
+
+
+        $stmt->close();
+    }  
+}
+    else {
+        $_SESSION['error'] = "Error interno del sistema.";
+    }
+
+
+    header("Location: Index.html.php"); 
     exit();
-  }
 
 ?>
