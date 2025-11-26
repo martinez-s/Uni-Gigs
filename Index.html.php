@@ -300,21 +300,6 @@ unset($_SESSION['success']);
             });
         
         <?php endif; ?>
-    </script>
-
-    <script>
-        <?php if(isset($_GET['success'])): ?>
-        
-            const successMessage = "<?php echo htmlspecialchars($_GET['success']); ?>";
-
-            Swal.fire({
-                icon: "success",
-                title: "Inicio de sesión exitoso",
-                text: successMessage, 
-            });
-
-        <?php endif; ?>
-    </script>
-    
+    </script>  
 </body>
 </html> 
