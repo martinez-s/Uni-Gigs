@@ -141,10 +141,6 @@ unset($_SESSION['success']);
                             <h2 class="lb_subtitulo text-center">CUENTANOS SOBRE TI, INGRESA TUS DATOS BÁSICOS</h2>
                                 <div class="row">
                                     <div class="col-lg-6 col-md-12">
-                                        <label for="nombre" class="lb_modal">NOMBRE</label>
-                                        <br>
-                                        <input type="text" id="nombre" name="nombre" class="inputs">
-                                        <br>
                                         <label for="correo" class="lb_modal">CORREO</label>
                                         <br>
                                         <input type="text" id="correo" name="correo" class="inputs">
@@ -154,10 +150,6 @@ unset($_SESSION['success']);
                                         <input type="password" id="clave" name="clave" class="inputs">   
                                     </div>
                                     <div class="col-lg-6 col-md-12">
-                                        <label for="apellido" class="lb_modal">APELLIDO</label>
-                                        <br>
-                                        <input type="text" id="nombre" name="nombre" class="inputs">
-                                        <br>
                                         <label for="fecha_nacimiento" class="lb_modal">FECHA DE NACIMIENTO</label>
                                         <br>
                                         <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="inputs">  
@@ -223,16 +215,26 @@ unset($_SESSION['success']);
                         <h1 class="Titulo titu_modal">REGISTRATE</h1>
                         <h2 class="lb_subtitulo text-center">AHORA ES MOMENTO DE LA VERIFICACION DE ESTUDIANTE</h2>
                         <div class="row">
-                            <div class="col-lg-4 col-md-12 flex-column justify-content-center">
-                                <p class="p_carnet" >SUBE UNA FOTO DE TU CARNET ESTUDIANTIL</p>
-                                <div class="d-flex justify-content-center">
-                                    <label for="input-imagen-carnet" class="imagen_carnet">
-                                        <span class="texto-placeholder">+</span>
-                                    </label>
-                                    <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*">
+                            <div class="col-lg-6 col-md-12 flex-column justify-content-center">
+                                <div class="contenedor_carnet">
+                                    <p class="p_carnet" >SUBE UNA FOTO DE TU CARNET ESTUDIANTIL</p>
+                                    <div>
+                                        <label for="input-imagen-carnet" class="imagen_carnet">
+                                            <span class="texto-placeholder">+</span>
+                                        </label>
+                                        <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*">
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-lg-8 col-md-12 flex-column justify-content-center columna_regis3">
+                            <div class="col-lg-6 col-md-12 flex-column justify-content-center columna_regis3">
+                                <label for="nombre" class="lb_modal">NOMBRE</label>
+                                <br>
+                                <input type="text" id="nombre" name="nombre" class="inputs">
+                                <br>
+                                <label for="apellido" class="lb_modal">APELLIDO</label>
+                                <br>
+                                <input type="text" id="nombre" name="nombre" class="inputs">
+                                <br>
                                 <label for="universidad" class="lb_modal">UNIVERSIDAD</label>
                                 <br>
                                 <input type="text" id="universidad" name="universidad" class="inputs">
@@ -240,8 +242,10 @@ unset($_SESSION['success']);
                                 <label for="carrera" class="lb_modal">CARRERA</label>
                                 <br>
                                 <input type="text" id="carrera" name="carrera" class="inputs">
+                            </div>
+                            <div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="submit" class="btn_siguiente">FINALIZAR REGISTRO</button>
+                                    <button type="submit" class="btn_fin">FINALIZAR REGISTRO</button>
                                 </div>
                             </div>
                         </div>
@@ -290,16 +294,6 @@ unset($_SESSION['success']);
         
         <?php endif; ?>
         
-        <?php if ($success_message): ?>
-        
-            const successMessage = "<?php echo htmlspecialchars($success_message); ?>";
-            Swal.fire({
-                icon: "success",
-                title: "Inicio de sesión exitoso",
-                text: successMessage, 
-            });
-        
-        <?php endif; ?>
     </script>  
 </body>
 </html> 
