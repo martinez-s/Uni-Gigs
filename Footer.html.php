@@ -96,53 +96,54 @@
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-3">
-                    <p class="h5">AUXILIO</p>
+                    <p class="h5">TEST</p>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div>
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-3">
-                    <p class="h5">AUXILIO</p>
+                    <p class="h5">TEST</p>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div>
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                 </div>
                 <div class="col-lg-3 col-md-3">
-                    <p class="h5">AUXILIO</p>
+                    <p class="h5">TEST</p>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                     <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">AUXILIO</a>
+                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
                     </div>
                 </div>
                 <div class="mt-3 border-top pt-3">
                     <p>&copy; 2025 Uni-Gigs. Todos los derechos reservados.</p>
-                    <p>Av. Concepción Mariño, Sector El Toporo, El Valle del Espíritu Santo, Edo. Nueva Esparta, Venezuela.</p>
+                    <a href="https://maps.app.goo.gl/CSp8w31eT2K3gLxUA" target="_blank" class="text-decoration-none text-white"><p>Av. Concepción Mariño, Sector El Toporo, 
+                        El Valle del Espíritu Santo, Edo. Nueva Esparta, Venezuela.</p></a>
                 </div>
                 <div class="d-flex-center">
                     <a class="text-decoration-none text-white" href="#">Términos y condiciones</a>
