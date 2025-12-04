@@ -18,7 +18,7 @@ unset($_SESSION['success']);
     <title>Document</title>
 </head>
 <body>
-<?php include 'Navbar.html.php'; ?>
+<?php include 'Navbar.php'; ?>
     <div id="Inicio" class="banner-container">
         <div class="container">
             <div class="row align-items-center mt-5">
@@ -267,7 +267,7 @@ unset($_SESSION['success']);
     </div>
 
 
-<?php include 'Footer.html.php'; ?>
+<?php include 'Footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
