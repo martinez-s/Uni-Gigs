@@ -188,3 +188,48 @@ a{
 .columna_regis3 {
     padding-top: 0px; /* Asegura que los inputs empiecen arriba */
 }
+
+
+/**CREAR REQUEST Y SERVICIO**/
+
+.titu_crear{
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 15px
+}
+.cont-crear{
+    height: 80%;
+    width: auto;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
+.archivos-request {
+    width: 100%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
+    height: 100px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
+    background-color: #e0e0e0; 
+    border-radius: 0%;
+    border: 1px solid #ccc; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+.archivos-request:hover {
+    background-color: #d0d0d0; 
+}
+
+
+.archivos-request .texto-placeholder {
+    color: #666;
+    font-size: 2em; /* Haz el "+" más grande y visible */
+    text-align: center;
+    padding: 10px;
+}
+#input-archivos-request {
+    display: none;
+}
