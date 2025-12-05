@@ -35,7 +35,7 @@ include('conect.php');
                   
                   <?php
 
-                  $sql = "SELECT id_estudiante, nombre FROM estudiantes ORDER BY nombre";
+                  $sql = "SELECT id_tipo_trabajo, nombre FROM tipos_trabajos ORDER BY nombre";
                   $result = $mysqli->query($sql);
             
                   if ($result->num_rows > 0) {

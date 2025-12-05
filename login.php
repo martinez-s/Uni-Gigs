@@ -6,7 +6,7 @@ include('conect.php');
 
 const REDIRECT_PAGE = "Index.php"; 
 
-const SUCCESS_REDIRECT_PAGE = "public/pages/aqui.php"; 
+const SUCCESS_REDIRECT_PAGE = "public/pages/principal.php"; 
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -36,7 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    $sql = "SELECT correo, id_estudiante, clave FROM estudiantes WHERE correo = ?";
+    $sql = "SELECT correo, id_usuario, clave FROM usuarios WHERE correo = ?";
     
     if ($stmt = $mysqli->prepare($sql)) {
         
@@ -53,11 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($row['clave'] === $Clave) { 
 
                 $_SESSION['correo'] = $row['correo'];
-                $_SESSION['id_estudiante'] = $row['id_estudiante'];
+                $_SESSION['id_usuario'] = $row['id_usuario'];
 
                 $_SESSION['success'] = "Inicio de sesión exitoso"; 
 
-                header("Location: public/pages/aqui.php");
+                header("Location: public/pages/principal.php");
                 exit();
             }
         }      
