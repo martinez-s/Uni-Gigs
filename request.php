@@ -16,26 +16,23 @@ include('conect.php');
 <div>
   <div class="cont-crear">
     <div class="div">
-      <h3 class="Titulo titu_crear"> CREAR UN REQUEST</h3>
+      <h3 class="Titulo titu_crear">CREAR UN REQUEST</h3>
     </div>
       <div class="row">
-          <div class="col-lg-6 col-md-12">
+          <div class="col-lg-6 col-md-12 espacio">
               <label for="titu_req" class="lb_modal">TÍTULO</label>
               <br>
               <input type="text" id="titureq" name="titulo" class="inputs">
               <br>
               <label for="nombre_carrera" class="lb_modal">CARRERA</label>
               <br>
-              <input type="text" id="nombre_carrera" name="nombre_carrera" class="inputs"> 
-              <br>
-              <label for="tipo_trabajo" class="lb_modal">TIPO DE TRABAJO</label>
-              <select class="form-select" id="tipo_trabajo" name="tipo_trabajo">
+              <select class="form-select dropdown_front" id="tipo_trabajo" name="tipo_trabajo">
                   
-                  <option value="">Seleccione el Tipo de Trabajo</option> 
+                  <option value="" class="text-dropdown">Seleccione la carrera</option> 
                   
                   <?php
 
-                  $sql = "SELECT id_estudiante, nombre FROM estudiantes ORDER BY nombre";
+                  $sql = "SELECT id_tipo_trabajo, nombre FROM tipos_trabajos ORDER BY nombre";
                   $result = $mysqli->query($sql);
             
                   if ($result->num_rows > 0) {
@@ -43,39 +40,83 @@ include('conect.php');
                           
                           // Genera el <option> usando los datos de la BDD
                           // El 'value' será el ID y el texto visible será el nombre.
-                          echo '<option value="' . $row["id_estudiante"] . '">' . $row["nombre"] . '</option>';
+                          echo '<option value="' . $row["id_tipo_trabajo"] . '" class="text-dropdown">' . $row["nombre"] . '</option>';
                       }
                   } else {
                       // Opción de reserva si no hay datos
-                      echo '<option value="">(No hay tipos de trabajo disponibles)</option>';
+                      echo '<option value="" class="text-dropdown">(No hay carreras disponibles)</option>';
+                  }
+                  ?>
+                  
+              </select>
+              <br>
+              <label for="tipo_trabajo" class="lb_modal">TIPO DE TRABAJO</label>
+              <select class="form-select dropdown_front" id="tipo_trabajo" name="tipo_trabajo">
+                  
+                  <option value="" class="text-dropdown">Seleccione el Tipo de Trabajo</option> 
+                  
+                  <?php
+
+                  $sql = "SELECT id_tipo_trabajo, nombre FROM tipos_trabajos ORDER BY nombre";
+                  $result = $mysqli->query($sql);
+            
+                  if ($result->num_rows > 0) {
+                      while($row = $result->fetch_assoc()) {
+                          
+                          // Genera el <option> usando los datos de la BDD
+                          // El 'value' será el ID y el texto visible será el nombre.
+                          echo '<option value="' . $row["id_tipo_trabajo"] . '" class="text-dropdown">' . $row["nombre"] . '</option>';
+                      }
+                  } else {
+                      // Opción de reserva si no hay datos
+                      echo '<option value="" class="text-dropdown">(No hay tipos de trabajo disponibles)</option>';
                   }
                   ?>
                   
               </select>
           </div>
-          <div class="col-lg-6 col-md-12">
+          <div class="col-lg-6 col-md-12 espacio">
               <label for="fecha-limit-req" class="lb_modal">FECHA LÍMITE</label>
               <br>
               <input type="date" id="fecha-limit-req" name="fecha-limit-req" class="inputs">   
               <br>
-              <label for="materia" class="lb_modal">MATERIA</label>
-              <br>
-              <input type="text" id="materia" name="materia" class="inputs">  
+              <label for="tipo_materia" class="lb_modal">MATERIA</label>
+              <select class="form-select dropdown_front" id="tipo_materia" name="tipo_materia">
+                  
+                  <option value="" class="text-dropdown">Seleccione la materia</option> 
+                  
+                  <?php
+
+                  $sql = "SELECT id_tipo_trabajo, nombre FROM tipos_trabajos ORDER BY nombre";
+                  $result = $mysqli->query($sql);
+            
+                  if ($result->num_rows > 0) {
+                      while($row = $result->fetch_assoc()) {
+                          
+                          // Genera el <option> usando los datos de la BDD
+                          // El 'value' será el ID y el texto visible será el nombre.
+                          echo '<option value="' . $row["id_estudiante"] . '" class="text-dropdown">' . $row["nombre"] . '</option>';
+                      }
+                  } else {
+                      // Opción de reserva si no hay datos
+                      echo '<option value="" class="text-dropdown">(No hay materias disponibles)</option>';
+                  }
+                  ?>
+                  
+              </select> 
               <br>
               <label for="precio" class="lb_modal">PRECIO</label>
               <br>
               <input type="text" id="precio" name="precio" class="inputs">               
           </div>
-          <div class="col-lg-12">
-            <label for="descripcion" class="lb_modal">DESCRIPCIÓN</label>
+          <div class="col-lg-12 espacio">
+            <label for="descripcion" class="lb_modal_des">DESCRIPCIÓN</label>
             <br>
-            <input type="text" id="descripcion" name="descripcion" class="inputs">
-            <p class="lb_modal">ADJUNTAR ARCHIVOS (MÁX 3)</p>
-            
+            <input type="text" id="descripcion" name="descripcion" class="inputs">            
             <input type="file" id="input-archivos-request" name="archivos-request[]" multiple hidden> 
             
             <label for="input-archivos-request" class="btn btn-secondary" style="margin-bottom: 15px;">
-                Seleccionar Archivos (Máx 3)
+                Subir Archivos (Max 3)
             </label>
             
             <div id="preview-archivos" style="

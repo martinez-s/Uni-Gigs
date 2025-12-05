@@ -78,14 +78,20 @@ a{
 }
 .inputs{
     width: 100%;
-    margin-bottom: 10px;
-    height: auto;
+    margin-bottom: 20px;
+    height: 14%;
 }
 .lb_modal{
     font-size: 0.75rem;
     margin-bottom: 3px; 
+    margin-top: 10px;
+}
+.lb_modal_des{
+    font-size: 0.75rem;
+    margin-bottom: 5px; 
     margin-top: 5px;
 }
+
 .lb_subtitulo{
     font-size: 1rem;
     margin-bottom: 7px; 
@@ -267,4 +273,19 @@ a{
 }
 #input-archivos-request {
     display: none;
+}
+
+.dropdown_front{
+    width: 100%;
+    margin-bottom: 5px;
+    height: 15%;
+}
+.text-dropdown{
+    font-size: 1rem;
+
+}
+
+.espacio{
+    margin-top: 10px;
+    margin-bottom: 10px;
 }
