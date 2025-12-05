@@ -1,0 +1,291 @@
+@font-face {
+    font-family: 'Montserrat-Light';
+    src: url('../fonts/Montserrat-Light.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Cascadia-Code-Regular';
+    src: url('../fonts/CascadiaCode-Regular.otf') format('opentype');
+}
+
+body {
+    font-family: 'Montserrat-Light', sans-serif;
+}
+.Titulo {
+    font-family: 'Cascadia-Code-Regular', sans-serif;
+}
+.navbar-custom {
+    background-color: #2F5597;
+}
+.banner-container {
+    background-color: #2F5597; 
+    color: white;
+    padding: 1rem 0;
+}
+.banner-img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 1rem;
+}
+.text-justify 
+{
+    text-align: justify;
+    hyphens: auto;
+}
+
+/**Login y registro**/
+
+a{
+    cursor: pointer;
+}
+
+.modal-dialog {
+    display: flex;
+    align-items: center; 
+}
+.modal-content{
+    width: 90%; 
+    margin: auto;
+}
+.conte_log{
+    width: 66.67%; 
+    height: auto; 
+    margin: 0 auto; 
+    padding: 10px;
+}
+.conte_regis{
+    width: 66.67%; 
+    height: auto; 
+    margin: 0 auto; 
+}
+
+.btn_inicio{
+    width: 100%;
+    margin-bottom:15px ;
+}
+.btn_siguiente{
+    width: 50%;
+    margin-bottom:15px;
+    margin-top: 15px;
+    justify-content: center;
+}
+.btn_fin{
+    width: 50%;
+    margin-bottom:15px;
+    margin-top: 15px;
+    justify-content: center;
+    font-size: 1rem;
+}
+.inputs{
+    width: 100%;
+    margin-bottom: 20px;
+    height: 14%;
+}
+.lb_modal{
+    font-size: 0.75rem;
+    margin-bottom: 3px; 
+    margin-top: 10px;
+}
+.lb_modal_des{
+    font-size: 0.75rem;
+    margin-bottom: 5px; 
+    margin-top: 5px;
+}
+
+.lb_subtitulo{
+    font-size: 1rem;
+    margin-bottom: 7px; 
+    margin-top: 5px;
+}
+.titu_modal{
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 15px
+}
+
+.texto_log_cont{
+    color: black;
+    text-align: right;
+    font-size: 0.5rem;
+    text-decoration: none;
+    margin-top: 10px;
+}
+.texto_log_regis{
+    color: black;
+    text-align: center;
+    font-size: 0.50rem;
+    text-decoration: none;
+    margin-top: 15px;
+}
+
+.circulo-imagen-perfil {
+    width: 100px;  
+    height: 100px; 
+    border-radius: 50%;
+    background-color: #e0e0e0; 
+    border: 1px solid #ccc;
+    
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+.circulo-imagen-perfil:hover {
+    background-color: #d0d0d0; 
+}
+
+
+.circulo-imagen-perfil .texto-placeholder {
+    color: #666;
+    font-size: 0.9em;
+    text-align: center;
+    padding: 10px;
+}
+
+#input-imagen-perfil {
+    display: none;
+}
+
+
+.contenedor_carnet{
+    width: 100%; /* Ocupa el 100% de la columna */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centra horizontalmente los elementos internos */
+    margin-top: 10px; /* Pequeño ajuste para mejor alineación vertical */
+}
+.p_carnet{
+    font-size: 0.7rem;
+    text-align: center;
+    margin-bottom: 5px; 
+    width: 100%;
+}
+.imagen_carnet {
+    width: 80%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
+    height: 205px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
+    background-color: #e0e0e0; 
+    border-radius: 0%;
+    border: 1px solid #ccc; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+.imagen_carnet:hover {
+    background-color: #d0d0d0; 
+}
+
+
+.imagen_carnet .texto-placeholder {
+    color: #666;
+    font-size: 2em; /* Haz el "+" más grande y visible */
+    text-align: center;
+    padding: 10px;
+}
+#input-imagen-carnet {
+    display: none;
+}
+
+/* Esta Sección es del apartado de perfiles */
+
+.avatar-box {
+    width: 100px;
+    height: 100px;
+    background-color: #e9ecef;
+}
+
+.badge-notification {
+    width: 30px;
+    height: 30px;
+    background-color: #adb5bd;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.label-box {
+    background-color: #e9ecef;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #495057;
+}
+
+ .description-box {
+    background-color: #e9ecef;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #495057;
+    font-weight: bold;
+}
+.columna_regis3 {
+    padding-top: 0px; /* Asegura que los inputs empiecen arriba */
+}
+
+
+/**CREAR REQUEST Y SERVICIO**/
+
+.titu_crear{
+    font-size: 1.5rem;
+    text-align: center;
+    margin-bottom: 15px
+}
+.cont-crear{
+    height: 80%;
+    width: auto;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
+.archivos-request {
+    width: 100%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
+    height: 100px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
+    background-color: #e0e0e0; 
+    border-radius: 0%;
+    border: 1px solid #ccc; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    overflow: hidden; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease; 
+}
+
+.archivos-request:hover {
+    background-color: #d0d0d0; 
+}
+
+
+.archivos-request .texto-placeholder {
+    color: #666;
+    font-size: 2em; /* Haz el "+" más grande y visible */
+    text-align: center;
+    padding: 10px;
+}
+#input-archivos-request {
+    display: none;
+}
+
+.dropdown_front{
+    width: 100%;
+    margin-bottom: 5px;
+    height: 15%;
+}
+.text-dropdown{
+    font-size: 1rem;
+
+}
+
+.espacio{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
