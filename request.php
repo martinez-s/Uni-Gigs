@@ -8,11 +8,11 @@ include('conect.php');
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="public/styles/styles.css">
   <title>Request</title>
 </head>
 <body>
-  <?php include 'Navbar.html.php'; ?>
+  <?php include __DIR__ . '/app/includes/Navbar.php'; ?>
 <div>
   <div class="cont-crear">
     <div class="div">
@@ -140,7 +140,7 @@ include('conect.php');
   </div>
 </div>
 
-  <?php include 'Footer.html.php'; ?>
+  <?php include __DIR__ . '/app/includes/Footer.php'; ?>
   <script src="login_regis.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
