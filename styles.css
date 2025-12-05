@@ -178,3 +178,38 @@ a{
 #input-imagen-carnet {
     display: none;
 }
+
+/* Esta Sección es del apartado de perfiles */
+
+.avatar-box {
+    width: 100px;
+    height: 100px;
+    background-color: #e9ecef;
+}
+
+.badge-notification {
+    width: 30px;
+    height: 30px;
+    background-color: #adb5bd;
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.label-box {
+    background-color: #e9ecef;
+    padding: 8px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #495057;
+}
+
+ .description-box {
+    background-color: #e9ecef;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #495057;
+    font-weight: bold;
+}

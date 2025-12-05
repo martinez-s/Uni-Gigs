@@ -93,9 +93,7 @@ unset($_SESSION['success']);
         </div>
     </div>
 
-<!--     // Modales de Login y Registro
-
-    //Modal Login -->
+<!-- Modales de Login -->
     <div class="modal fade" id="modal_login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -123,7 +121,7 @@ unset($_SESSION['success']);
         </div>
     </div>
 
-<!--     //Modal Registro 1 -->
+<!-- Modal Registro 1 -->
     <div class="modal fade" id="modal_registro" aria-hidden="true" aria-labelledby="modal_registro" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -166,7 +164,7 @@ unset($_SESSION['success']);
         </div>
     </div>
 
-<!--     //Modal Registro 2 -->
+<!-- Modal Registro 2 -->
     <div class="modal fade" id="modal_registro2" aria-hidden="true" aria-labelledby="modal_registro2" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -196,7 +194,7 @@ unset($_SESSION['success']);
             </div>
         </div>
     </div> 
-<!--     //Modal Registro 3 -->
+<!-- Modal Registro 3 -->
     <div class="modal fade" id="modal_registro3" aria-hidden="true" aria-labelledby="modal_registro3" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -247,12 +245,7 @@ unset($_SESSION['success']);
             </div>
         </div>
     </div>
-    
-
-
-            
-
- <!--    //Hasta aqui modales -->
+ <!-- Hasta aqui modales -->
 
     <div id="Registro" class="container-fluid p-5 bg-light">
         <div class="row">
@@ -273,7 +266,7 @@ unset($_SESSION['success']);
 
     <script src="login_regis.js"></script>
 
-<!--     //Scripts que deberia poner en otro archivo -->
+<!-- Scripts que deberia poner en otro archivo -->
     <script>
         <?php if ($error_message): ?>
         

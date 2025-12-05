@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $_SESSION['success'] = "Inicio de sesión exitoso"; 
 
-                header("Location: aqui.html.php");
+                header("Location: aqui.php");
                 exit();
             }
         }      
@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
 
-    header("Location: Index.html.php"); 
+    header("Location: Index.php"); 
     exit();
 
 ?>

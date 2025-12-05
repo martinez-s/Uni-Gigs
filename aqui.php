@@ -3,7 +3,7 @@
 session_start();
 
 if (!isset($_SESSION['id_estudiante'])) {
-    header("Location: Index.html.php");
+    header("Location: Index.php");
     exit();
 }
 
