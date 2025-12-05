@@ -2,7 +2,7 @@
 <nav class="navbar navbar-expand-md fixed-top navbar-custom navbar-dark">
   <div id="Navbar" class="container-fluid">
     <a class="Titulo navbar-brand text-white" href="#Inicio">
-      <img src="img/Isotipo_Blanco.png" alt="Logo" width="60" height="48" class="d-inline-block align-text-center">
+      <img src="public/img/Isotipo_Blanco.png" alt="Logo" width="60" height="48" class="d-inline-block align-text-center">
       Uni-Gigs
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -19,7 +19,7 @@
       </ul>
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link text-white" href="#">Registrate</a>
+          <a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#modal_registro">Registrate</a>
         </li>
         <li class="nav-item">
           <a class="nav-link text-white" data-bs-toggle="modal" data-bs-target="#modal_login">

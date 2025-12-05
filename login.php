@@ -4,9 +4,9 @@ session_start();
 
 include('conect.php'); 
 
-const REDIRECT_PAGE = "Index.html.php"; 
+const REDIRECT_PAGE = "Index.php"; 
 
-const SUCCESS_REDIRECT_PAGE = "aqui.html.php"; 
+const SUCCESS_REDIRECT_PAGE = "public/pages/aqui.php"; 
 
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $_SESSION['success'] = "Inicio de sesión exitoso"; 
 
-                header("Location: aqui.php");
+                header("Location: public/pages/aqui.php");
                 exit();
             }
         }      

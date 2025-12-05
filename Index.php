@@ -5,6 +5,8 @@ $success_message = $_SESSION['success'] ?? null;
 
 unset($_SESSION['error']);
 unset($_SESSION['success']);
+
+include __DIR__ . '/app/includes/Navbar.php';
 ?>
 
 <!DOCTYPE html>
@@ -14,11 +16,10 @@ unset($_SESSION['success']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="public/styles/styles.css">
     <title>Document</title>
 </head>
 <body>
-<?php include 'Navbar.php'; ?>
     <div id="Inicio" class="banner-container">
         <div class="container">
             <div class="row align-items-center mt-5">
@@ -28,7 +29,7 @@ unset($_SESSION['success']);
                         Pero hey, al menos pagan por hacerlos.</p>
                 </div>
                 <div class="col-md-6 text-center">
-                    <img src="img/img_banner.png" class="banner-img img-fluid" alt="Descripción de la imagen">
+                    <img src="public/img/img_banner.png" class="banner-img img-fluid" alt="Descripción de la imagen">
                 </div>
             </div>
         </div>
@@ -56,7 +57,7 @@ unset($_SESSION['success']);
         <h2 class="Titulo text-center mt-5">Funciones</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3">
             <div class="col">
-                <div class="card h-100 shadow-sm border-0"> <img src="img/Relleno.jpg" class="card-img-top" alt="...">
+                <div class="card h-100 shadow-sm border-0"> <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Card title</h5>
                         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
@@ -65,7 +66,7 @@ unset($_SESSION['success']);
             </div>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="img/Relleno.jpg" class="card-img-top" alt="...">
+                    <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Card title</h5>
                         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
@@ -74,7 +75,7 @@ unset($_SESSION['success']);
             </div>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="img/Relleno.jpg" class="card-img-top" alt="...">
+                    <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Card title</h5>
                         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
@@ -83,7 +84,7 @@ unset($_SESSION['success']);
             </div>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="img/Relleno.jpg" class="card-img-top" alt="...">
+                    <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
                     <div class="card-body">
                         <h5 class="card-title">Card title</h5>
                         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
@@ -257,12 +258,11 @@ unset($_SESSION['success']);
         </div>
     </div>
 
-
-<?php include 'Footer.php'; ?>
+<?php include __DIR__ . '/app/includes/Footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <script src="login_regis.js"></script>
+    <script src="public/js/login_regis.js"></script>
 
 <!-- Scripts que deberia poner en otro archivo -->
     <script>
