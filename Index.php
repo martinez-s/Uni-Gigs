@@ -95,13 +95,13 @@ unset($_SESSION['success']);
 
 <!-- Modales de Login -->
     <div class="modal fade" id="modal_login" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <div class="container conte_log">
+                    <div class="conte_log">
                         <form action="login.php" method="post">
                             <h1 class="Titulo titu_modal">INICIA SESIÓN</h1>
                             <label for="correo" class="lb_modal">CORREO</label>
@@ -208,13 +208,11 @@ unset($_SESSION['success']);
                         <div class="row">
                             <div class="col-lg-6 col-md-12 flex-column justify-content-center">
                                 <div class="contenedor_carnet">
-                                    <p class="p_carnet" >SUBE UNA FOTO DE TU CARNET ESTUDIANTIL</p>
-                                    <div>
-                                        <label for="input-imagen-carnet" class="imagen_carnet">
-                                            <span class="texto-placeholder">+</span>
-                                        </label>
-                                        <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*">
-                                    </div>
+                                    <p class="p_carnet" >SUBE UNA FOTO DE TU <br> CARNET ESTUDIANTIL</p>
+                                    <label for="input-imagen-carnet" class="imagen_carnet">
+                                        <span class="texto-placeholder">+</span>
+                                    </label>
+                                    <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-12 flex-column justify-content-center columna_regis3">
@@ -268,20 +266,20 @@ unset($_SESSION['success']);
 
 <!-- Scripts que deberia poner en otro archivo -->
     <script>
-        <?php if ($error_message): ?>
+        // <?php if ($error_message): ?>
         
-            const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
+        //     const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
         
-            Swal.fire({
-                icon: "error",
-                title: "Error de inicio de sesión",
-                text: errorMessage, 
-            });
+        //     Swal.fire({
+        //         icon: "error",
+        //         title: "Error de inicio de sesión",
+        //         text: errorMessage, 
+        //     });
         
-            var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
-            loginModal.show();
+        //     var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
+        //     loginModal.show();
         
-        <?php endif; ?>
+        // <?php endif; ?>
         
     </script>  
 </body>

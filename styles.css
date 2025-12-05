@@ -38,21 +38,27 @@ body {
 a{
     cursor: pointer;
 }
+
+.modal-dialog {
+    display: flex;
+    align-items: center; 
+}
+.modal-content{
+    width: 90%; 
+    margin: auto;
+}
 .conte_log{
-    width: 50%;
-    height: 70%;
+    width: 66.67%; 
+    height: auto; 
+    margin: 0 auto; 
+    padding: 10px;
 }
 .conte_regis{
-    width: 65%;
-    height: 70%;
+    width: 66.67%; 
+    height: auto; 
+    margin: 0 auto; 
 }
-.modal_body{
-    width: 90%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    
-}
+
 .btn_inicio{
     width: 100%;
     margin-bottom:15px ;
@@ -82,7 +88,7 @@ a{
 }
 .lb_subtitulo{
     font-size: 1rem;
-    margin-bottom: 3px; 
+    margin-bottom: 7px; 
     margin-top: 5px;
 }
 .titu_modal{
@@ -139,20 +145,21 @@ a{
 
 
 .contenedor_carnet{
-    width: 50%;
+    width: 100%; /* Ocupa el 100% de la columna */
+    display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: center; /* Centra horizontalmente los elementos internos */
+    margin-top: 10px; /* Pequeño ajuste para mejor alineación vertical */
 }
 .p_carnet{
-    margin-top: 15px;
     font-size: 0.7rem;
     text-align: center;
-    margin-bottom: 5%;
+    margin-bottom: 5px; 
     width: 100%;
 }
 .imagen_carnet {
-    width: 200px;  
-    height: 600px; 
+    width: 80%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
+    height: 205px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
     background-color: #e0e0e0; 
     border-radius: 0%;
     border: 1px solid #ccc; 
@@ -169,9 +176,9 @@ a{
 }
 
 
-.imagen_carnet.texto-placeholder {
+.imagen_carnet .texto-placeholder {
     color: #666;
-    font-size: 0.9em;
+    font-size: 2em; /* Haz el "+" más grande y visible */
     text-align: center;
     padding: 10px;
 }
@@ -212,4 +219,7 @@ a{
     justify-content: center;
     color: #495057;
     font-weight: bold;
+}
+.columna_regis3 {
+    padding-top: 0px; /* Asegura que los inputs empiecen arriba */
 }
