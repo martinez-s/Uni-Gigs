@@ -83,7 +83,7 @@
                     <td><?php echo $categoria;?></td>
                     <td><a href="archivo/<?php echo $ruta; ?>" download>descargar</a></td>
                     <td><?php echo $fecha ;?></td>
-                    <td><a class='btn btn-secondary' href="editar.php?id=<?php echo $id?>">Editar</a> <a class='btn btn-danger' href="archivo/acciones/eliminar.php?id=<?php echo $id?>">Eliminar</a></td>
+                    <td><a class='btn btn-secondary' href="editar.php?id=<?php echo $id?>">Editar</a> <a class='btn btn-danger' href="acciones/eliminar.php?id=<?php echo $id?>">Eliminar</a></td>
                 </tr>
                 <?php 
                     }
