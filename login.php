@@ -43,6 +43,8 @@ if ($row = $resultado->fetch_assoc()) {
         $_SESSION['correo']     = $row['correo'];
         $_SESSION['success']    = "Inicio de sesión exitoso";
 
+        $stmt_admin = $mysqli->prepare("SELECT COUNT(*) FROM administradores WHERE id_usuario = ?");
+
         $stmt->close();
 
         header("Location: " . SUCCESS_REDIRECT_PAGE);

@@ -7,43 +7,183 @@ $(document).ready(function() {
     let lastMessageId = 0;
     let refreshInterval = null;
     let otherUserPhoto = '';
-    
-    console.log("🚀 Sistema de mensajería inicializado");
+    let selectedFiles = [];
+    let fileUploadQueue = [];
+    let isUploading = false;
     
     // ============================================
-    // 1. CARGAR LISTA DE CHATS AL INICIAR
+    // 1. INICIALIZACIÓN
     // ============================================
+    console.log("🚀 Sistema de Mensajería con Archivos inicializado");
     loadChats();
     
     // ============================================
-    // 2. FUNCIONES PRINCIPALES
+    // 2. MANEJO DE ARCHIVOS
     // ============================================
     
-    // Cargar lista de chats (se ejecuta cada 30 segundos)
-    function loadChats() {
-        console.log("📋 Cargando lista de chats...");
+    // Click en botón adjuntar
+    $('#attach-btn').click(function() {
+        $('#file-input').click();
+    });
+    
+    // Selección de archivos
+    $('#file-input').change(function(e) {
+        const files = e.target.files;
+        if (files.length === 0) return;
         
+        // Validar número máximo de archivos (5)
+        if (files.length > 5) {
+            alert('Máximo 5 archivos a la vez');
+            return;
+        }
+        
+        // Procesar cada archivo
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            
+            // Validar tamaño máximo (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert(`El archivo "${file.name}" es demasiado grande (máximo 10MB)`);
+                continue;
+            }
+            
+            // Validar tipo de archivo
+            const allowedTypes = [
+                'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+                'application/pdf', 'application/msword', 
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                'text/plain',
+                'application/zip', 'application/x-rar-compressed',
+                'audio/mpeg', 'video/mp4', 'video/avi', 'video/quicktime'
+            ];
+            
+            if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|txt|zip|rar|mp3|mp4|avi|mov)$/i)) {
+                alert(`Tipo de archivo no permitido: "${file.name}"`);
+                continue;
+            }
+            
+            // Agregar a la lista de archivos seleccionados
+            selectedFiles.push(file);
+            
+            // Mostrar previsualización
+            showFilePreview(file);
+        }
+        
+        // Limpiar input
+        $(this).val('');
+        
+        // Habilitar botón de enviar
+        if (selectedFiles.length > 0) {
+            $('#send-btn').prop('disabled', false);
+        }
+    });
+    
+    // Mostrar previsualización de archivo
+    function showFilePreview(file) {
+        const container = $('#file-preview-container');
+        const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        
+        let previewHtml = '';
+        const isImage = file.type.startsWith('image/');
+        
+        if (isImage) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                previewHtml = `
+                    <div class="file-preview" id="${fileId}">
+                        <div class="d-flex align-items-center">
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <div>
+                                <div class="file-name">${file.name}</div>
+                                <div class="file-size">${formatFileSize(file.size)}</div>
+                            </div>
+                        </div>
+                        <div class="remove-file" onclick="removeSelectedFile('${fileId}')">
+                            <i class="bi bi-x-circle"></i>
+                        </div>
+                    </div>
+                `;
+                container.append(previewHtml).show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            previewHtml = `
+                <div class="file-preview" id="${fileId}">
+                    <div class="d-flex align-items-center">
+                        <div class="file-icon">
+                            <i class="bi bi-file-earmark"></i>
+                        </div>
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <div class="remove-file" onclick="removeSelectedFile('${fileId}')">
+                        <i class="bi bi-x-circle"></i>
+                    </div>
+                </div>
+            `;
+            container.append(previewHtml).show();
+        }
+    }
+    
+    // Función global para remover archivos
+    window.removeSelectedFile = function(fileId) {
+        const fileElement = $('#' + fileId);
+        const fileName = fileElement.find('.file-name').text();
+        
+        // Remover de la lista de archivos seleccionados
+        selectedFiles = selectedFiles.filter(file => file.name !== fileName);
+        
+        // Remover elemento del DOM
+        fileElement.remove();
+        
+        // Ocultar contenedor si no hay más archivos
+        if (selectedFiles.length === 0) {
+            $('#file-preview-container').hide();
+            if ($('#message-input').val().trim() === '') {
+                $('#send-btn').prop('disabled', true);
+            }
+        }
+    };
+    
+    // Formatear tamaño de archivo
+    function formatFileSize(bytes) {
+        if (bytes >= 1073741824) {
+            return (bytes / 1073741824).toFixed(2) + ' GB';
+        } else if (bytes >= 1048576) {
+            return (bytes / 1048576).toFixed(2) + ' MB';
+        } else if (bytes >= 1024) {
+            return (bytes / 1024).toFixed(2) + ' KB';
+        } else {
+            return bytes + ' bytes';
+        }
+    }
+    
+    // ============================================
+    // 3. CARGAR Y MOSTRAR CHATS
+    // ============================================
+    
+    function loadChats() {
         $.ajax({
             url: 'app/ajax/get_chats.php',
             type: 'GET',
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    console.log(`✅ Chats cargados: ${response.chats.length}`);
                     displayChats(response.chats);
                 } else {
-                    console.error("❌ Error en get_chats.php:", response.message);
-                    showError('Error al cargar chats');
+                    showError('Error al cargar chats: ' + response.message);
                 }
             },
             error: function(xhr, status, error) {
-                console.error("❌ Error AJAX en loadChats:", error);
-                showError('Error de conexión');
+                showError('Error de conexión al cargar chats');
             }
         });
     }
     
-    // Mostrar chats en sidebar
     function displayChats(chats) {
         const chatsList = $('#chats-list');
         chatsList.empty();
@@ -64,13 +204,19 @@ $(document).ready(function() {
             chatsList.append(chatElement);
         });
         
-        // Agregar eventos click
         $('.chat-item').click(function() {
-            selectChat($(this));
+            $('.chat-item').removeClass('active-chat');
+            $(this).addClass('active-chat');
+            
+            const chatId = $(this).data('chat-id');
+            const otherId = $(this).data('other-id');
+            otherUserName = $(this).data('other-name');
+            otherUserPhoto = $(this).data('other-photo');
+            
+            selectChat(chatId, otherId);
         });
     }
     
-    // Crear elemento HTML para un chat
     function createChatElement(chat) {
         const nombreCompleto = chat.nombre_otro_usuario + ' ' + chat.apellido_otro_usuario;
         
@@ -82,7 +228,6 @@ $(document).ready(function() {
                  data-other-photo="${chat.foto_otro_usuario}"
                  style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
                 <div class="d-flex align-items-center">
-                    <!-- Avatar -->
                     <div class="position-relative me-3">
                         ${chat.foto_otro_usuario ? 
                             `<img src="${chat.foto_otro_usuario}" 
@@ -99,7 +244,6 @@ $(document).ready(function() {
                             ''}
                     </div>
                     
-                    <!-- Información -->
                     <div class="flex-grow-1" style="min-width: 0;">
                         <div class="d-flex justify-content-between align-items-center mb-1">
                             <h6 class="mb-0 fw-bold text-truncate" style="font-size: 0.95rem;">
@@ -118,39 +262,21 @@ $(document).ready(function() {
         `;
     }
     
-    // Seleccionar un chat
-    function selectChat(chatElement) {
-        console.log("💬 Seleccionando chat...");
-        
-        // Remover active de todos
-        $('.chat-item').removeClass('active-chat');
-        // Agregar active al seleccionado
-        chatElement.addClass('active-chat');
-        
-        // Obtener datos
-        currentChatId = chatElement.data('chat-id');
-        otherUserName = chatElement.data('other-name');
-        otherUserPhoto = chatElement.data('other-photo');
+    function selectChat(chatId, otherId) {
+        currentChatId = chatId;
         lastMessageId = 0;
         
-        // Actualizar UI
-        updateChatHeader();
-        $('#current-chat-id').val(currentChatId);
+        $('#chat-title').text(otherUserName);
+        $('#current-chat-id').val(chatId);
         $('#message-input').prop('disabled', false).focus();
-        $('#send-btn').prop('disabled', false);
         $('#chat-actions').removeClass('d-none');
         
-        // Cargar mensajes
-        loadMessages(currentChatId);
-        
-        // Iniciar actualización periódica
+        updateChatHeader();
+        loadMessages(chatId);
         startMessageRefresh();
     }
     
-    // Actualizar cabecera del chat
     function updateChatHeader() {
-        $('#chat-title').text(otherUserName);
-        
         if (otherUserPhoto) {
             $('#chat-avatar').html(`
                 <img src="${otherUserPhoto}" 
@@ -163,10 +289,11 @@ $(document).ready(function() {
         }
     }
     
-    // Cargar mensajes de un chat
+    // ============================================
+    // 4. CARGAR Y MOSTRAR MENSAJES
+    // ============================================
+    
     function loadMessages(chatId) {
-        console.log("📨 Cargando mensajes del chat:", chatId);
-        
         $.ajax({
             url: 'app/ajax/get_messages.php',
             type: 'GET',
@@ -174,27 +301,20 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    console.log(`✅ ${response.messages.length} mensajes cargados`);
                     displayMessages(response.messages);
-                    
-                    // Guardar ID del último mensaje
                     if (response.messages.length > 0) {
                         lastMessageId = response.messages[response.messages.length - 1].id_mensaje;
-                        console.log("📌 Último mensaje ID:", lastMessageId);
                     }
                 } else {
-                    console.error("❌ Error en get_messages.php:", response.message);
                     showError('Error al cargar mensajes');
                 }
             },
-            error: function(xhr, status, error) {
-                console.error("❌ Error AJAX en loadMessages:", error);
-                showError('Error de conexión');
+            error: function() {
+                showError('Error de conexión al cargar mensajes');
             }
         });
     }
     
-    // Mostrar mensajes en el contenedor
     function displayMessages(messages) {
         const container = $('#messages-container');
         container.empty();
@@ -204,18 +324,16 @@ $(document).ready(function() {
                 <div class="text-center text-muted mt-5">
                     <i class="bi bi-chat-left" style="font-size: 3rem; opacity: 0.3;"></i>
                     <p class="mt-3">No hay mensajes aún</p>
-                    <small class="text-muted">Envía el primer mensaje para comenzar</small>
+                    <small class="text-muted">Envía el primer mensaje o archivo para comenzar</small>
                 </div>
             `);
             return;
         }
         
-        // Agrupar mensajes por fecha
         let currentDate = '';
         messages.forEach(message => {
             const messageDate = message.fecha_completa.split(' ')[0];
             
-            // Mostrar fecha si cambió
             if (messageDate !== currentDate) {
                 currentDate = messageDate;
                 container.append(`
@@ -227,20 +345,63 @@ $(document).ready(function() {
                 `);
             }
             
-            // Agregar mensaje
             const messageElement = createMessageElement(message);
             container.append(messageElement);
         });
         
-        // Hacer scroll al final
         setTimeout(scrollToBottom, 100);
     }
     
-    // Crear elemento HTML para un mensaje
     function createMessageElement(message) {
         const isOwn = message.es_mio;
         const messageClass = isOwn ? 'text-end' : 'text-start';
         const bubbleClass = isOwn ? 'sent' : 'received';
+        
+        let messageContent = '';
+        
+        switch (message.tipo_mensaje) {
+            case 'texto':
+                messageContent = `<p class="mb-1" style="white-space: pre-wrap;">${message.contenido}</p>`;
+                break;
+                
+            case 'imagen':
+                messageContent = `
+                    <div class="mb-2">
+                        <p class="mb-1" style="white-space: pre-wrap;">${message.contenido || ''}</p>
+                        <img src="${message.url_archivo}" 
+                             class="message-image"
+                             alt="${message.nombre_archivo}"
+                             onclick="openImageModal('${message.url_archivo}', '${message.nombre_archivo}')">
+                        <div class="mt-1 small">${message.nombre_archivo}</div>
+                    </div>
+                `;
+                break;
+                
+            case 'archivo':
+                const fileIcon = getFileIcon(message.nombre_archivo);
+                messageContent = `
+                    <div class="mb-2">
+                        <p class="mb-1" style="white-space: pre-wrap;">${message.contenido || ''}</p>
+                        <div class="message-file">
+                            <div class="d-flex align-items-center">
+                                <div class="file-icon">
+                                    <i class="bi ${fileIcon}"></i>
+                                </div>
+                                <div class="file-info">
+                                    <div class="file-name">
+                                        <a href="${message.url_archivo}" download="${message.nombre_archivo}" 
+                                           class="text-decoration-none">
+                                            ${message.nombre_archivo}
+                                        </a>
+                                    </div>
+                                    <div class="file-size">${message.tamano_archivo || ''}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                break;
+        }
         
         return `
             <div class="mb-2 ${messageClass}">
@@ -250,9 +411,7 @@ $(document).ready(function() {
                     </small>
                 ` : ''}
                 <div class="message-bubble ${bubbleClass} d-inline-block">
-                    <div class="message-content">
-                        ${message.contenido}
-                    </div>
+                    ${messageContent}
                     <div class="message-time text-end mt-1" style="font-size: 0.7rem; opacity: 0.7;">
                         ${message.hora}
                     </div>
@@ -261,30 +420,177 @@ $(document).ready(function() {
         `;
     }
     
+    // Función global para abrir imagen en modal
+    window.openImageModal = function(imageUrl, fileName) {
+        $('#modal-image').attr('src', imageUrl);
+        $('#download-image').attr('href', imageUrl).attr('download', fileName);
+        $('#imageModal').modal('show');
+    };
+    
+    // Obtener ícono según tipo de archivo
+    function getFileIcon(fileName) {
+        const extension = fileName.split('.').pop().toLowerCase();
+        
+        switch (extension) {
+            case 'pdf':
+                return 'bi-file-earmark-pdf';
+            case 'doc':
+            case 'docx':
+                return 'bi-file-earmark-word';
+            case 'xls':
+            case 'xlsx':
+                return 'bi-file-earmark-excel';
+            case 'zip':
+            case 'rar':
+                return 'bi-file-earmark-zip';
+            case 'mp3':
+                return 'bi-file-earmark-music';
+            case 'mp4':
+            case 'avi':
+            case 'mov':
+                return 'bi-file-earmark-play';
+            default:
+                return 'bi-file-earmark';
+        }
+    }
+    
     // ============================================
-    // 3. ACTUALIZACIÓN AUTOMÁTICA
+    // 5. ENVÍO DE MENSAJES Y ARCHIVOS
     // ============================================
     
-    // Iniciar actualización periódica
-    function startMessageRefresh() {
-        // Limpiar intervalo anterior
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-            console.log("🔄 Intervalo anterior limpiado");
+    // Enviar al hacer clic en el botón
+    $('#send-btn').click(sendMessage);
+    
+    // Enviar con Enter
+    $('#message-input').keypress(function(e) {
+        if (e.which === 13 && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    });
+    
+    async function sendMessage() {
+        const chatId = currentChatId;
+        const message = $('#message-input').val().trim();
+        
+        if (!chatId) {
+            alert('Selecciona un chat primero');
+            return;
         }
         
-        // Configurar nuevo intervalo (5 segundos)
+        if (selectedFiles.length === 0 && !message) {
+            alert('Escribe un mensaje o adjunta un archivo');
+            return;
+        }
+        
+        // Deshabilitar botones durante el envío
+        $('#send-btn').prop('disabled', true);
+        $('#attach-btn').css('pointer-events', 'none');
+        $('#message-input').prop('disabled', true);
+        
+        let fileData = null;
+        
+        // Subir archivos si hay
+        if (selectedFiles.length > 0) {
+            try {
+                fileData = await uploadFiles(selectedFiles, chatId);
+            } catch (error) {
+                alert('Error al subir archivos: ' + error);
+                resetForm();
+                return;
+            }
+        }
+        
+        // Enviar mensaje
+        $.ajax({
+            url: 'app/ajax/send_message.php',
+            type: 'POST',
+            data: {
+                chat_id: chatId,
+                message: message,
+                file_data: fileData ? JSON.stringify(fileData) : null
+            },
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    console.log('✅ Mensaje enviado:', response);
+                    
+                    // Limpiar formulario
+                    resetForm();
+                    
+                    // Recargar mensajes
+                    loadMessages(chatId);
+                    loadChats();
+                } else {
+                    alert('Error: ' + response.message);
+                    resetForm();
+                }
+            },
+            error: function(xhr, status, error) {
+                alert('Error de conexión');
+                resetForm();
+            }
+        });
+    }
+    
+    // Subir archivos
+    async function uploadFiles(files, chatId) {
+        if (files.length === 0) return null;
+        
+        // Por simplicidad, subimos solo el primer archivo
+        // Para múltiples archivos, necesitarías modificar la BD
+        const file = files[0];
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('chat_id', chatId);
+        
+        return new Promise((resolve, reject) => {
+            $.ajax({
+                url: 'app/ajax/upload_file.php',
+                type: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: 'json',
+                success: function(response) {
+                    if (response.success) {
+                        resolve(response);
+                    } else {
+                        reject(response.message);
+                    }
+                },
+                error: function() {
+                    reject('Error de conexión al subir archivo');
+                }
+            });
+        });
+    }
+    
+    // Resetear formulario después del envío
+    function resetForm() {
+        $('#message-input').val('').prop('disabled', false).focus();
+        $('#send-btn').prop('disabled', true);
+        $('#attach-btn').css('pointer-events', 'auto');
+        $('#file-preview-container').empty().hide();
+        selectedFiles = [];
+    }
+    
+    // ============================================
+    // 6. ACTUALIZACIÓN AUTOMÁTICA
+    // ============================================
+    
+    function startMessageRefresh() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+        
         refreshInterval = setInterval(() => {
             if (currentChatId && lastMessageId > 0) {
-                console.log("🔍 Verificando nuevos mensajes...");
                 checkNewMessages();
             }
         }, 5000);
-        
-        console.log("⏱️ Intervalo de 5 segundos iniciado");
     }
     
-    // Verificar nuevos mensajes
     function checkNewMessages() {
         $.ajax({
             url: 'app/ajax/check_new_messages.php',
@@ -296,21 +602,14 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success && response.new_messages.length > 0) {
-                    console.log(`🆕 ${response.new_messages.length} nuevos mensajes encontrados`);
                     appendNewMessages(response.new_messages);
                     lastMessageId = response.new_messages[response.new_messages.length - 1].id_mensaje;
-                    
-                    // Actualizar lista de chats
                     loadChats();
                 }
-            },
-            error: function() {
-                // Silenciar errores de polling
             }
         });
     }
     
-    // Agregar nuevos mensajes al chat
     function appendNewMessages(newMessages) {
         const container = $('#messages-container');
         
@@ -319,82 +618,11 @@ $(document).ready(function() {
             container.append(messageElement);
         });
         
-        // Hacer scroll si está cerca del final
         scrollToBottomIfNear();
     }
     
     // ============================================
-    // 4. ENVÍO DE MENSAJES
-    // ============================================
-    
-    // Enviar mensaje
-    $('#message-form').submit(function(e) {
-        e.preventDefault();
-        sendMessage();
-    });
-    
-    function sendMessage() {
-        const chatId = $('#current-chat-id').val();
-        const message = $('#message-input').val().trim();
-        
-        if (!chatId || !message) {
-            console.warn("⚠️ No se puede enviar: chat o mensaje vacío");
-            return;
-        }
-        
-        console.log("✉️ Enviando mensaje:", message.substring(0, 50) + "...");
-        
-        // Deshabilitar temporalmente
-        $('#message-input').prop('disabled', true);
-        $('#send-btn').prop('disabled', true);
-        
-        $.ajax({
-            url: 'app/ajax/send_message.php',
-            type: 'POST',
-            data: {
-                chat_id: chatId,
-                message: message
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.success) {
-                    console.log("✅ Mensaje enviado, ID:", response.message_id);
-                    
-                    // Limpiar y habilitar
-                    $('#message-input').val('').prop('disabled', false).focus();
-                    $('#send-btn').prop('disabled', false);
-                    
-                    // Recargar mensajes
-                    loadMessages(chatId);
-                    
-                    // Actualizar lista de chats
-                    loadChats();
-                } else {
-                    console.error("❌ Error al enviar:", response.message);
-                    alert('Error: ' + response.message);
-                    $('#message-input').prop('disabled', false);
-                    $('#send-btn').prop('disabled', false);
-                }
-            },
-            error: function(xhr, status, error) {
-                console.error("❌ Error AJAX en sendMessage:", error);
-                alert('Error de conexión');
-                $('#message-input').prop('disabled', false);
-                $('#send-btn').prop('disabled', false);
-            }
-        });
-    }
-    
-    // Permitir enviar con Enter
-    $('#message-input').keypress(function(e) {
-        if (e.which === 13 && !e.shiftKey) {
-            e.preventDefault();
-            sendMessage();
-        }
-    });
-    
-    // ============================================
-    // 5. FUNCIONES UTILITARIAS
+    // 7. FUNCIONES UTILITARIAS
     // ============================================
     
     function scrollToBottom() {
@@ -406,7 +634,6 @@ $(document).ready(function() {
         const container = $('#messages-container');
         const distanceFromBottom = container[0].scrollHeight - container.scrollTop() - container.height();
         
-        // Si está a menos de 150px del fondo, hacer scroll
         if (distanceFromBottom < 150) {
             scrollToBottom();
         }
@@ -414,22 +641,22 @@ $(document).ready(function() {
     
     function showError(message) {
         console.error(message);
-        // Podrías agregar un toast o alert aquí
+        // Podrías mostrar un toast aquí
     }
     
     // ============================================
-    // 6. ACTUALIZACIONES PERIÓDICAS
+    // 8. ACTUALIZACIONES PERIÓDICAS
     // ============================================
     
     // Actualizar lista de chats cada 30 segundos
     setInterval(loadChats, 30000);
-    console.log("⏱️ Intervalo de 30 segundos para chats iniciado");
     
     // Limpiar al cerrar página
     $(window).on('beforeunload', function() {
         if (refreshInterval) {
             clearInterval(refreshInterval);
-            console.log("🧹 Intervalos limpiados");
         }
     });
+
+    
 });

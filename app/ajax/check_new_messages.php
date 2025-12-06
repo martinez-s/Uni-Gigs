@@ -54,6 +54,8 @@ try {
             'id_mensaje' => $row['id_mensaje'],
             'contenido' => htmlspecialchars($row['contenido']),
             'tipo_mensaje' => $row['tipo_mensaje'],
+            'url_archivo' => $row['url_archivo'],
+            'nombre_archivo' => $row['nombre_archivo'],
             'id_emisor' => $row['id_emisor'],
             'nombre_emisor' => $row['nombre'],
             'apellido_emisor' => $row['apellido'],
@@ -64,8 +66,7 @@ try {
     
     echo json_encode([
         'success' => true, 
-        'new_messages' => $new_messages,
-        'count' => count($new_messages)
+        'new_messages' => $new_messages
     ]);
     
     $stmt->close();

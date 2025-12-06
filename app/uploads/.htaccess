@@ -1,0 +1,9 @@
+# Denegar acceso directo a archivos
+Order Deny,Allow
+Deny from all
+
+# Permitir solo desde nuestro dominio
+<FilesMatch "\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|txt|mp3|mp4|avi)$">
+    Order Allow,Deny
+    Allow from all
+</FilesMatch>
