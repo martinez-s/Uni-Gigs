@@ -121,52 +121,45 @@ include __DIR__ . '/app/includes/Navbar.php';
             </div>
         </div>
     </div>
-
-    <form action="registro.php" method="post" enctype="multipart/form-data">
-<!-- Modal Registro 1 -->
+<!-- MODLALES DE REGISTRO -->
+<form id="form_registro" action="registro.php" method="post" enctype="multipart/form-data">
+    
     <div class="modal fade" id="modal_registro" aria-hidden="true" aria-labelledby="modal_registro" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="container conte_regis">
-                        <form action="login.php" method="post">
-                            <h1 class="Titulo titu_modal">REGISTRATE</h1>
-                            <h2 class="lb_subtitulo text-center">CUENTANOS SOBRE TI, INGRESA TUS DATOS BÁSICOS</h2>
-                                <div class="row">
-                                    <div class="col-lg-6 col-md-12">
-                                        <label for="correo" class="lb_modal">CORREO</label>
-                                        <br>
-                                        <input type="email" name="correo" class="form-control inputs" required placeholder="ejemplo@correo.com">
-                                        <br>
-                                        <label for="clave" class="lb_modal">CONTRASEÑA</label>
-                                        <br>
-                                        <input type="password" name="clave" class="form-control inputs" required>   
-                                    </div>
-                                    <div class="col-lg-6 col-md-12">
-                                        <label for="fecha_nacimiento" class="lb_modal">FECHA DE NACIMIENTO</label>
-                                        <br>
-                                        <input type="date" name="fecha_nacimiento" class="form-control inputs" required>  
-                                        <br>
-                                        <label for="clave" class="lb_modal">CONFIRMAR CONTRASEÑA</label>
-                                        <br>
-                                        <input type="password" name="clave_confirm" class="form-control inputs" required>       
-                                    </div>
-                                </div>
-                                <div class="d-flex justify-content-center">
-                                    <button type="button" class="btn_siguiente" data-bs-target="#modal_registro2" data-bs-toggle="modal">SIGUIENTE</button>
-                                </div>
-                                <a class="texto_log_regis" data-bs-toggle="modal" data-bs-target="#modal_login"><p>¿YA TIENES CUENTA? INICIA SESION</p></a>
-                        </form>
+                        <h1 class="Titulo titu_modal">REGISTRATE</h1>
+                        <h2 class="lb_subtitulo text-center">CUENTANOS SOBRE TI, INGRESA TUS DATOS BÁSICOS</h2>
+                        <div class="row">
+                            <div class="col-lg-6 col-md-12">
+                                <label for="correo" class="lb_modal">CORREO</label><br>
+                                <input type="email" name="correo" class="form-control inputs" required placeholder="ejemplo@correo.com"><br>
+
+                                <label for="clave" class="lb_modal">CONTRASEÑA</label><br>
+                                <input type="password" name="clave" class="form-control inputs" required>
+                            </div>
+                            <div class="col-lg-6 col-md-12">
+                                <label for="fecha_nacimiento" class="lb_modal">FECHA DE NACIMIENTO</label><br>
+                                <input type="date" name="fecha_nacimiento" class="form-control inputs" required><br>
+
+                                <label for="clave_confirm" class="lb_modal">CONFIRMAR CONTRASEÑA</label><br>
+                                <input type="password" name="clave_confirm" class="form-control inputs" required>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-3">
+                            <button type="button" class="btn_siguiente" onclick="validarPaso1()">SIGUIENTE</button>
+                        </div>
+                        <a class="texto_log_regis text-center d-block mt-2" data-bs-toggle="modal" data-bs-target="#modal_login" style="cursor: pointer;"><p>¿YA TIENES CUENTA? INICIA SESION</p></a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-<!-- Modal Registro 2 -->
     <div class="modal fade" id="modal_registro2" aria-hidden="true" aria-labelledby="modal_registro2" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -176,27 +169,29 @@ include __DIR__ . '/app/includes/Navbar.php';
                 <div class="modal-body">
                     <div class="container conte_regis">
                         <h1 class="Titulo titu_modal">REGISTRATE</h1>
-                        <h2 class="lb_subtitulo text-center">PERSONALIZA TU CUENTA, ESCOGE UNA IMAGEN DE PERFIL</h2>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="d-flex justify-content-center my-4">
-                                        <label for="input-imagen-perfil" class="circulo-imagen-perfil">
-                                            <span class="texto-placeholder">+</span>
-                                        </label>
-                                        <input type="file" id="input-imagen-perfil" name="imagen_perfil" accept="image/*">
-                                    </div>
-                                    <a><p class="texto_log_regis" data-bs-target="#modal_registro3" data-bs-toggle="modal" data-bs-dismiss="modal">PREFIERO SALTARME ESTE PASO</p></a>
+                        <h2 class="lb_subtitulo text-center">PERSONALIZA TU CUENTA</h2>
+                        <div class="row">
+                            <div class="col">
+                                <div class="d-flex justify-content-center my-4">
+                                    <label for="input-imagen-perfil" class="circulo-imagen-perfil" style="cursor: pointer; border: 2px dashed #ccc; width: 150px; height: 150px; display: flex; align-items: center; justify-content: center; border-radius: 50%;">
+                                        <span class="texto-placeholder">Subir Foto</span>
+                                    </label>
+                                    <input type="file" id="input-imagen-perfil" name="imagen_perfil" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="text-center">
+                                    <a style="cursor: pointer;" data-bs-target="#modal_registro3" data-bs-toggle="modal"><p class="texto_log_regis">PREFIERO SALTARME ESTE PASO</p></a>
                                 </div>
                             </div>
+                        </div>
                         <div class="d-flex justify-content-center">
-                            <button type="button" class="btn_siguiente" name="btnsiguiente" data-bs-target="#modal_registro3" data-bs-toggle="modal" data-bs-dismiss="modal">SIGUIENTE</button>
+                            <button type="button" class="btn_siguiente" data-bs-target="#modal_registro3" data-bs-toggle="modal">SIGUIENTE</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div> 
-<!-- Modal Registro 3 -->
+    </div>
+
     <div class="modal fade" id="modal_registro3" aria-hidden="true" aria-labelledby="modal_registro3" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
             <div class="modal-content">
@@ -206,47 +201,44 @@ include __DIR__ . '/app/includes/Navbar.php';
                 <div class="modal-body">
                     <div class="container conte_regis">
                         <h1 class="Titulo titu_modal">REGISTRATE</h1>
-                        <h2 class="lb_subtitulo text-center">AHORA ES MOMENTO DE LA VERIFICACION DE ESTUDIANTE</h2>
+                        <h2 class="lb_subtitulo text-center">VERIFICACION DE ESTUDIANTE</h2>
                         <div class="row">
                             <div class="col-lg-6 col-md-12 flex-column justify-content-center">
-                                <div class="contenedor_carnet">
-                                    <p class="p_carnet" >SUBE UNA FOTO DE TU <br> CARNET ESTUDIANTIL</p>
-                                    <label for="input-imagen-carnet" class="imagen_carnet">
+                                <div class="contenedor_carnet text-center">
+                                    <p class="p_carnet">SUBE UNA FOTO DE TU <br> CARNET ESTUDIANTIL</p>
+                                    <label for="input-imagen-carnet" class="imagen_carnet" style="cursor: pointer; border: 2px dashed #ccc; padding: 20px; display: block;">
                                         <span class="texto-placeholder">+</span>
                                     </label>
-                                    <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*">
+                                    <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*" style="display: none;">
                                 </div>
                             </div>
                             <div class="col-lg-6 col-md-12 flex-column justify-content-center columna_regis3">
-                                <label for="nombre" class="lb_modal">NOMBRE</label>
-                                <br>
-                                <input type="text"  name="nombre" class="inputs">
-                                <br>
-                                <label for="apellido" class="lb_modal">APELLIDO</label>
-                                <br>
-                                <input type="text"  name="nombre" class="inputs">
-                                <br>
-                                <label for="universidad" class="lb_modal">UNIVERSIDAD</label>
-                                <br>
-                                <input type="text" name="universidad" class="inputs">
-                                <br>
-                                <label for="carrera" class="lb_modal">CARRERA</label>
-                                <br>
+                                <label for="nombre" class="lb_modal">NOMBRE</label><br>
+                                <input type="text" name="nombre" class="inputs form-control" required><br>
+
+                                <label for="apellido" class="lb_modal">APELLIDO</label><br>
+                                <input type="text" name="apellido" class="inputs form-control" required><br>
+
+                                <label for="cedula" class="lb_modal">CÉDULA</label><br>
+                                <input type="text" name="cedula" class="inputs form-control" required><br>
+
+                                <label for="universidad" class="lb_modal">UNIVERSIDAD</label><br>
+                                <input type="text" name="universidad" class="inputs form-control"><br>
+
+                                <label for="carrera" class="lb_modal">CARRERA</label><br>
                                 <input type="text" name="carrera_texto" class="inputs form-control">
                             </div>
-                            <div>
-                                <div class="d-flex justify-content-center">
-                                    <button type="submit" name="btn_finalizar" class="btn_fin">FINALIZAR REGISTRO</button>
-                                </div>
-                            </div>
+                        </div>
+                        <div class="d-flex justify-content-center mt-4">
+                            <button type="submit" name="btn_finalizar" class="btn_fin">FINALIZAR REGISTRO</button>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
- <!-- Hasta aqui modales -->
-  </form>
+
+</form>
     <div id="Registro" class="container-fluid p-5 bg-light">
         <div class="row">
             <div class="col">
@@ -266,7 +258,7 @@ include __DIR__ . '/app/includes/Navbar.php';
     <script src="login_regis.js"></script>
 
 <!-- Scripts que deberia poner en otro archivo -->
-    <script>
+<script>
         // <?php if ($error_message): ?>
         
         //     const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
@@ -282,6 +274,85 @@ include __DIR__ . '/app/includes/Navbar.php';
         
         // <?php endif; ?>
         
-    </script>  
+</script>  
+<script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Manejo de Errores (PHP -> JS)
+            <?php if ($error_message): ?>
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "<?php echo htmlspecialchars($error_message); ?>",
+                    confirmButtonColor: '#3085d6',
+                    confirmButtonText: 'Reintentar'
+                }).then((result) => {
+                    // Si hubo error, volvemos a abrir el modal de registro
+                    var registroModal = new bootstrap.Modal(document.getElementById('modal_registro'));
+                    registroModal.show();
+                });
+            <?php endif; ?>
+
+            // Manejo de Éxito
+            <?php if ($success_message): ?>
+                Swal.fire({
+                    icon: "success",
+                    title: "¡Listo!",
+                    text: "<?php echo htmlspecialchars($success_message); ?>",
+                    confirmButtonColor: '#28a745',
+                }).then((result) => {
+                    // Si fue exitoso, abrimos el modal de login
+                    var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
+                    loginModal.show();
+                });
+            <?php endif; ?>
+        });
+</script>
+<script>
+function validarPaso1() {
+        // 1. Obtenemos los inputs ESPECÍFICOS del formulario de registro usando el ID
+        const correo = document.querySelector('#form_registro input[name="correo"]');
+        const clave = document.querySelector('#form_registro input[name="clave"]');
+        const fecha = document.querySelector('#form_registro input[name="fecha_nacimiento"]');
+        const clave2 = document.querySelector('#form_registro input[name="clave_confirm"]');
+
+        // 2. Verificamos validación
+        // Nota: checkValidity() devuelve true si el campo cumple con 'required', tipo email, etc.
+        let esValido = true;
+
+        if (!correo.checkValidity()) {
+            correo.reportValidity();
+            esValido = false;
+        } else if (!clave.checkValidity()) {
+            clave.reportValidity();
+            esValido = false;
+        } else if (!fecha.checkValidity()) {
+            fecha.reportValidity();
+            esValido = false;
+        } else if (!clave2.checkValidity()) {
+            clave2.reportValidity();
+            esValido = false;
+        }
+
+        // Si algún campo falló, detenemos la función aquí
+        if (!esValido) return;
+
+        // 3. Validación extra: Que las contraseñas coincidan visualmente antes de enviar
+        if (clave.value !== clave2.value) {
+            Swal.fire({
+                icon: "warning",
+                title: "Contraseñas no coinciden",
+                text: "Por favor verifica que ambas contraseñas sean iguales."
+            });
+            return;
+        }
+
+        // 4. Si todo está bien, cambiamos de modal
+        const modal1 = bootstrap.Modal.getInstance(document.getElementById('modal_registro'));
+        const modal2 = new bootstrap.Modal(document.getElementById('modal_registro2'));
+
+        modal1.hide();
+        modal2.show();
+    }
+</script>
 </body>
 </html> 

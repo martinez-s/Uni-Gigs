@@ -1,78 +1,61 @@
 <?php
-
 session_start();
-
 include('conect.php'); 
 
-const REDIRECT_PAGE = "Index.php"; 
-
+const LOGIN_PAGE = "Index.php"; 
 const SUCCESS_REDIRECT_PAGE = "public/pages/principal.php"; 
 
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header("Location: " . LOGIN_PAGE);
+    exit();
+}
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    
+$correo = trim($_POST['correo'] ?? '');
+$clave  = $_POST['clave'] ?? '';
 
-    function validate($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    return $data;
-    }
+if (empty($correo) || empty($clave)) {
+    $_SESSION['error'] = "Por favor, complete todos los campos.";
+    header("Location: " . LOGIN_PAGE);
+    exit();
+}
 
-    $Usuario = validate($_POST['correo'] ?? '');
-    $Clave = validate($_POST['clave'] ?? '');
+$sql = "SELECT id_usuario, correo, clave FROM usuarios WHERE correo = ?";
+$stmt = $mysqli->prepare($sql);
 
-    if(empty($Usuario) && empty($Clave)) {
-        $_SESSION['error'] = "Complete todos los campos";
-        header("Location: " . REDIRECT_PAGE);
-        exit();
-    } elseif (empty($Usuario)) {
-        $_SESSION['error'] = "Debe ingresar su correo";
-        header("Location: " . REDIRECT_PAGE);
-        exit();
-    } elseif (empty($Clave)) {
-        $_SESSION['error'] = "Debe ingresar su clave";
-        header("Location: " . REDIRECT_PAGE);
-        exit();
-    }
-    
-    $sql = "SELECT correo, id_usuario, clave FROM usuarios WHERE correo = ?";
-    
-    if ($stmt = $mysqli->prepare($sql)) {
-        
-        $stmt->bind_param("s", $Usuario);
-        
+if (!$stmt) {
 
-        $stmt->execute();
-        
-        $resultado = $stmt->get_result();
-        
-    if ($resultado->num_rows === 1) {
-            $row = $resultado->fetch_assoc();
+    $_SESSION['error'] = "Error interno del sistema.";
+    header("Location: " . LOGIN_PAGE);
+    exit();
+}
 
-            if ($row['clave'] === $Clave) { 
+$stmt->bind_param("s", $correo);
+$stmt->execute();
+$resultado = $stmt->get_result();
 
-                $_SESSION['correo'] = $row['correo'];
-                $_SESSION['id_usuario'] = $row['id_usuario'];
+if ($row = $resultado->fetch_assoc()) {
 
-                $_SESSION['success'] = "Inicio de sesión exitoso"; 
+    if (password_verify($clave, $row['clave'])) {
 
-                header("Location: " . SUCCESS_REDIRECT_PAGE);
-                exit();
-            }
-        }      
-        $_SESSION['error'] = "El usuario o la contraseña son incorrectos";
+        session_regenerate_id(true); 
 
+        $_SESSION['id_usuario'] = $row['id_usuario'];
+        $_SESSION['correo']     = $row['correo'];
+        $_SESSION['success']    = "Inicio de sesión exitoso";
 
         $stmt->close();
-    }  
-}
-    else {
-        $_SESSION['error'] = "Error interno del sistema.";
+
+        header("Location: " . SUCCESS_REDIRECT_PAGE);
+        exit();
     }
+}
 
+$_SESSION['error'] = "El usuario o la contraseña son incorrectos.";
 
-    header("Location: Index.php"); 
-    exit();
+if (isset($stmt)) {
+    $stmt->close();
+}
 
+header("Location: " . LOGIN_PAGE);
+exit();
 ?>
