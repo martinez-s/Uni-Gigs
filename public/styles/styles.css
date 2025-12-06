@@ -212,7 +212,7 @@ a{
     color: #495057;
 }
 
- .description-box {
+.description-box {
     background-color: #e9ecef;
     height: 100px;
     display: flex;
@@ -300,4 +300,26 @@ a{
     height: 40px;
     padding: 8px 12px; 
     box-sizing: border-box; 
+}
+
+
+.custom-select-container {
+        position: relative;
+    }
+    
+
+#materia_custom_list,
+#tipo_trabajo_custom_list,
+#carrera_custom_list
+{
+    position: absolute; 
+    width: 100%; /* Alinea con el ancho del contenedor padre (.custom-select-container) */
+    z-index: 1000; 
+    max-height: 200px; 
+    overflow-y: auto; 
+    border-top: none; 
+    border-radius: 0 0 0.375rem 0.375rem; /* Redondeo solo en la parte inferior */
+    background-color: #fff;
+    margin-top: -1px; /* Para superponer el borde del input y que parezcan una pieza */
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
 }

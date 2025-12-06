@@ -155,7 +155,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <input type="date" id="fecha-limit-req" name="fecha-limit-req" class="inputs">   
               <br>
               <label for="tipo_materia" class="lb_modal">MATERIA</label>
-              <select class="form-select dropdown_front" id="tipo_materia" name="tipo_materia">
+              <select class="form-select dropdown_front" id="tipo_materia" name="tipo_materia" required>
                   
                   <option value="" class="text-dropdown">Seleccione la materia</option> 
                   
@@ -255,8 +255,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   </div>
 </div>
 
-  <?php include __DIR__ . '/app/includes/Footer.php'; ?>
   <script src="login_regis.js"></script>
+  <script src="dropdown.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
