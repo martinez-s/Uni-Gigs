@@ -1,6 +1,7 @@
 <?php
+// mensajeria.php - EN RAÍZ del proyecto
 session_start();
-require_once __DIR__ . '/app/includes/conect.php'; // Cambiar la ruta según sea necesario
+require_once __DIR__ . '/conect.php';  // ✅ Ahora está en la misma carpeta
 
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: login.php");
@@ -8,53 +9,107 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 $id_usuario = $_SESSION['id_usuario'];
+$nombre_usuario = $_SESSION['nombre'] ?? 'Usuario';
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <title>Mensajería - UniGigs</title>
+    
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Tus estilos -->
     <link rel="stylesheet" href="public/styles/styles.css">
     <link rel="stylesheet" href="public/styles/mensajeria.css">
-    <title>Mensajería - UniGigs</title>
+    
     <style>
-        .chat-item:hover {
-            background-color: #34495e !important;
+        /* Estilos para mensajería */
+        .sidebar {
+            background: linear-gradient(180deg, #2c3e50 0%, #1a252f 100%);
+            height: 100vh;
+            overflow-y: auto;
         }
+        
+        .chat-item {
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border-left: 3px solid transparent;
+        }
+        
+        .chat-item:hover {
+            background-color: rgba(52, 73, 94, 0.7) !important;
+            border-left: 3px solid #3498db;
+        }
+        
         .chat-item.active-chat {
             background-color: #34495e !important;
-            border-left: 4px solid #007bff;
+            border-left: 3px solid #007bff;
         }
-        #messages-container {
-            background-color: #f8f9fa;
-            min-height: 400px;
-            max-height: calc(100vh - 200px);
-        }
+        
         .message-bubble {
             max-width: 70%;
+            padding: 12px 16px;
             border-radius: 18px;
-            padding: 10px 15px;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             position: relative;
             word-wrap: break-word;
+            animation: fadeIn 0.3s ease-out;
         }
+        
         .message-bubble.sent {
-            background-color: #007bff;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
             color: white;
             margin-left: auto;
             border-bottom-right-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 123, 255, 0.2);
         }
+        
         .message-bubble.received {
-            background-color: #e9ecef;
+            background: white;
             color: #333;
-            margin-right: auto;
             border-bottom-left-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
-        .chat-input {
-            background-color: white;
-            border-top: 1px solid #dee2e6;
+        
+        #messages-container {
+            background: linear-gradient(180deg, #f8f9fa 0%, #e9ecef 100%);
+            height: calc(100vh - 140px);
+            overflow-y: auto;
+        }
+        
+        .status-online {
+            width: 10px;
+            height: 10px;
+            background: #2ecc71;
+            border-radius: 50%;
+            border: 2px solid #2c3e50;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Scrollbar personalizado */
+        #messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #messages-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        
+        #messages-container::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+        
+        #messages-container::-webkit-scrollbar-thumb:hover {
+            background: #555;
         }
     </style>
 </head>
@@ -63,42 +118,74 @@ $id_usuario = $_SESSION['id_usuario'];
     
     <div class="container-fluid">
         <div class="row">
-            <!-- Sidebar para chats -->
+            <!-- ============================================
+                 SIDEBAR - LISTA DE CHATS 
+                 Se actualiza cada 30 segundos
+            ============================================ -->
             <div class="col-md-4 col-lg-3 p-0">
                 <div class="sidebar">
-                    <div class="sidebar-header p-3 border-bottom" style="background-color: #34495e;">
-                        <h4 class="mb-0 text-white">Chats</h4>
+                    <div class="p-3 border-bottom" style="background: #34495e;">
+                        <div class="d-flex align-items-center">
+                            <div class="me-2">
+                                <i class="bi bi-chat-left-text fs-4 text-white"></i>
+                            </div>
+                            <div>
+                                <h4 class="mb-0 text-white">Mensajes</h4>
+                                <p class="mb-0 text-light small">Bienvenido, <?php echo htmlspecialchars($nombre_usuario); ?></p>
+                            </div>
+                        </div>
                     </div>
-                    <div id="chats-list" class="nav-links">
-                        <!-- Los chats se cargarán aquí por AJAX -->
-                        <div class="text-center mt-3">
+                    
+                    <!-- CONTENEDOR DE CHATS - Se llena por AJAX -->
+                    <div id="chats-list" class="pt-2">
+                        <div class="text-center mt-4">
                             <div class="spinner-border text-light" role="status">
                                 <span class="visually-hidden">Cargando chats...</span>
                             </div>
+                            <p class="text-light mt-2 small">Cargando conversaciones...</p>
                         </div>
                     </div>
                 </div>
             </div>
             
-            <!-- Área principal del chat -->
+            <!-- ============================================
+                 ÁREA PRINCIPAL DEL CHAT 
+                 Se actualiza cada 5 segundos cuando hay chat activo
+            ============================================ -->
             <div class="col-md-8 col-lg-9 p-0">
-                <div class="chat-container d-flex flex-column" style="height: 100vh;">
+                <div class="d-flex flex-column" style="height: 100vh;">
                     <!-- Cabecera del chat -->
-                    <div class="chat-header p-3 border-bottom bg-white">
-                        <h4 id="chat-title" class="mb-0">Selecciona un chat</h4>
-                        <small id="chat-status" class="text-muted"></small>
-                    </div>
-                    
-                    <!-- Área de mensajes -->
-                    <div id="messages-container" class="flex-grow-1 p-3 overflow-auto">
-                        <div class="text-center text-muted mt-5">
-                            <i class="bi bi-chat-dots" style="font-size: 3rem;"></i>
-                            <p class="mt-3">Selecciona un chat para comenzar a conversar</p>
+                    <div class="p-3 border-bottom bg-white shadow-sm">
+                        <div class="d-flex align-items-center">
+                            <div class="me-3">
+                                <div id="chat-avatar" class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                     style="width: 50px; height: 50px;">
+                                    <i class="bi bi-person fs-4 text-white"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h4 id="chat-title" class="mb-0">Selecciona un chat</h4>
+                                <small id="chat-status" class="text-muted">Elige una conversación para comenzar</small>
+                            </div>
+                            <div id="chat-actions" class="d-none">
+                                <button class="btn btn-outline-secondary btn-sm">
+                                    <i class="bi bi-three-dots-vertical"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
-                    <!-- Input para enviar mensajes -->
-                    <div class="chat-input p-3 border-top bg-white">
+                    <!-- CONTENEDOR DE MENSAJES -->
+                    <div id="messages-container" class="flex-grow-1 p-3 overflow-auto">
+                        <div class="text-center text-muted mt-5">
+                            <i class="bi bi-chat-dots" style="font-size: 3rem; opacity: 0.3;"></i>
+                            <p class="mt-3">Selecciona un chat para ver los mensajes</p>
+                            <small class="text-muted">Los mensajes se actualizan automáticamente cada 5 segundos</small>
+                        </div>
+                    </div>
+                    
+                    <!-- FORMULARIO PARA ENVIAR MENSAJES -->
+                    <div class="p-3 border-top bg-white shadow-sm">
                         <form id="message-form" class="d-flex">
                             <input type="hidden" id="current-chat-id">
                             <div class="flex-grow-1 me-2">
@@ -106,12 +193,14 @@ $id_usuario = $_SESSION['id_usuario'];
                                        id="message-input" 
                                        class="form-control" 
                                        placeholder="Escribe un mensaje..." 
-                                       disabled>
+                                       disabled
+                                       style="border-radius: 20px; padding: 10px 20px;">
                             </div>
                             <button type="submit" 
                                     class="btn btn-primary" 
                                     id="send-btn" 
-                                    disabled>
+                                    disabled
+                                    style="border-radius: 20px; padding: 10px 25px;">
                                 <i class="bi bi-send"></i>
                             </button>
                         </form>
@@ -121,12 +210,22 @@ $id_usuario = $_SESSION['id_usuario'];
         </div>
     </div>
 
-    <!-- Scripts -->
+    <!-- ============================================
+         SCRIPTS 
+    ============================================ -->
+    <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script>
+        // Variable global con el ID del usuario logueado
         const userId = <?php echo $id_usuario; ?>;
+        console.log("🔧 Sistema de Mensajería iniciado");
+        console.log("👤 Usuario ID:", userId);
     </script>
+    
+    <!-- Script principal de mensajería -->
     <script src="public/js/mensajeria.js"></script>
 </body>
 </html>

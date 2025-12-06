@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../includes/conect.php';
+require_once __DIR__ . '/../../conect.php';  // ✅ Sube dos niveles desde app/ajax/ hasta raíz
 
 header('Content-Type: application/json');
 
@@ -10,10 +10,8 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 $id_usuario = $_SESSION['id_usuario'];
-$response = ['success' => false, 'chats' => []];
 
 try {
-    // Obtener todos los chats del usuario
     $query = "
         SELECT 
             c.id_chat,
@@ -32,8 +30,10 @@ try {
                 WHEN c.id_usuario1 = ? THEN u2.apellido 
                 ELSE u1.apellido 
             END as apellido_otro_usuario,
-            u1.url_foto_perfil as foto_usuario1,
-            u2.url_foto_perfil as foto_usuario2,
+            CASE 
+                WHEN c.id_usuario1 = ? THEN u2.url_foto_perfil 
+                ELSE u1.url_foto_perfil 
+            END as foto_otro_usuario,
             (SELECT contenido FROM mensajes 
              WHERE id_chat = c.id_chat 
              ORDER BY fecha DESC LIMIT 1) as ultimo_mensaje,
@@ -48,33 +48,35 @@ try {
     ";
     
     $stmt = $mysqli->prepare($query);
-    $stmt->bind_param('iiiii', $id_usuario, $id_usuario, $id_usuario, $id_usuario, $id_usuario);
+    $stmt->bind_param('iiiiii', $id_usuario, $id_usuario, $id_usuario, $id_usuario, $id_usuario, $id_usuario);
     $stmt->execute();
     $result = $stmt->get_result();
     
     $chats = [];
     while ($row = $result->fetch_assoc()) {
-        // Determinar foto del otro usuario
-        $foto_otro = ($row['id_usuario1'] == $id_usuario) ? $row['foto_usuario2'] : $row['foto_usuario1'];
-        
-        // Formatear última fecha
-        $ultima_fecha = $row['ultima_fecha'];
-        if ($ultima_fecha) {
-            $fecha = new DateTime($ultima_fecha);
+        // Formatear fecha
+        $ultima_fecha_formateada = '';
+        if ($row['ultima_fecha']) {
+            $fecha = new DateTime($row['ultima_fecha']);
             $hoy = new DateTime();
             $diferencia = $hoy->diff($fecha);
             
             if ($diferencia->days == 0) {
-                $ultima_fecha = $fecha->format('H:i');
+                $ultima_fecha_formateada = 'Hoy, ' . $fecha->format('H:i');
             } elseif ($diferencia->days == 1) {
-                $ultima_fecha = 'Ayer';
+                $ultima_fecha_formateada = 'Ayer, ' . $fecha->format('H:i');
             } elseif ($diferencia->days < 7) {
-                $ultima_fecha = $fecha->format('l');
+                $dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+                $ultima_fecha_formateada = $dias[$fecha->format('w')] . ', ' . $fecha->format('H:i');
             } else {
-                $ultima_fecha = $fecha->format('d/m/Y');
+                $ultima_fecha_formateada = $fecha->format('d/m H:i');
             }
-        } else {
-            $ultima_fecha = '';
+        }
+        
+        // Acortar mensaje
+        $ultimo_mensaje = $row['ultimo_mensaje'] ?? 'Sin mensajes aún';
+        if (strlen($ultimo_mensaje) > 35) {
+            $ultimo_mensaje = substr($ultimo_mensaje, 0, 35) . '...';
         }
         
         $chats[] = [
@@ -82,21 +84,18 @@ try {
             'id_otro_usuario' => $row['id_otro_usuario'],
             'nombre_otro_usuario' => $row['nombre_otro_usuario'],
             'apellido_otro_usuario' => $row['apellido_otro_usuario'],
-            'foto_otro_usuario' => $foto_otro,
-            'ultimo_mensaje' => $row['ultimo_mensaje'],
-            'ultima_fecha' => $ultima_fecha,
+            'foto_otro_usuario' => $row['foto_otro_usuario'],
+            'ultimo_mensaje' => $ultimo_mensaje,
+            'ultima_fecha' => $ultima_fecha_formateada,
             'estado' => $row['estado']
         ];
     }
     
-    $response['success'] = true;
-    $response['chats'] = $chats;
+    echo json_encode(['success' => true, 'chats' => $chats]);
     
     $stmt->close();
     
 } catch (Exception $e) {
-    $response['message'] = $e->getMessage();
+    echo json_encode(['success' => false, 'message' => $e->getMessage()]);
 }
-
-echo json_encode($response);
 ?>
