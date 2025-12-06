@@ -245,8 +245,8 @@ include __DIR__ . '/app/includes/Navbar.php';
             </div>
         </div>
     </div>
- <!-- Hasta aqui modales -->
-  </form>
+<!-- Hasta aqui modales -->
+    </form>
     <div id="Registro" class="container-fluid p-5 bg-light">
         <div class="row">
             <div class="col">
@@ -267,20 +267,20 @@ include __DIR__ . '/app/includes/Navbar.php';
 
 <!-- Scripts que deberia poner en otro archivo -->
     <script>
-        // <?php if ($error_message): ?>
+        <?php if ($error_message): ?>
         
-        //     const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
+        const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
         
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Error de inicio de sesión",
-        //         text: errorMessage, 
-        //     });
+        Swal.fire({
+                icon: "error",
+                title: "Error de inicio de sesión",
+                text: errorMessage, 
+            });
         
-        //     var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
-        //     loginModal.show();
+            var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
+            loginModal.show();
         
-        // <?php endif; ?>
+        <?php endif; ?>
         
     </script>  
 </body>

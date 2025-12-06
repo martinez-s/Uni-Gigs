@@ -1,6 +1,80 @@
+
 <?php
+
 include('conect.php'); 
+
+echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>'; 
+
+$id_usuario_logueado = 2; 
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    
+    // 1. Recibir y tipificar datos del formulario
+    $titulo = $_POST['titulo'] ?? '';
+    $descripcion = $_POST['descripcion'] ?? '';
+    $precio = (float)($_POST['precio'] ?? 0); 
+    
+    $tipo_trabajo_id = (int)($_POST['tipo_trabajo_id'] ?? 0);
+    $carrera_id = (int)($_POST['carrera_id'] ?? 0);
+    $materia_id = (int)($_POST['materia_id'] ?? 0);
+    
+    // Validar datos mínimos
+    if (empty($titulo) || $precio <= 0 || $tipo_trabajo_id == 0 || $carrera_id == 0 || $materia_id == 0) {
+        
+        $error_msg = "Faltan campos obligatorios o los valores son inválidos.";
+        echo "<script>Swal.fire('Error', '{$error_msg}', 'error');</script>";
+        
+    } else {
+        
+        $fecha_creacion = date("Y-m-d");
+
+        // 2. Sentencia Preparada para la inserción en `servicios`
+        $sql_insert_servicio = "INSERT INTO servicios (
+            titulo, descripcion, precio, fecha_creacion, id_tipo_trabajo, id_carrera, id_materia, id_usuario
+        ) VALUES (
+            ?, ?, ?, ?, ?, ?, ?, ?
+        )";
+
+        $stmt = $mysqli->prepare($sql_insert_servicio);
+
+        if ($stmt === false) {
+            $error_msg = "Error al preparar la consulta: " . $mysqli->error;
+            echo "<script>Swal.fire('Error', '{$error_msg}', 'error');</script>";
+        } else {
+            
+            // 3. Vincular los parámetros
+            $stmt->bind_param("ssdsiiii", 
+                $titulo, $descripcion, $precio, $fecha_creacion, 
+                $tipo_trabajo_id, $carrera_id, $materia_id, $id_usuario_logueado
+            );
+
+            if ($stmt->execute()) {
+
+                $stmt->close();
+                
+                echo "<script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            Swal.fire({
+                                title: '¡Éxito!',
+                                text: 'Servicio publicado correctamente.',
+                                icon: 'success',
+                                confirmButtonText: 'Ok'
+                            }).then((result) => {
+                                window.location.href = 'index.php'; // Cambia a la página deseada
+                            });
+                        });
+                    </script>";
+
+            } else {
+                $error_msg = "Error al publicar el servicio: " . $stmt->error;
+                echo "<script>Swal.fire('Error', '{$error_msg}', 'error');</script>";
+                $stmt->close();
+            }
+        }
+    }
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>

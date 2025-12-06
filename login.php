@@ -57,6 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $_SESSION['success'] = "Inicio de sesión exitoso"; 
 
+                
                 header("Location: " . SUCCESS_REDIRECT_PAGE);
                 exit();
             }

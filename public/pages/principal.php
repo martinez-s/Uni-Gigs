@@ -2,7 +2,7 @@
 
 session_start();
 
-if (!isset($_SESSION['id_estudiante'])) {
+if (!isset($_SESSION['id_usuario'])) {
     header("Location: Index.php");
     exit();
 }
