@@ -122,6 +122,7 @@ include __DIR__ . '/app/includes/Navbar.php';
         </div>
     </div>
 
+    <form action="registro.php" method="post" enctype="multipart/form-data">
 <!-- Modal Registro 1 -->
     <div class="modal fade" id="modal_registro" aria-hidden="true" aria-labelledby="modal_registro" data-bs-backdrop="static" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -138,24 +139,24 @@ include __DIR__ . '/app/includes/Navbar.php';
                                     <div class="col-lg-6 col-md-12">
                                         <label for="correo" class="lb_modal">CORREO</label>
                                         <br>
-                                        <input type="text" id="correo" name="correo" class="inputs">
+                                        <input type="email" name="correo" class="form-control inputs" required placeholder="ejemplo@correo.com">
                                         <br>
                                         <label for="clave" class="lb_modal">CONTRASEÑA</label>
                                         <br>
-                                        <input type="password" id="clave" name="clave" class="inputs">   
+                                        <input type="password" name="clave" class="form-control inputs" required>   
                                     </div>
                                     <div class="col-lg-6 col-md-12">
                                         <label for="fecha_nacimiento" class="lb_modal">FECHA DE NACIMIENTO</label>
                                         <br>
-                                        <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" class="inputs">  
+                                        <input type="date" name="fecha_nacimiento" class="form-control inputs" required>  
                                         <br>
                                         <label for="clave" class="lb_modal">CONFIRMAR CONTRASEÑA</label>
                                         <br>
-                                        <input type="password" id="clave" name="clave" class="inputs">       
+                                        <input type="password" name="clave_confirm" class="form-control inputs" required>       
                                     </div>
                                 </div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="button" class="btn_siguiente" data-bs-target="#modal_registro2" data-bs-toggle="modal" data-bs-dismiss="modal">SIGUIENTE</button>
+                                    <button type="button" class="btn_siguiente" data-bs-target="#modal_registro2" data-bs-toggle="modal">SIGUIENTE</button>
                                 </div>
                                 <a class="texto_log_regis" data-bs-toggle="modal" data-bs-target="#modal_login"><p>¿YA TIENES CUENTA? INICIA SESION</p></a>
                         </form>
@@ -188,7 +189,7 @@ include __DIR__ . '/app/includes/Navbar.php';
                                 </div>
                             </div>
                         <div class="d-flex justify-content-center">
-                            <button type="button" class="btn_siguiente" data-bs-target="#modal_registro3" data-bs-toggle="modal" data-bs-dismiss="modal">SIGUIENTE</button>
+                            <button type="button" class="btn_siguiente" name="btnsiguiente" data-bs-target="#modal_registro3" data-bs-toggle="modal" data-bs-dismiss="modal">SIGUIENTE</button>
                         </div>
                     </div>
                 </div>
@@ -219,23 +220,23 @@ include __DIR__ . '/app/includes/Navbar.php';
                             <div class="col-lg-6 col-md-12 flex-column justify-content-center columna_regis3">
                                 <label for="nombre" class="lb_modal">NOMBRE</label>
                                 <br>
-                                <input type="text" id="nombre" name="nombre" class="inputs">
+                                <input type="text"  name="nombre" class="inputs">
                                 <br>
                                 <label for="apellido" class="lb_modal">APELLIDO</label>
                                 <br>
-                                <input type="text" id="nombre" name="nombre" class="inputs">
+                                <input type="text"  name="nombre" class="inputs">
                                 <br>
                                 <label for="universidad" class="lb_modal">UNIVERSIDAD</label>
                                 <br>
-                                <input type="text" id="universidad" name="universidad" class="inputs">
+                                <input type="text" name="universidad" class="inputs">
                                 <br>
                                 <label for="carrera" class="lb_modal">CARRERA</label>
                                 <br>
-                                <input type="text" id="carrera" name="carrera" class="inputs">
+                                <input type="text" name="carrera_texto" class="inputs form-control">
                             </div>
                             <div>
                                 <div class="d-flex justify-content-center">
-                                    <button type="submit" class="btn_fin">FINALIZAR REGISTRO</button>
+                                    <button type="submit" name="btn_finalizar" class="btn_fin">FINALIZAR REGISTRO</button>
                                 </div>
                             </div>
                         </div>
@@ -245,7 +246,7 @@ include __DIR__ . '/app/includes/Navbar.php';
         </div>
     </div>
  <!-- Hasta aqui modales -->
-
+  </form>
     <div id="Registro" class="container-fluid p-5 bg-light">
         <div class="row">
             <div class="col">
