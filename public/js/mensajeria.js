@@ -88,8 +88,7 @@ $(document).ready(function() {
                             `<img src="${chat.foto_otro_usuario}" 
                                  class="rounded-circle" 
                                  style="width: 50px; height: 50px; object-fit: cover;"
-                                 alt="${chat.nombre_otro_usuario}"
-                                 onerror="this.onerror=null; this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👤</text></svg>';">` :
+                                 alt="${chat.nombre_otro_usuario}">` :
                             `<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
                                   style="width: 50px; height: 50px;">
                                 <i class="bi bi-person fs-5 text-white"></i>
@@ -157,8 +156,7 @@ $(document).ready(function() {
                 <img src="${otherUserPhoto}" 
                      class="rounded-circle" 
                      style="width: 50px; height: 50px; object-fit: cover;"
-                     alt="${otherUserName}"
-                     onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\"bi bi-person fs-4 text-white\"></i>'">
+                     alt="${otherUserName}">
             `);
         } else {
             $('#chat-avatar').html('<i class="bi bi-person fs-4 text-white"></i>');
