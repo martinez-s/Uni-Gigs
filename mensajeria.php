@@ -121,7 +121,7 @@ $nombre_usuario = $_SESSION['nombre'] ?? 'Usuario';
     }
     </style>
 
-    <nav class="navbar navbar-expand-lg">
+    <nav class="navbar navbar-expand-lg" style="margin: 0px;">
         <div class="container-fluid">
             <!-- ruta del logo desde la raíz hacia public/img -->
             <a class="navbar-brand" href="public/pages/principal.php">
