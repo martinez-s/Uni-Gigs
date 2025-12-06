@@ -306,3 +306,14 @@ a{
     height: 150px; 
     object-fit: cover;
 }
+.reportar {
+    cursor: pointer;
+    width: 35px;
+    height: 35px;
+    background-color: #dc3545;
+}
+.reportar-icon {
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: white;
+}
