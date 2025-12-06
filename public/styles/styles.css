@@ -76,11 +76,7 @@ a{
     justify-content: center;
     font-size: 1rem;
 }
-.inputs{
-    width: 100%;
-    margin-bottom: 20px;
-    height: 14%;
-}
+
 .lb_modal{
     font-size: 0.75rem;
     margin-bottom: 3px; 
@@ -246,6 +242,14 @@ a{
     padding-top: 10%;
     padding-bottom: 10%;
 }
+.cont-publi{
+    height: 100%;
+    width: auto;
+    padding-left: 20%;
+    padding-right: 20%;
+    padding-top: 10%;
+    padding-bottom: 10%;
+}
 .archivos-request {
     width: 100%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
     height: 100px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
@@ -278,7 +282,8 @@ a{
 .dropdown_front{
     width: 100%;
     margin-bottom: 5px;
-    height: 15%;
+    height: 40px;
+    box-sizing: border-box;
 }
 .text-dropdown{
     font-size: 1rem;
@@ -288,4 +293,12 @@ a{
 .espacio{
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+.inputs, .inputs-publi {
+    width: 100%;
+    margin-bottom: 20px;
+    height: 40px;
+    padding: 8px 12px; 
+    box-sizing: border-box; 
 }
