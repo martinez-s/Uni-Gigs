@@ -2,16 +2,16 @@
 if (!empty($_POST["btn_siguiente"])) {
     $imagen=$_FILES["imagen_perfil"]["temp_name"];
     $nombreImagen=$_FILES["imagen_perfil"]["name"];
-    $tipoImagen=strtolower(pathinfo($nombre, PATHINFO_EXTENSION));
+    $tipoImagen=strtolower(pathinfo($nombreImagen, PATHINFO_EXTENSION));
     $sizeImagen=$_FILES["imagen_perfil"]["size"];
-    $carpetaDestino="public/images/imgusuarios/";
+    $carpetaDestino="public/img/imgusuarios/";
 
-    if ($tipoImagen=="jpg" && $tipoImagen=="png" && $tipoImagen=="jpeg") {
-        $registro=$conexion->query("INSERT INTO estudiantes (url_foto_perfil) VALUES ('')");
+    if ($tipoImagen=="jpg" or $tipoImagen=="png" or $tipoImagen=="jpeg") {
+        $registro=$conexion->query("INSERT INTO usuarios (url_foto_perfil) VALUES ('')");
         $idRegistro=$conexion->insert_id;
 
         $ruta=$carpetaDestino.$idRegistro.".".$tipoImagen;
-        $actualizarImagen=$conexion->query("UPDATE estudiantes SET url_foto_perfil='$ruta' WHERE id_estudiante=$idRegistro");
+        $actualizarImagen=$conexion->query("UPDATE usuarios SET url_foto_perfil='$ruta' WHERE id_estudiante=$idRegistro");
 
 
         if(move_uploaded_file($imagen, $ruta)){

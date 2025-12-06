@@ -301,3 +301,8 @@ a{
     padding: 8px 12px; 
     box-sizing: border-box; 
 }
+.foto-perfil {
+    width: 150px; 
+    height: 150px; 
+    object-fit: cover;
+}

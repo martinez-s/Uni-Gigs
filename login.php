@@ -3,7 +3,7 @@ session_start();
 include('conect.php'); 
 
 const LOGIN_PAGE = "Index.php"; 
-const SUCCESS_REDIRECT_PAGE = "public/pages/principal.php"; 
+const SUCCESS_REDIRECT_PAGE = "public/pages/perfil.php"; 
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header("Location: " . LOGIN_PAGE);

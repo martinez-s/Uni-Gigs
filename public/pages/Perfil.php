@@ -1,3 +1,23 @@
+<?php
+session_start();
+include('../../conect.php'); 
+
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: ../../Index.php");
+    exit();
+}
+
+$idUsuario = $_SESSION['id_usuario'];
+
+$sql = "SELECT url_foto_perfil, nombre, apellido FROM usuarios WHERE id_usuario = ?";
+$stmt = $mysqli->prepare($sql);
+$stmt->bind_param("i", $idUsuario);
+$stmt->execute();
+$resultado = $stmt->get_result();
+$datosUsuario = $resultado->fetch_assoc();
+
+$rutaFoto = !empty($datosUsuario['url_foto_perfil']) ? $datosUsuario['url_foto_perfil'] : "public/img/imgusuarios/default_avatar.jpg";
+?>
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -13,7 +33,7 @@
 <div class="container pt-5">
     <div class="d-flex flex-column flex-md-row align-items-center gap-4">
         <div class="position-relative align-self-center-top">
-            <div class="rounded-circle avatar-box"></div>
+            <img src="../../<?php echo htmlspecialchars($rutaFoto); ?>" alt="Foto de perfil" class="foto-perfil rounded-circle avatar-box">
             <div class="position-absolute top-0 start-100 translate-middle rounded-circle badge-notification d-flex justify-content-center align-items-center">
                 !
             </div>
