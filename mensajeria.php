@@ -8,7 +8,7 @@ if (!isset($_SESSION['id_usuario'])) {
 }
 
 $id_usuario = $_SESSION['id_usuario'];
-$nombre_usuario = $_SESSION['nombre'] ?? 'Usuario';
+$nombre_usuario = $_SESSION['nombre'];
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -17,11 +17,11 @@ $nombre_usuario = $_SESSION['nombre'] ?? 'Usuario';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mensajería con Archivos - UniGigs</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <!-- Tus estilos -->
+    <link rel="stylesheet" href="public/pages/stylesNav.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="public/styles/styles.css">
     <link rel="stylesheet" href="public/styles/mensajeria.css">
     
@@ -169,7 +169,57 @@ $nombre_usuario = $_SESSION['nombre'] ?? 'Usuario';
     </style>
 </head>
 <body>
-    <?php include __DIR__ . '/app/includes/Navbar.php'; ?>
+    <style>
+    .navbar-toggler:focus {
+        outline: none !important;
+        box-shadow: none !important;
+        background-color: transparent !important; 
+    }
+    </style>
+    <nav class="navbar navbar-expand-lg" style="margin:0px;">
+        <div class="container-fluid">
+            
+            <a class="navbar-brand" href="public/pages/Principal.php">
+                <img src="public/img/Logo_Navbar.png" alt="Logo" width="170" height="48" class="d-inline-block align-text-center">
+            </a>
+            
+            <button class="navbar-toggler" style="border:none;" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="material-symbols-outlined">menu</span> 
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                
+                <form class="search w-100" role="search"> 
+                    <div class="search-overlay w-100">
+                        <input class="form-control" type="search" placeholder="Busqueda" aria-label="Search"/>
+                        <button class="buscar btn btn-outline-success rounded-circle" type="submit" aria-label="Buscar">
+                            <span class="material-symbols-outlined">search</span>
+                        </button>
+                    </div>
+                </form>
+
+                <ul class="navbar-nav mx-auto text-center mb-2 mb-lg-0 ms-3"> 
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Carreras</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">Ingenieria de Sistemas</a></li>
+                            <li><a class="dropdown-item" href="#">Diseno Grafico</a></li>
+                            <li><a class="dropdown-item" href="#">Idiomas modernos</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="icon-group d-flex align-items-center mx-auto">
+                    <a class="Icon fa-lg" href="#"><span class="material-symbols-outlined">notifications</span></a>
+                    <a class="Icon" href="mensajeria.php"><span class="material-symbols-outlined">mail</span></a>
+                    <a class="Icon"><span class="material-symbols-outlined">school</span></a>
+                    <a class="Icon"><span class="material-symbols-outlined">account_circle</span></a>
+                </div>
+                
+            </div>
+        </div>
+    </nav>
+
     
     <div class="container-fluid">
         <div class="row">
@@ -259,7 +309,7 @@ $nombre_usuario = $_SESSION['nombre'] ?? 'Usuario';
                                     class="btn btn-primary" 
                                     id="send-btn" 
                                     disabled
-                                    style="border-radius: 20px; padding: 10px 25px;">
+                                    style="width: 30px; border-radius: 20px; padding: 10px 25px;">
                                 <i class="bi bi-send"></i>
                             </button>
                         </div>
