@@ -2,8 +2,8 @@
 
 session_start();
 
-if (!isset($_SESSION['id_estudiante'])) {
-    header("Location: principal.php");
+if (!isset($_SESSION['id_usuario'])) {
+    header("Location: Index.php");
     exit();
 }
 

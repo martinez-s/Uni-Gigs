@@ -261,18 +261,18 @@ include __DIR__ . '/app/includes/Navbar.php';
 <script>
         // <?php if ($error_message): ?>
         
-        //     const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
+        const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
         
-        //     Swal.fire({
-        //         icon: "error",
-        //         title: "Error de inicio de sesión",
-        //         text: errorMessage, 
-        //     });
+        Swal.fire({
+                icon: "error",
+                title: "Error de inicio de sesión",
+                text: errorMessage, 
+            });
         
-        //     var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
-        //     loginModal.show();
+            var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
+            loginModal.show();
         
-        // <?php endif; ?>
+        <?php endif; ?>
         
 </script>  
 <script>
