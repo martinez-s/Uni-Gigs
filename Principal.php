@@ -49,65 +49,127 @@
     </div>
 
     <div id="Inicio" class="banner-container">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center mt-5">
-                <div class="col-md-12 mb-4 mb-md-0">
-                    <h3 class="Titulo">Explora diferentes requests</h1>
-                    <hr>
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Titulo coqueto</h5>
-                            <div class="separator-line"></div>
-                        
-                            <h6 class="carrera">
-                                <span class="material-symbols-outlined">license</span>
-                                Carrera
-                            </h6>
-                        
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                            <div class="d-flex justify-content-between align-items-center mb-3"> 
-                                <div class="star-rating-display" data-rating="3.5"></div>
-                                <h4 class="Precio mb-0">$20</h6> 
-                            </div>
-                            <a href="#" class="btn btn-primary">Mas informacion</a>
-                        </div>
-                    </div> 
-                </div>
-                
+    <div class="container-fluid px-5">
+        
+        <div class="row align-items-center mt-5">
+            <div class="col-md-12 mb-4 mb-md-0">
+                <h3 class="Titulo">Explora diferentes requests</h3> 
+                <hr>
             </div>
         </div>
-    </div>
+
+        <?php
+        include('conect.php');
+        $sql = "SELECT 
+                    s.id_servicio, s.titulo, s.descripcion, s.precio,
+                    c.nombre_carrera, u.rating, u.porcentaje_completacion
+                FROM servicios s
+                JOIN carreras c ON s.id_carrera = c.id_carrera
+                JOIN usuarios u ON s.id_usuario = u.id_usuario
+                ";
+
+        $resultado = $mysqli->query($sql);
+
+        if ($resultado && $resultado->num_rows > 0) {
+        ?><div class="row">
+            <?php
+            while ($row = $resultado->fetch_assoc()) {
+            ?><div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card"> <div class="card-body d-flex flex-column">
+                    
+                    <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
+                    <div class="separator-line"></div>
+                
+                    <h6 class="carrera">
+                        <span class="material-symbols-outlined">license</span>
+                        <?php echo htmlspecialchars($row['nombre_carrera']); ?>
+                    </h6>
+                
+                    <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
+                        <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
+                        <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+                    </div>
+                    
+                    <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
+                </div>
+                </div> 
+            </div><?php
+            } 
+            ?>
+        </div><?php 
+        } 
+        ?>
+    
+    </div> 
+</div>
+    
+
+
+
+
+    
 
     <div id="Inicio" class="banner-container">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center mt-5">
-                <div class="col-md-12 mb-4 mb-md-0">
-                    <h3 class="Titulo">Explora diferentes requests</h1>
-                    <hr>
-                    <div class="card" style="width: 18rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Titulo coqueto</h5>
-                            <hr>
-                            <img src="img/si.png" class="card-img-top" alt="...">
-                            <h6 class="carrera">
-                                <span class="material-symbols-outlined">license</span>
-                                Carrera
-                            </h6>
-                        
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
-                            <div class="d-flex justify-content-between align-items-center mb-3"> 
-                                <div class="star-rating-display" data-rating="3.5"></div>
-                                <h4 class="Precio mb-0">$20</h6> 
-                            </div>
-                            <a href="#" class="btn btn-primary">Mas informacion</a>
-                        </div>
-                    </div> 
-                </div>
-                
+    <div class="container-fluid px-5">
+        
+        <div class="row align-items-center mt-5">
+            <div class="col-md-12 mb-4 mb-md-0">
+                <h3 class="Titulo">Explora diferentes requests</h3> 
+                <hr>
             </div>
         </div>
-    </div>
-     <?php include 'Footer.html.php'; ?>
+
+        <?php
+        include('conect.php');
+        $sql = "SELECT 
+                    s.id_servicio, s.titulo, s.descripcion, s.precio,
+                    c.nombre_carrera, u.rating, u.porcentaje_completacion
+                FROM servicios s
+                JOIN carreras c ON s.id_carrera = c.id_carrera
+                JOIN usuarios u ON s.id_usuario = u.id_usuario
+                ";
+
+        $resultado = $mysqli->query($sql);
+
+        if ($resultado && $resultado->num_rows > 0) {
+        ?><div class="row">
+            <?php
+            while ($row = $resultado->fetch_assoc()) {
+            ?><div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                <div class="card"> <div class="card-body d-flex flex-column">
+                    
+                    <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
+                    <div class="separator-line"></div>
+                
+                    <h6 class="carrera">
+                        <span class="material-symbols-outlined">license</span>
+                        <?php echo htmlspecialchars($row['nombre_carrera']); ?>
+                    </h6>
+                
+                    <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
+                        <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
+                        <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+                    </div>
+                    
+                    <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
+                </div>
+                </div> 
+            </div><?php
+            } 
+            ?>
+        </div><?php 
+        } 
+        ?>
+    
+    </div> 
+</div>
+
+
+    <?php include 'Footer.html.php'; ?>
     
 </body>
 </html>
