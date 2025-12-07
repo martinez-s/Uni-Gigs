@@ -177,20 +177,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea id="descripcion_input" name="descripcion" class="inputs" rows="4" required></textarea>            
                 
                 <div class="mt-3">
-                    <input type="file" id="input-imagen-servicio" accept="image/*" style="display: none;"> 
+                    <input type="file" id="input-archivos-servicio" accept="image/*" style="display: none;"> 
                     
                     <button type="button" class="btn btn-secondary" id="btn-trigger-image">
-                        <i class="bi bi-image-fill"></i> Seleccionar Imagen (Solo 1)
+                        <i class="bi bi-cloud-arrow-up-fill"></i> Seleccionar Imagen (Opcional)
                     </button>
                             
-                    <div id="preview-imagen" class="preview-container">
-                        <p id="mensaje-vacio-imagen" class="text-muted w-100 text-center my-auto">No hay imagen seleccionada.</p>
+                    <div id="preview-archivos" class="preview-container">
+                        <p id="mensaje-vacio-imagen" class="text-muted w-100 text-center my-auto">
+                            No hay imagen seleccionada.
+                        </p>
                     </div> 
                 </div>
             </div>
 
             <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn_crear_req btn_siguiente">CREAR</button>
+                <button type="submit" class="btn_siguiente">CREAR</button>
             </div>
         </div>
     </form>
