@@ -70,7 +70,7 @@ if ($nombre_result->num_rows > 0) {
                                 <span class="material-symbols-outlined">server_person</span>
                             </div>
                             <div class="card-contenido">
-                                <a href="request.php">
+                                <a href="../../servicio.php">
                                 <h3 class="titulo">Ofrece un servicio</h3>
                                 </a>
                                 <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
