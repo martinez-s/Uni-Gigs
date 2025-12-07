@@ -8,7 +8,6 @@ $id_usuario_logueado = 2;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // 1. Recibir y tipificar datos del formulario
     $titulo = $_POST['titulo'] ?? '';
     $descripcion = $_POST['descripcion'] ?? '';
     $precio = (float)($_POST['precio'] ?? 0); 
@@ -17,37 +16,44 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $carrera_id = (int)($_POST['carrera_id'] ?? 0);
     $materia_id = (int)($_POST['materia_id'] ?? 0);
     
-    // Validar datos mínimos
     if (empty($titulo) || $precio <= 0 || $tipo_trabajo_id == 0 || $carrera_id == 0 || $materia_id == 0) {
         
         $error_msg = "Faltan campos obligatorios o los valores son inválidos.";
-        echo "<script>Swal.fire('Error', '{$error_msg}', 'error');</script>";
+
+        echo "<script>
+            document.addEventListener('DOMContentLoaded', function() {
+                Swal.fire('Error', '{$error_msg}', 'error');
+            });
+        </script>";
         
     } else {
         
-        $fecha_creacion = date("Y-m-d");
 
-        // 2. Sentencia Preparada para la inserción en `servicios`
         $sql_insert_servicio = "INSERT INTO servicios (
             titulo, descripcion, precio, fecha_creacion, id_tipo_trabajo, id_carrera, id_materia, id_usuario
         ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, CURDATE(), ?, ?, ?, ?
         )";
 
         $stmt = $mysqli->prepare($sql_insert_servicio);
 
         if ($stmt === false) {
             $error_msg = "Error al preparar la consulta: " . $mysqli->error;
-            echo "<script>Swal.fire('Error', '{$error_msg}', 'error');</script>";
+
+            echo "<script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    Swal.fire('Error', '{$error_msg}', 'error');
+                });
+            </script>";
         } else {
             
-            // 3. Vincular los parámetros
-            $stmt->bind_param("ssdsiiii", 
-                $titulo, $descripcion, $precio, $fecha_creacion, 
+            $stmt->bind_param("ssdsiii", 
+                $titulo, $descripcion, $precio, 
                 $tipo_trabajo_id, $carrera_id, $materia_id, $id_usuario_logueado
             );
 
             if ($stmt->execute()) {
+                
 
                 $stmt->close();
                 
@@ -59,14 +65,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 icon: 'success',
                                 confirmButtonText: 'Ok'
                             }).then((result) => {
-                                window.location.href = 'index.php'; // Cambia a la página deseada
+                                window.location.href = 'index.php'; 
                             });
                         });
                     </script>";
 
             } else {
+
                 $error_msg = "Error al publicar el servicio: " . $stmt->error;
-                echo "<script>Swal.fire('Error', '{$error_msg}', 'error');</script>";
+
+                echo "<script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        Swal.fire('Error', '{$error_msg}', 'error');
+                    });
+                </script>";
                 $stmt->close();
             }
         }
@@ -82,6 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="public/styles/styles.css">
+
     <title>Servicio</title>
 </head>
 <body>
@@ -96,84 +109,96 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <div class="col-lg-12">
             <label for="titulo" class="lb_modal_des">TÍTULO</label>
             <br>
-            <input type="text" id="titulo" name="titulo" class="inputs-publi">            
+            <input type="text" id="titulo" name="titulo" class="inputs-publi" required>          
         </div>
-            <div class="col-lg-6 col-md-12 espacio">
-                <label for="carrera_id" class="lb_modal">CARRERA</label>
+        <div class="col-lg-6 col-md-12 espacio">
+        <label for="carrera_visual_input" class="lb_modal">CARRERA</label>
+        <br>
+
+        <div class="custom-select-container">
+            <input 
+                type="text" 
+                id="carrera_visual_input" 
+                class="form-control dropdown_front" 
+                placeholder="Seleccione o busque la carrera..."
+                autocomplete="off"
+            >
+            <ul id="carrera_custom_list" class="list-group" style="display: none;">
+                </ul>
+        </div>
+
+        <select id="carrera_id" name="carrera_id" required style="display: none;">
+            <option value="" selected disabled>Seleccione la carrera</option> 
+            <?php
+
+            $sql = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera";
+            $result = $mysqli->query($sql);
+
+            if ($result->num_rows > 0) {
+                while($row = $result->fetch_assoc()) {
+                    echo '<option value="' . $row["id_carrera"] . '" data-nombre="' . htmlspecialchars($row["nombre_carrera"]) . '">' . htmlspecialchars($row["nombre_carrera"]) . '</option>';
+                }
+            } else {
+                echo '<option value="" class="text-dropdown">(No hay carreras disponibles)</option>';
+            }
+            ?>
+        </select>
                 <br>
-                <select class="form-select dropdown_front" id="carrera_id" name="carrera_id">
-                
-                    <option value="" class="text-dropdown">Seleccione la carrera</option> 
-                  
-                  <?php
+                <label for="tipo_trabajo_visual_input" class="lb_modal">TIPO DE TRABAJO</label>
 
-                  $sql = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera";
-                  $result = $mysqli->query($sql);
-            
-                  if ($result->num_rows > 0) {
-                      while($row = $result->fetch_assoc()) {
-                          
-                          // Genera el <option> usando los datos de la BDD
-                          // El 'value' será el ID y el texto visible será el nombre.
-                          echo '<option value="' . $row["id_carrera"] . '" class="text-dropdown">' . $row["nombre_carrera"] . '</option>';
-                      }
-                  } else {
-                      // Opción de reserva si no hay datos
-                      echo '<option value="" class="text-dropdown">(No hay carreras disponibles)</option>';
-                  }
-                  ?>
-                  
-              </select>
-              <br>
-              <label for="tipo_trabajo" class="lb_modal">TIPO DE TRABAJO</label>
-              <select class="form-select dropdown_front" id="tipo_trabajo_id" name="tipo_trabajo_id" required>
-                  
-                  <option value="" class="text-dropdown">Seleccione el Tipo de Trabajo</option> 
-                  
-                  <?php
+                <div class="custom-select-container">
+                    <input 
+                        type="text" 
+                        id="tipo_trabajo_visual_input" 
+                        class="form-control dropdown_front" 
+                        placeholder="Seleccione o busque el tipo de trabajo..."
+                        autocomplete="off"
+                    >
+                    <ul id="tipo_trabajo_custom_list" class="list-group" style="display: none;">
+                        </ul>
+                </div>
 
-                  $sql = "SELECT id_tipo_trabajo, nombre FROM tipos_trabajos ORDER BY nombre";
-                  $result = $mysqli->query($sql);
-            
-                  if ($result->num_rows > 0) {
-                      while($row = $result->fetch_assoc()) {
-                          
-                          // Genera el <option> usando los datos de la BDD
-                          // El 'value' será el ID y el texto visible será el nombre.
-                          echo '<option value="' . $row["id_tipo_trabajo"] . '" class="text-dropdown">' . $row["nombre"] . '</option>';
-                      }
-                  } else {
-                      // Opción de reserva si no hay datos
-                      echo '<option value="" class="text-dropdown">(No hay tipos de trabajo disponibles)</option>';
-                  }
-                ?>                  
+                <select id="tipo_trabajo_id" name="tipo_trabajo_id" required style="display: none;">
+                    <option value="" selected disabled>Seleccione el Tipo de Trabajo</option> 
+                    <?php
+                    $sql = "SELECT id_tipo_trabajo, nombre FROM tipos_trabajos ORDER BY nombre";
+                    $result = $mysqli->query($sql);
+
+                    if ($result->num_rows > 0) {
+                        while($row = $result->fetch_assoc()) {
+                            echo '<option value="' . $row["id_tipo_trabajo"] . '" data-nombre="' . htmlspecialchars($row["nombre"]) . '">' . htmlspecialchars($row["nombre"]) . '</option>';
+                        }
+                    } else {
+                        echo '<option value="" class="text-dropdown">(No hay tipos de trabajo disponibles)</option>';
+                    }
+                    ?>
                 </select>
             </div>
             <div class="col-lg-6 col-md-12 espacio">
-                <label for="tipo_materia" class="lb_modal">MATERIA</label>
-                <select class="form-select dropdown_front" id="materia_id" name="materia_id" required>                      
-                <option value="" class="text-dropdown">Seleccione la materia</option>                   
-                <?php
+            <label for="materia_visual_input" class="lb_modal">MATERIA</label>
+                <br>
 
-                    $sql = "SELECT id_materia, nombre FROM materias ORDER BY nombre";
-                    $result = $mysqli->query($sql);
-            
-                    if ($result->num_rows > 0) {
-                        while($row = $result->fetch_assoc()) {                         
-                          // Genera el <option> usando los datos de la BDD
-                          // El 'value' será el ID y el texto visible será el nombre.
-                            echo '<option value="' . $row["id_materia"] . '" class="text-dropdown">' . $row["nombre"] . '</option>';
-                        }
-                    } else {
-                      // Opción de reserva si no hay datos
-                        echo '<option value="" class="text-dropdown">(No hay materias disponibles)</option>';
-                    }
-                ?>            
-            </select> 
+                <div class="custom-select-container">
+                    <input 
+                        type="text" 
+                        id="materia_visual_input" 
+                        class="form-control dropdown_front" 
+                        placeholder="Seleccione o busque una materia..."
+                        autocomplete="off"
+                    >
+
+                    <ul id="materia_custom_list" class="list-group" style="display: none; position: absolute; width: 100%; z-index: 1000; max-height: 200px; overflow-y: auto; border-top: none;">
+                        </ul>
+                </div>
+
+                <select id="materia_id" name="materia_id" required style="display: none;">
+                    <option value="" selected disabled>Seleccione la materia</option> 
+
+                </select>
             <br>
             <label for="precio" class="lb_modal">PRECIO</label>
             <br>
-            <input type="number" step="0.01" id="precio" name="precio" class="inputs" required>               
+            <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="inputs" required>               
         </div>
         <div class="col-lg-12 espacio">
             <label for="descripcion" class="lb_modal_des">DESCRIPCIÓN</label>
@@ -207,7 +232,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 </div>
 
     <script src="login_regis.js"></script>
+    <script src="dropdown.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
 </body>
 </html>
