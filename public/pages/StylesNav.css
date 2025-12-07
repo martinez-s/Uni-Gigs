@@ -20,7 +20,6 @@ body{
 
 nav{
     width: 100%;
-    padding: 1rem 5%;
     background-color: #2F5597;
     margin-bottom: 2rem;
     display: flex;
@@ -115,12 +114,6 @@ nav{
     .nav-link{
     margin-top: 1rem;
 }
-}
-
-
-.todo{
-    width: 100%;
-    margin: 4rem;
 }
 
 
@@ -315,4 +308,46 @@ hr {
 
 a {
     text-decoration: none !important; /* Quita el subrayado en todos los estados */
+}
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    /* Esto es para navegadores basados en WebKit (Chrome, Safari, Edge moderno) */
+    -webkit-appearance: none;
+    display: none; /* Asegura que no se muestre ningún componente */
+}
+/* Estilos para REQUEST */
+.EsReq {
+    color: #203864;
+    margin: 0;
+    padding: 5px 10px;
+    margin-bottom: 1.25rem;
+    margin-top: 10px;
+    
+    /* PROPIEDADES DE CENTRADO CON FLEXBOX */
+    display: flex; /* 1. Activa Flexbox */
+    align-items: center; /* 2. Centra el contenido VERTICALMENTE */
+    justify-content: center; /* 3. Centra el contenido HORIZONTALMENTE */
+    
+    
+    border: 1px solid #203864;
+    border-radius: 10px;
+}
+
+.EsSer {
+    color: #203864;
+    margin: 0;
+    padding: 5px 10px;
+    margin-bottom: 1.25rem;
+    margin-top: 10px;
+    
+    /* PROPIEDADES DE CENTRADO CON FLEXBOX */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    border: 1px solid #203864;
+    border-radius: 10px;
 }

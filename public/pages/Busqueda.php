@@ -1,43 +1,3 @@
-
-<?php 
-session_start();
-
-require_once __DIR__ . '/../../conect.php';
-
-// Si el archivo de conexión define $mysqli, úsalo como $conn
-if (!isset($conn) && isset($mysqli) && $mysqli instanceof mysqli) {
-    $conn = $mysqli;
-}
-
-// Si sigue sin existir, abortar con mensaje corto (evita exponer credenciales)
-if (!isset($conn) || !($conn instanceof mysqli)) {
-    error_log('Error: conexión DB no encontrada en principal.php');
-    header('HTTP/1.1 500 Internal Server Error');
-    echo 'Error interno de servidor.';
-    exit;
-}
-
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../../login.php");
-    exit();
-}
-
-$id_usuario = $_SESSION['id_usuario'];
-
-$stml_usuario = $conn->prepare("SELECT nombre FROM usuarios WHERE id_usuario = ?");
-$stml_usuario->bind_param("i", $id_usuario);
-$stml_usuario->execute();
-
-$nombre_result = $stml_usuario->get_result();
-if ($nombre_result->num_rows > 0) {
-    $usuario = $nombre_result->fetch_assoc();
-    $nombre = $usuario['nombre'];
-} else {
-    $nombre = "Usuario";
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -46,7 +6,7 @@ if ($nombre_result->num_rows > 0) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="stylesNav.css">
+    <link rel="stylesheet" href="StylesNav.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Uni-Gigs</title>
 </head>
@@ -54,227 +14,239 @@ if ($nombre_result->num_rows > 0) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="main.js"></script>
     
-    <?php include 'NavBar.php'; ?>
+ 
+<?php
+// Configuración y Conexión a la Base de Datos
 
+// 1. Establecer la conexión (Asegúrate de que tus credenciales sean correctas)
+$mysqli = new mysqli("localhost", "root", "", "uni-gigs"); 
 
-    <div id="Inicio" class="banner-container">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center mt-5">
-                <div class="col-md-10 mb-4 mb-md-0">
-                    <h1 class="Titulo">Hola, <?php echo $nombre?></h1>
-                    <p class="texto mb-4 ">Comienza haciendo una publicación, descubre servicios o ayuda a otros a culminar sus tareas.</p> 
-                </div>
-                <div class="botones-agrupados d-flex flex-column flex-lg-row gap-3">
-                    <button class="servicio-card flex-grow-1" type="button">
-                        <div class="card-icono">
-                            <span class="material-symbols-outlined">server_person</span>
-                        </div>
-                        <a href="../../servicio.php">
-                        <div class="card-contenido">
-                            <h3 class="titulo">Ofrece un servicio</h3>
-                            <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
-                        </div>
-                        </a>
-                    </button>
-                    <button class="servicio-card flex-grow-1" type="button">
-                        <div class="card-icono">
-                            <span class="material-symbols-outlined">server_person</span>
-                        </div>
-                        <a href="../../request.php">
-                        <div class="card-contenido">
-                            <h3 class="titulo">Publicar un request</h3>
-                            <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
-                        </a>
-                        </div>
-                    </button>    
-                </div>
-            </div>
-        </div>
-    </div>
+if ($mysqli->connect_errno) {
+    die("Fallo al conectar a MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
+}
 
-    <div id="Servicios" class="banner-container">
+// Activar errores estrictos para la depuración de consultas SQL
+$mysqli->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
+
+// 2. Incluir la barra de navegación (debe ir después de la conexión si usa $mysqli)
+include 'NavBar.php'; 
+
+// 3. Inicializar variables de búsqueda
+$sql_query_completa = ''; 
+$termino_actual = ''; 
+$termino_para_sql = null; 
+$resultado = false;
+
+// Determinar si hay término de búsqueda POST
+if (isset($_POST['q_post']) && !empty($_POST['q_post'])) {
+    $termino_actual = $_POST['q_post']; 
+    $termino_para_sql = '%' . $termino_actual . '%';
+}
+
+// ===================================================================
+// 4. Consultas Base (SELECT 1 y SELECT 2)
+// ===================================================================
+
+// Consulta para SERVICIOS
+$sql_servicios = "
+    SELECT 
+        s.id_servicio AS id_item, 
+        'servicio' AS tipo, 
+        s.titulo, s.descripcion, s.precio,
+        c.nombre_carrera, u.rating, u.porcentaje_completacion,
+        MIN(f.url_foto) AS url_foto
+    FROM servicios s
+    JOIN carreras c ON s.id_carrera = c.id_carrera
+    JOIN usuarios u ON s.id_usuario = u.id_usuario
+    LEFT JOIN fotos_servicios f ON s.id_servicio = f.id_servicio
+    {CONDICION_BUSQUEDA_S}
+    GROUP BY 
+        s.id_servicio, s.titulo, s.descripcion, s.precio, 
+        c.nombre_carrera, u.rating, u.porcentaje_completacion
+";
+
+// Consulta para REQUESTS (Solicitudes) - CORREGIDA: Eliminamos el JOIN innecesario a 'usuarios' 
+$sql_requests = "
+    SELECT 
+        r.id_requests AS id_item, 
+        'request' AS tipo, 
+        r.titulo, r.descripcion, r.precio,
+        c.nombre_carrera, u.rating, u.porcentaje_completacion,
+        MIN(f.url_foto) AS url_foto
+    FROM requests r  -- ¡Cambiado de 'servicios s' a 'requests r'!
+    JOIN carreras c ON r.id_carrera = c.id_carrera
+    JOIN usuarios u ON r.id_usuario = u.id_usuario
+    LEFT JOIN fotos_requests f ON r.id_requests = f.id_request
+    {CONDICION_BUSQUEDA_R}  -- ¡Cambiado de {CONDICION_BUSQUEDA_S} a {CONDICION_BUSQUEDA_R}!
+    GROUP BY 
+        r.id_requests, r.titulo, r.descripcion, r.precio, 
+        c.nombre_carrera, u.rating, u.porcentaje_completacion
+";
+
+// ===================================================================
+// 5. Lógica de Ejecución (Búsqueda o Todos)
+// ===================================================================
+
+if ($termino_para_sql) {
+    // A) Búsqueda Activa (Usa consultas preparadas)
+
+    // Definición de las cláusulas WHERE para la búsqueda
+    $where_s = "WHERE s.titulo LIKE ? OR s.descripcion LIKE ? OR c.nombre_carrera LIKE ?";
+    $where_r = "WHERE r.titulo LIKE ? OR r.descripcion LIKE ? OR c.nombre_carrera LIKE ?";
+
+    $sql_servicios = str_replace('{CONDICION_BUSQUEDA_S}', $where_s, $sql_servicios);
+    $sql_requests = str_replace('{CONDICION_BUSQUEDA_R}', $where_r, $sql_requests);
+
+    // Consulta final combinada (UNION ALL)
+    $sql_query_completa = "
+        ($sql_servicios)
+        UNION ALL
+        ($sql_requests)
+        ORDER BY tipo DESC, id_item DESC
+    ";
+
+    $stmt = $mysqli->prepare($sql_query_completa);
+    
+    // Vincula 6 parámetros de cadena (s*6)
+    if ($stmt) {
+        $stmt->bind_param("ssssss", 
+            $termino_para_sql, $termino_para_sql, $termino_para_sql, // 3 para Servicios
+            $termino_para_sql, $termino_para_sql, $termino_para_sql  // 3 para Requests
+        );
+        $stmt->execute();
+        $resultado = $stmt->get_result();
+        $stmt->close();
+    } else {
+        error_log("Error al preparar la consulta con búsqueda UNION: " . $mysqli->error);
+    }
+
+} else {
+    // B) Sin Búsqueda (Muestra todos los resultados)
+    
+    // Elimina los marcadores de condición (no hay WHERE)
+    $sql_servicios = str_replace('{CONDICION_BUSQUEDA_S}', '', $sql_servicios);
+    $sql_requests = str_replace('{CONDICION_BUSQUEDA_R}', '', $sql_requests);
+    
+    // Consulta final combinada (UNION ALL)
+    $sql_query_completa = "
+        ($sql_servicios)
+        UNION ALL
+        ($sql_requests)
+        ORDER BY tipo DESC, id_item DESC
+    ";
+
+    $resultado = $mysqli->query($sql_query_completa);
+
+    if (!$resultado) {
+        error_log("Error al ejecutar la consulta UNION sin búsqueda: " . $mysqli->error);
+    }
+}
+?>
+
+<div id="Resultados" class="banner-container">
     <div class="container-fluid px-5">
-        
         <div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="Titulo mb-0">Explora diferentes servicios</h3> 
-                    <a href="VerMasServicio.php" class="mas text-decoration-none">Ver más</a>
-                </div>
+                <h4 class="Titulo mb-0">Resultados de Búsqueda</h4> 
                 <hr>
             </div>
         </div>
 
         <?php
-        include('../../conect.php');
-
-        if (isset($_POST['id_carrera_filtro']) && !empty($_POST['id_carrera_filtro'])) {
-            $id_carrera_seleccionada = (int)$_POST['id_carrera_filtro'];
-        } else {
-            $id_carrera_seleccionada = 0; 
-        }
-
-        $sql = "SELECT 
-            s.id_servicio, s.titulo, s.descripcion, s.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion,
-            MIN(f.url_foto) AS url_foto
-            FROM servicios s
-            JOIN carreras c ON s.id_carrera = c.id_carrera
-            JOIN usuarios u ON s.id_usuario = u.id_usuario
-            LEFT JOIN fotos_servicios f ON s.id_servicio = f.id_servicio";
-
-        if ($id_carrera_seleccionada > 0) {
-            $sql .= " WHERE s.id_carrera = " . $id_carrera_seleccionada;
-        }
-
-        $sql .= " GROUP BY 
-            s.id_servicio, s.titulo, s.descripcion, s.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion";
-
-
-        $resultado = $mysqli->query($sql);
-
         if ($resultado && $resultado->num_rows > 0) {
         ?>
             <div class="row">
-            <?php
+                <?php
                 while ($row = $resultado->fetch_assoc()) {
+                    $es_servicio = ($row['tipo'] === 'servicio');
+                    $es_request = ($row['tipo'] === 'request');
+                    $tiene_foto = !empty($row['url_foto']);
                 ?>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                        <div class="card"> <div class="card-body d-flex flex-column">
-                            
-                            <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
-                            <div class="separator-line"></div>
+                        <div class="card">
+                            <div class="card-body d-flex flex-column">
+                                
+
+                                <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
+                                
+
+                                <div class="separator-line"></div>
+                                
                                 <?php 
-                                if ($row['url_foto']) { 
+                                if ($tiene_foto) { 
+                                    $folder = $es_servicio ? 'imgSer' : 'imgReq';
+                                    $ruta_imagen = "../../public/img/{$folder}/" . htmlspecialchars($row['url_foto']);
                                 ?>
                                     <div class="img-wrapper">
-                                    <img class="imagen" src="../../public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>" alt="Foto del servicio">
+                                    <img class="imagen" src="<?php echo $ruta_imagen; ?>" alt="Foto del item">
                                     </div>
                                 <?php 
-                                } 
+                                } elseif ($es_request) {
+                                    // Placeholder visual si es un request y NO tiene foto
                                 ?>
-                            <h6 class="carrera">
-                                <span class="material-symbols-outlined">license</span>
-                                <?php echo htmlspecialchars($row['nombre_carrera']); ?>
-                            </h6>
-                        
-                            <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                                <?php 
+                                } 
+                                // CIERRE DEL BLOQUE IF/ELSEIF DE IMÁGENES
+                                ?>
+
+                                 <?php if ($es_request): ?>
+                                    <h6 class="EsReq">
+                                        Request
+                                    </h6>
+                                <?php elseif ($es_servicio): ?>
+                                    <h6 class="EsSer">
+                                        Servicio
+                                    </h6>
+                                <?php endif; ?>
+                                
+                                
+                                <h6 class="carrera">
+                                    <span class="material-symbols-outlined">license</span>
+                                    <?php echo htmlspecialchars($row['nombre_carrera']); ?>
+                                </h6>
                             
-                            <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
-                                <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
-                                <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+                                <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
+                                    
+                                    <?php if (!empty($row['rating'])): ?>
+                                        <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
+                                    <?php else: ?>
+                                        <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
+                                    <?php endif; ?>
+
+                                    <?php if (!empty($row['precio'])): ?>
+                                        <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+                                    <?php else: ?>
+                                        <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5>  
+                                    <?php endif; ?>
+                                </div>
+                                <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
                             </div>
-                            
-                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
-                        </div>
                         </div> 
                     </div>
                 <?php
-                } 
+                } // FIN DEL WHILE
                 ?>
-            </div>
-        <?php 
-        } else {
-            echo '<div class="col-12"><p class="alert alert-info">No se encontraron servicios para la carrera seleccionada.</p></div>';
-        }
+            </div><?php 
+        } else { 
         ?>
-        </div>
-    </div>
-
-
-
-        
-
-    <div id="Requests" class="banner-container">
-    <div class="container-fluid px-5">
-        
-        <div class="row align-items-center mt-5">
-            <div class="col-md-12 mb-4 mb-md-0">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="Titulo mb-0">Explora diferentes Requests</h3> 
-                    <a href="VerMasRequest.php" class="mas text-decoration-none">Ver más</a>
+            <div class="row">
+                <div class="col-12 mt-4">
+                    <div class="alert alert-warning" role="alert">
+                        No se encontraron servicios ni solicitudes que coincidan con tu búsqueda.
+                    </div>
                 </div>
-                <hr>
             </div>
-        </div>
-
         <?php
-        include('../../conect.php');
-
-        if (isset($_POST['id_carrera_filtro']) && !empty($_POST['id_carrera_filtro'])) {
-            $id_carrera_seleccionada = (int)$_POST['id_carrera_filtro'];
-        } else {
-            $id_carrera_seleccionada = 0; 
-        }
-
-        $sql = "SELECT 
-            r.id_requests, r.titulo, r.descripcion, r.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion,
-            MIN(f.url_foto) AS url_foto
-            FROM requests r
-            JOIN carreras c ON r.id_carrera = c.id_carrera
-            JOIN usuarios u ON r.id_usuario = u.id_usuario
-            LEFT JOIN fotos_requests f ON r.id_requests = f.id_request";
-
-        if ($id_carrera_seleccionada > 0) {
-            $sql .= " WHERE r.id_carrera = " . $id_carrera_seleccionada;
-        }
-
-        $sql .= " GROUP BY 
-            r.id_requests, r.titulo, r.descripcion, r.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion";
-
-
-        $resultado = $mysqli->query($sql);
-
-        if ($resultado && $resultado->num_rows > 0) {
+        } // FIN DEL IF ($resultado)
         ?>
-            <div class="row">
-            <?php
-                while ($row = $resultado->fetch_assoc()) {
-                ?>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                        <div class="card"> <div class="card-body d-flex flex-column">
-                            
-                            <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
-                            <div class="separator-line"></div>
-                                <?php 
-                                if ($row['url_foto']) { 
-                                ?>
-                                    <div class="img-wrapper">
-                                    <img class="imagen" src="../../public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>" alt="Foto del servicio">
-                                    </div>
-                                <?php 
-                                } 
-                                ?>
-                            <h6 class="carrera">
-                                <span class="material-symbols-outlined">license</span>
-                                <?php echo htmlspecialchars($row['nombre_carrera']); ?>
-                            </h6>
-                        
-                            <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
-                            
-                            <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
-                                <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
-                                <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
-                            </div>
-                            
-                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
-                        </div>
-                        </div> 
-                    </div>
-                <?php
-                } 
-                ?>
-            </div>
-        <?php 
-        } else {
-            echo '<div class="col-12"><p class="alert alert-info">No se encontraron servicios para la carrera seleccionada.</p></div>';
-        }
-        ?>
-        </div>
-    </div>
+    
+    </div> 
+</div>
+
+   
+
 
 
 
