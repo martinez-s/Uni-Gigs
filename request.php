@@ -156,8 +156,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <label for="precio" class="lb_modal">PRECIO</label>
                     <div class="input-group mb-3">
-                        <span class="input-group-text">$</span>
-                        <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="form-control inputs" required>
+                        <span class="input-group-text" style="height: 16px">$</span>
+                        <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="form-control inputs" style="height: 16px"required>
                     </div>
                 </div>
 

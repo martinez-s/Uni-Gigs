@@ -19,7 +19,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Insertar el servicio en la base de datos (sin fecha límite según tu estructura)
     $sql_insert_servicio = "INSERT INTO servicios (titulo, descripcion, precio, fecha_creacion, id_tipo_trabajo, id_carrera, id_materia, id_usuario) VALUES (?, ?, ?, CURDATE(), ?, ?, ?, ?)";
     $stmt = $mysqli->prepare($sql_insert_servicio);
     
@@ -30,19 +29,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id_servicio = $stmt->insert_id;
             $imagen_procesada = 0;
 
-            // Procesar imagen (solo una)
             if (isset($_FILES['imagen-servicio']) && $_FILES['imagen-servicio']['error'] === UPLOAD_ERR_OK) {
                 $carpeta_destino = 'public/img/imgSer/';
                 
-                // Crear carpeta si no existe
-                if (!file_exists($carpeta_destino)) {
-                    mkdir($carpeta_destino, 0777, true);
-                }
                 
                 $tmp_file = $_FILES['imagen-servicio']['tmp_name'];
                 $nombre_original = basename($_FILES['imagen-servicio']['name']);
                 
-                // Generar nombre único para la imagen
                 $nombre_imagen = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\.]/', '_', $nombre_original);
                 $ruta_destino = $carpeta_destino . $nombre_imagen;
                 
@@ -164,7 +157,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <br>
                 <label for="precio" class="lb_modal">PRECIO</label>
-                <br>
                 <div class="input-group mb-3">
                     <span class="input-group-text">$</span>
                     <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="form-control inputs" required>
