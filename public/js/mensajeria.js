@@ -226,44 +226,49 @@ function showFilePreview(file) {
             chatsList.append(chatElement);
         });
         
-        $('.chat-item').click(function() {
-            $('.chat-item').removeClass('active-chat');
-            $(this).addClass('active-chat');
-            
-            const chatId = $(this).data('chat-id');
-            const otherId = $(this).data('other-id');
-            otherUserName = $(this).data('other-name');
-            otherUserPhoto = $(this).data('other-photo');
-            
-            selectChat(chatId, otherId);
-        });
+        // ...existing code...
+    $('.chat-item').click(function() {
+        $('.chat-item').removeClass('active-chat');
+        $(this).addClass('active-chat');
+        
+        const chatId = $(this).data('chat-id');
+        const otherId = $(this).data('other-id');
+        otherUserName = $(this).data('other-name');
+        otherUserPhoto = $(this).data('other-photo');
+        const estado = $(this).data('estado'); // puede ser 1/0 o true/false
+        
+        selectChat(chatId, otherId, estado);
+    });
+// ...existing code...
     }
     
+    // ...existing code...
     function createChatElement(chat) {
         const nombreCompleto = chat.nombre_otro_usuario + ' ' + chat.apellido_otro_usuario;
         
         return `
             <div class="chat-item p-3" 
-                 data-chat-id="${chat.id_chat}"
-                 data-other-id="${chat.id_otro_usuario}"
-                 data-other-name="${nombreCompleto}"
-                 data-other-photo="${chat.foto_otro_usuario}"
-                 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                data-chat-id="${chat.id_chat}"
+                data-other-id="${chat.id_otro_usuario}"
+                data-other-name="${nombreCompleto}"
+                data-other-photo="${chat.foto_otro_usuario}"
+                data-estado="${chat.estado}"
+                style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
                 <div class="d-flex align-items-center">
                     <div class="position-relative me-3">
                         ${chat.foto_otro_usuario ? 
                             `<img src="${chat.foto_otro_usuario}" 
-                                 class="rounded-circle" 
-                                 style="width: 50px; height: 50px; object-fit: cover;"
-                                 alt="${chat.nombre_otro_usuario}">` :
+                                class="rounded-circle" 
+                                style="width: 50px; height: 50px; object-fit: cover;"
+                                alt="${chat.nombre_otro_usuario}">` :
                             `<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
-                                  style="width: 50px; height: 50px;">
+                                style="width: 50px; height: 50px;">
                                 <i class="bi bi-person fs-5 text-white"></i>
                             </div>`
                         }
                         ${chat.estado == 1 ? 
                             `<div class="status-online position-absolute bottom-0 end-0"></div>` : 
-                            ''}
+                            `<div class="status-offline position-absolute bottom-0 end-0" title="Chat inactivo" style="width:10px;height:10px;border-radius:50%;background:#999;border:2px solid #1a252f"></div>`}
                     </div>
                     
                     <div class="flex-grow-1" style="min-width: 0;">
@@ -283,20 +288,36 @@ function showFilePreview(file) {
             </div>
         `;
     }
+// ...existing code...
     
-    function selectChat(chatId, otherId) {
+    // ...existing code...
+    function selectChat(chatId, otherId, estado) {
         currentChatId = chatId;
         lastMessageId = 0;
         
         $('#chat-title').text(otherUserName);
         $('#current-chat-id').val(chatId);
-        $('#message-input').prop('disabled', false).focus();
-        $('#chat-actions').removeClass('d-none');
-        
+
+        // Si el chat está inactivo (estado == 0 / false) mantener input deshabilitado
+        const isActive = (estado === 1 || estado === '1' || estado === true || estado === 'true');
+        if (!isActive) {
+            $('#message-input').prop('disabled', true).val('').attr('placeholder', 'Chat inactivo');
+            $('#send-btn').prop('disabled', true);
+            // opcional: ocultar acciones si existe contenedor
+            $('#chat-actions').addClass('d-none');
+        } else {
+            $('#message-input').prop('disabled', false).attr('placeholder', 'Escribe un mensaje...').focus();
+            $('#chat-actions').removeClass('d-none');
+        }
+
         updateChatHeader();
         loadMessages(chatId);
         startMessageRefresh();
+
+        // actualizar estado del botón al seleccionar chat
+        if (typeof updateSendButtonState === 'function') updateSendButtonState();
     }
+// ...existing code...
     
     function updateChatHeader() {
         if (otherUserPhoto) {
