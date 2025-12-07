@@ -65,38 +65,35 @@ if ($nombre_result->num_rows > 0) {
                     <p class="texto mb-4 ">Comienza haciendo una publicación, descubre servicios o ayuda a otros a culminar sus tareas.</p> 
                 </div>
                 <div class="botones-agrupados d-flex flex-column flex-lg-row gap-3">
-                        <button class="servicio-card flex-grow-1" type="button">
-                            <div class="card-icono">
-                                <span class="material-symbols-outlined">server_person</span>
-                            </div>
-                            <div class="card-contenido">
-                                <a href="request.php">
-                                <h3 class="titulo">Ofrece un servicio</h3>
-                                </a>
-                                <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
-                            </div>
-                        </button>
-                        <button class="servicio-card flex-grow-1" type="button">
-                            <div class="card-icono">
-                                <span class="material-symbols-outlined">server_person</span>
-                            </div>
-                            <div class="card-contenido">
-                                <a href="request.php">
-                                <h3 class="titulo">Publicar un request</h3>
-                                </a>
-                                <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
-                            </div>
-                        </button>
-                    
+                    <button class="servicio-card flex-grow-1" type="button">
+                        <div class="card-icono">
+                            <span class="material-symbols-outlined">server_person</span>
+                        </div>
+                        <a href="../../servicio.php">
+                        <div class="card-contenido">
+                            <h3 class="titulo">Ofrece un servicio</h3>
+                            <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
+                        </div>
+                        </a>
+                    </button>
+                    <button class="servicio-card flex-grow-1" type="button">
+                        <div class="card-icono">
+                            <span class="material-symbols-outlined">server_person</span>
+                        </div>
+                        <a href="../../request.php">
+                        <div class="card-contenido">
+                            <h3 class="titulo">Publicar un request</h3>
+                            <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
+                        </a>
+                        </div>
+                    </button>    
                 </div>
             </div>
         </div>
     </div>
 
     <div id="Inicio" class="banner-container">
-    <div class="container-fluid px-5">
-        
-        <div class="row align-items-center mt-5">
+<div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
                 <div class="d-flex justify-content-between align-items-center">
                     <h3 class="Titulo mb-0">Explora diferentes servicios</h3> 
@@ -108,16 +105,19 @@ if ($nombre_result->num_rows > 0) {
 
         <?php
         include('../../conect.php');
-        $sql = "SELECT 
-            s.id_servicio, s.titulo, s.descripcion, s.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion,
-            MIN(f.url_foto) AS url_foto
-            FROM servicios s
-            JOIN carreras c ON s.id_carrera = c.id_carrera
-            JOIN usuarios u ON s.id_usuario = u.id_usuario
-            JOIN fotos_servicios f ON s.id_servicio = f.id_servicio
-            GROUP BY s.id_servicio
-            ";
+    $sql = "SELECT 
+    s.id_servicio, s.titulo, s.descripcion, s.precio, s.id_usuario,
+    c.nombre_carrera, u.rating, u.porcentaje_completacion, u.nombre, u.id_usuario,
+    MIN(f.url_foto) AS url_foto
+    FROM servicios s
+    JOIN carreras c ON s.id_carrera = c.id_carrera
+    JOIN usuarios u ON s.id_usuario = u.id_usuario
+    LEFT JOIN fotos_servicios f ON s.id_servicio = f.id_servicio
+    GROUP BY 
+        s.id_servicio, s.titulo, s.descripcion, s.precio, s.id_usuario,
+        c.nombre_carrera, u.rating, u.porcentaje_completacion, u.nombre, u.id_usuario
+
+    ";
 
         $resultado = $mysqli->query($sql);
 
@@ -130,15 +130,24 @@ if ($nombre_result->num_rows > 0) {
                     
                     <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                     <div class="separator-line"></div>
-                    <div class="img-wrapper">
-                    <img class="imagen" src="public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>">
-                    </div>
+                        <?php 
+                        // Comprobamos si hay una URL de foto disponible
+                        if ($row['url_foto']) { 
+                        ?>
+                            <div class="img-wrapper">
+                            <img class="imagen" src="../../public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>" alt="Foto del servicio">
+                            </div>
+                        <?php 
+                        } 
+                        // Si $row['url_foto'] es NULL, no se imprime la etiqueta <img>
+                        ?>
                     <h6 class="carrera">
                         <span class="material-symbols-outlined">license</span>
                         <?php echo htmlspecialchars($row['nombre_carrera']); ?>
                     </h6>
                 
                     <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                    <a href="perfilAjeno.php?id=<?php echo $row['id_usuario']; ?>"><p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['nombre']); ?></p></a>
                     
                     <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
                         <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
@@ -157,7 +166,6 @@ if ($nombre_result->num_rows > 0) {
     
     </div> 
 </div>
-    
 
 
 
@@ -180,11 +188,11 @@ if ($nombre_result->num_rows > 0) {
         <?php
         include('../../conect.php');
         $sql = "SELECT 
-                    s.id_servicio, s.titulo, s.descripcion, s.precio,
+                    r.id_requests, r.titulo, r.descripcion, r.precio,
                     c.nombre_carrera, u.rating, u.porcentaje_completacion
-                FROM servicios s
-                JOIN carreras c ON s.id_carrera = c.id_carrera
-                JOIN usuarios u ON s.id_usuario = u.id_usuario
+                FROM requests r
+                JOIN carreras c ON r.id_carrera = c.id_carrera
+                JOIN usuarios u ON r.id_usuario = u.id_usuario
                 ";
 
         $resultado = $mysqli->query($sql);

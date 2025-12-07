@@ -8,7 +8,7 @@
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid">
         
-        <a class="navbar-brand" href="Principal.html">
+        <a class="navbar-brand" href="principal.php">
             <img src="../img/Logo_Navbar.png" alt="Logo" width="170" height="48" class="d-inline-block align-text-center">
         </a>
         
@@ -42,7 +42,7 @@
                 <a class="Icon fa-lg" href="Principal.html"><span class="material-symbols-outlined">notifications</span></a>
                 <a class="Icon" href="../../mensajeria.php"><span class="material-symbols-outlined">mail</span></a>
                 <a class="Icon"><span class="material-symbols-outlined">school</span></a>
-                <a class="Icon"><span class="material-symbols-outlined">account_circle</span></a>
+                <a class="Icon" href="perfil.php"><span class="material-symbols-outlined">account_circle</span></a>
             </div>
             
         </div>
