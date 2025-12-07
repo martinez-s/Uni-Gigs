@@ -292,7 +292,7 @@ $nombre_usuario = $_SESSION['nombre'];
                             </div>
                             
                             <!-- Input oculto para archivos -->
-                            <input type="file" id="file-input" multiple>
+                            <input type="file" id="file-input">
                             
                             <!-- Input de texto -->
                             <div class="flex-grow-1 me-2">

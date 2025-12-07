@@ -27,127 +27,149 @@ $(document).ready(function() {
     });
     
     // Selección de archivos
-    $('#file-input').change(function(e) {
-        const files = e.target.files;
+    // ...existing code...
+// Selección de archivos
+    $('#file-input').on('change', function(e) {
+        const files = Array.from(e.target.files || []);
         if (files.length === 0) return;
-        
-        // Validar número máximo de archivos (5)
-        if (files.length > 5) {
-            alert('Máximo 5 archivos a la vez');
+
+        // Solo permitimos 1 archivo: tomamos el primero y reemplazamos cualquier anterior
+        const file = files[0];
+
+        // Validar tamaño máximo (10MB)
+        const MAX_SIZE = 10 * 1024 * 1024;
+        if (file.size > MAX_SIZE) {
+            alert(`El archivo "${file.name}" es demasiado grande (máximo 10MB)`);
+            $(this).val('');
             return;
         }
-        
-        // Procesar cada archivo
-        for (let i = 0; i < files.length; i++) {
-            const file = files[i];
-            
-            // Validar tamaño máximo (10MB)
-            if (file.size > 10 * 1024 * 1024) {
-                alert(`El archivo "${file.name}" es demasiado grande (máximo 10MB)`);
-                continue;
-            }
-            
-            // Validar tipo de archivo
-            const allowedTypes = [
-                'image/jpeg', 'image/png', 'image/gif', 'image/webp',
-                'application/pdf', 'application/msword', 
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                'application/vnd.ms-excel',
-                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-                'text/plain',
-                'application/zip', 'application/x-rar-compressed',
-                'audio/mpeg', 'video/mp4', 'video/avi', 'video/quicktime'
-            ];
-            
-            if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|txt|zip|rar|mp3|mp4|avi|mov)$/i)) {
-                alert(`Tipo de archivo no permitido: "${file.name}"`);
-                continue;
-            }
-            
-            // Agregar a la lista de archivos seleccionados
-            selectedFiles.push(file);
-            
-            // Mostrar previsualización
-            showFilePreview(file);
+
+        // Validar tipo de archivo (misma lista que antes)
+        const allowedTypes = [
+            'image/jpeg', 'image/png', 'image/gif', 'image/webp',
+            'application/pdf', 'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'application/vnd.ms-excel',
+            'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'text/plain',
+            'application/zip', 'application/x-rar-compressed',
+            'audio/mpeg', 'video/mp4', 'video/avi', 'video/quicktime'
+        ];
+        if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|txt|zip|rar|mp3|mp4|avi|mov)$/i)) {
+            alert(`Tipo de archivo no permitido: "${file.name}"`);
+            $(this).val('');
+            return;
         }
-        
-        // Limpiar input
+
+        // Reemplazar cualquier archivo seleccionado previamente (solo 1 permitido)
+        selectedFiles = [file];
+
+        // Mostrar previsualización (el método que ya tienes se encargará de vaciar/mostrar)
+        showFilePreview(file);
+
+        // Limpiar input nativo y mostrar contenedor
         $(this).val('');
-        
-        // Habilitar botón de enviar
-        if (selectedFiles.length > 0) {
-            $('#send-btn').prop('disabled', false);
-        }
+        $('#file-preview-container').show();
+
+        // Actualizar estado del botón de enviar
+        if (typeof updateSendButtonState === 'function') updateSendButtonState();
     });
+// ...existing code...
     
     // Mostrar previsualización de archivo
-    function showFilePreview(file) {
-        const container = $('#file-preview-container');
-        const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        
-        let previewHtml = '';
-        const isImage = file.type.startsWith('image/');
-        
-        if (isImage) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                previewHtml = `
-                    <div class="file-preview" id="${fileId}">
-                        <div class="d-flex align-items-center">
-                            <img src="${e.target.result}" alt="${file.name}">
-                            <div>
-                                <div class="file-name">${file.name}</div>
-                                <div class="file-size">${formatFileSize(file.size)}</div>
-                            </div>
-                        </div>
-                        <div class="remove-file" onclick="removeSelectedFile('${fileId}')">
-                            <i class="bi bi-x-circle"></i>
-                        </div>
-                    </div>
-                `;
-                container.append(previewHtml).show();
-            };
-            reader.readAsDataURL(file);
-        } else {
-            previewHtml = `
-                <div class="file-preview" id="${fileId}">
-                    <div class="d-flex align-items-center">
-                        <div class="file-icon">
-                            <i class="bi bi-file-earmark"></i>
-                        </div>
-                        <div class="file-info">
-                            <div class="file-name">${file.name}</div>
-                            <div class="file-size">${formatFileSize(file.size)}</div>
-                        </div>
-                    </div>
-                    <div class="remove-file" onclick="removeSelectedFile('${fileId}')">
-                        <i class="bi bi-x-circle"></i>
+    // ...existing code...
+function showFilePreview(file) {
+    const container = $('#file-preview-container');
+    // Vaciar para asegurar que solo haya 1 preview a la vez
+    container.empty();
+
+    const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    const isImage = file.type.startsWith('image/');
+
+    if (isImage) {
+        const wrapper = $(`
+            <div class="file-preview d-flex align-items-center" id="${fileId}">
+                <div class="d-flex align-items-center">
+                    <img alt="${file.name}" style="max-width:60px;max-height:60px;margin-right:10px;border-radius:4px;">
+                    <div>
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size">${formatFileSize(file.size)}</div>
                     </div>
                 </div>
-            `;
-            container.append(previewHtml).show();
-        }
+                <div class="remove-file" style="cursor:pointer;">
+                    <i class="bi bi-x-circle"></i>
+                </div>
+            </div>
+        `);
+
+        const img = wrapper.find('img');
+        const reader = new FileReader();
+        reader.onload = function(e) { img.attr('src', e.target.result); };
+        reader.readAsDataURL(file);
+
+        wrapper.find('.remove-file').on('click', function() { window.removeSelectedFile(file.name); });
+        container.append(wrapper).show();
+    } else {
+        const previewHtml = $(`
+            <div class="file-preview d-flex align-items-center justify-content-between" id="${fileId}">
+                <div class="d-flex align-items-center">
+                    <div class="file-icon me-2"><i class="bi bi-file-earmark"></i></div>
+                    <div class="file-info">
+                        <div class="file-name">${file.name}</div>
+                        <div class="file-size text-muted">${formatFileSize(file.size)}</div>
+                    </div>
+                </div>
+                <div class="remove-file" style="cursor:pointer;"><i class="bi bi-x-circle"></i></div>
+            </div>
+        `);
+        previewHtml.find('.remove-file').on('click', function() { window.removeSelectedFile(file.name); });
+        container.append(previewHtml).show();
     }
-    
-    // Función global para remover archivos
-    window.removeSelectedFile = function(fileId) {
-        const fileElement = $('#' + fileId);
-        const fileName = fileElement.find('.file-name').text();
+}
+// ...existing code...
         
-        // Remover de la lista de archivos seleccionados
-        selectedFiles = selectedFiles.filter(file => file.name !== fileName);
-        
-        // Remover elemento del DOM
-        fileElement.remove();
-        
-        // Ocultar contenedor si no hay más archivos
-        if (selectedFiles.length === 0) {
-            $('#file-preview-container').hide();
-            if ($('#message-input').val().trim() === '') {
-                $('#send-btn').prop('disabled', true);
-            }
-        }
+        // Función global para remover archivos
+        window.removeSelectedFile = function(fileNameOrId) {
+        // selectedFiles contiene objetos File (por nombre usamos file.name)
+        selectedFiles = selectedFiles.filter(f => f.name !== fileNameOrId);
+
+        // remover cualquier preview (vacía el contenedor)
+        $('#file-preview-container').empty().hide();
+
+        // actualizar estado del botón
+        if (typeof updateSendButtonState === 'function') updateSendButtonState();
     };
+
+    // función que habilita/deshabilita el botón de enviar
+    function updateSendButtonState() {
+        const hasChat = !!currentChatId;
+        const text = ($('#message-input').val() || '').trim();
+        const hasText = text.length > 0;
+        const hasFile = selectedFiles.length > 0;
+        const enable = hasChat && (hasText || hasFile);
+        $('#send-btn').prop('disabled', !enable);
+    }
+
+    // enlazar input para actualizar estado en tiempo real
+    $('#message-input').on('input', updateSendButtonState);
+
+    // Modifica selectChat para llamar updateSendButtonState() (reemplaza la función selectChat existente)
+    function selectChat(chatId, otherId) {
+        currentChatId = chatId;
+        lastMessageId = 0;
+
+        $('#chat-title').text(otherUserName);
+        $('#current-chat-id').val(chatId);
+        $('#message-input').prop('disabled', false).focus();
+        $('#chat-actions').removeClass('d-none');
+
+        updateChatHeader();
+        loadMessages(chatId);
+        startMessageRefresh();
+
+        // actualizar el estado del botón al seleccionar chat
+        updateSendButtonState();
+    }
     
     // Formatear tamaño de archivo
     function formatFileSize(bytes) {
