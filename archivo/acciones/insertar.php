@@ -3,7 +3,6 @@
 $nombre = $_POST['nombreArchivo'];
 $archivo = $_FILES['archivo'];
 
-#categoria y tipo
 $tipo = $archivo['type'];
 $categoria = pathinfo($archivo['name'], PATHINFO_EXTENSION);
 

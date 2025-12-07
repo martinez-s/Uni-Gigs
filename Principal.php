@@ -1,43 +1,3 @@
-
-<?php 
-session_start();
-
-require_once __DIR__ . '/../../conect.php';
-
-// Si el archivo de conexión define $mysqli, úsalo como $conn
-if (!isset($conn) && isset($mysqli) && $mysqli instanceof mysqli) {
-    $conn = $mysqli;
-}
-
-// Si sigue sin existir, abortar con mensaje corto (evita exponer credenciales)
-if (!isset($conn) || !($conn instanceof mysqli)) {
-    error_log('Error: conexión DB no encontrada en principal.php');
-    header('HTTP/1.1 500 Internal Server Error');
-    echo 'Error interno de servidor.';
-    exit;
-}
-
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../../login.php");
-    exit();
-}
-
-$id_usuario = $_SESSION['id_usuario'];
-
-$stml_usuario = $conn->prepare("SELECT nombre FROM usuarios WHERE id_usuario = ?");
-$stml_usuario->bind_param("i", $id_usuario);
-$stml_usuario->execute();
-
-$nombre_result = $stml_usuario->get_result();
-if ($nombre_result->num_rows > 0) {
-    $usuario = $nombre_result->fetch_assoc();
-    $nombre = $usuario['nombre'];
-} else {
-    $nombre = "Usuario";
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,7 +21,7 @@ if ($nombre_result->num_rows > 0) {
         <div class="container-fluid px-5">
             <div class="row align-items-center mt-5">
                 <div class="col-md-10 mb-4 mb-md-0">
-                    <h1 class="Titulo">Hola, <?php echo $nombre ?></h1>
+                    <h1 class="Titulo">Hola, nombre</h1>
                     <p class="texto mb-4 ">Comienza haciendo una publicación, descubre servicios o ayuda a otros a culminar sus tareas.</p> 
                 </div>
                 <div class="botones-agrupados d-flex flex-column flex-lg-row gap-3">
@@ -110,7 +70,7 @@ if ($nombre_result->num_rows > 0) {
                                 <h4 class="Precio mb-0">$20</h6> 
                             </div>
                             <a href="#" class="btn btn-primary">Mas informacion</a>
-                        </div>
+                        e</div>
                     </div> 
                 </div>
                 

@@ -19,7 +19,7 @@ if (empty($correo) || empty($clave)) {
     exit();
 }
 
-$sql = "SELECT id_usuario, correo, clave FROM usuarios WHERE correo = ?";
+$sql = "SELECT id_usuario, correo, clave, nombre FROM usuarios WHERE correo = ?";
 $stmt = $mysqli->prepare($sql);
 
 if (!$stmt) {
@@ -41,9 +41,24 @@ if ($row = $resultado->fetch_assoc()) {
 
         $_SESSION['id_usuario'] = $row['id_usuario'];
         $_SESSION['correo']     = $row['correo'];
+        $_SESSION['nombre']     = $row['nombre'] ;
         $_SESSION['success']    = "Inicio de sesión exitoso";
 
         $stmt->close();
+
+        /*
+        $stmt_admin = $mysqli->prepare("SELECT COUNT(*) FROM administradores WHERE id_usuario = ?");
+        $stmt_admin->bind_param("i", $row['id_usuario']);
+        $stmt_admin->execute();
+        $stmt_admin->bind_result($is_admin);
+        $stmt_admin->fetch();
+        if ($is_admin > 0) {
+            $_SESSION['is_admin'] = true;
+        } else {
+            $_SESSION['is_admin'] = false;
+        }
+        $stmt_admin->close(); 
+        */
 
         header("Location: " . SUCCESS_REDIRECT_PAGE);
         exit();
