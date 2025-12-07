@@ -7,7 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="stylesNav.css">
+    <link rel="stylesheet" href="StylesNav.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <title>Uni-Gigs</title>
 </head>
@@ -15,7 +15,7 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="main.js"></script>
     
-    <?php include 'NavBar.php'; ?>
+    <?php include 'NavbarBusqueda.php'; ?>
 
     <div id="Inicio" class="banner-container">
         <div class="container-fluid px-5">
@@ -53,20 +53,24 @@
         
         <div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
-                <h3 class="Titulo">Explora diferentes requests</h3> 
+                <h3 class="Titulo">Explora diferentes servicios</h3> 
                 <hr>
             </div>
         </div>
 
         <?php
+        $base_url = '/uni-gigs/';
         include('conect.php');
         $sql = "SELECT 
-                    s.id_servicio, s.titulo, s.descripcion, s.precio,
-                    c.nombre_carrera, u.rating, u.porcentaje_completacion
-                FROM servicios s
-                JOIN carreras c ON s.id_carrera = c.id_carrera
-                JOIN usuarios u ON s.id_usuario = u.id_usuario
-                ";
+            s.id_servicio, s.titulo, s.descripcion, s.precio,
+            c.nombre_carrera, u.rating, u.porcentaje_completacion,
+            MIN(f.url_foto) AS url_foto
+            FROM servicios s
+            JOIN carreras c ON s.id_carrera = c.id_carrera
+            JOIN usuarios u ON s.id_usuario = u.id_usuario
+            JOIN fotos_servicios f ON s.id_servicio = f.id_servicio
+            GROUP BY s.id_servicio
+            ";
 
         $resultado = $mysqli->query($sql);
 
@@ -79,7 +83,9 @@
                     
                     <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                     <div class="separator-line"></div>
-                
+                    <div class="img-wrapper">
+                    <img class="imagen" src="public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>">
+                    </div>
                     <h6 class="carrera">
                         <span class="material-symbols-outlined">license</span>
                         <?php echo htmlspecialchars($row['nombre_carrera']); ?>
