@@ -61,7 +61,7 @@ if ($nombre_result->num_rows > 0) {
         <div class="container-fluid px-5">
             <div class="row align-items-center mt-5">
                 <div class="col-md-10 mb-4 mb-md-0">
-                    <h1 class="Titulo">Hola, nombre</h1>
+                    <h1 class="Titulo">Hola, <?php echo $nombre?></h1>
                     <p class="texto mb-4 ">Comienza haciendo una publicación, descubre servicios o ayuda a otros a culminar sus tareas.</p> 
                 </div>
                 <div class="botones-agrupados d-flex flex-column flex-lg-row gap-3">

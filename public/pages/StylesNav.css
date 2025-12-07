@@ -195,7 +195,7 @@ hr {
 }
 
 .card{
-    margin-bottom: 3rem;
+    margin-bottom: 1rem;
 }
 
 .card:hover {
@@ -260,8 +260,6 @@ hr {
     margin-bottom: 0.5rem; 
 }
 
-
-
 .star-rating-display {
     --rating: attr(data-rating); /* Lee el valor del atributo data-rating */
     --star-color-filled: gold;
@@ -289,6 +287,32 @@ hr {
     left: 0;
     color: var(--star-color-filled);
     overflow: hidden;
-    /* CÁLCULO DINÁMICO: (Valor del Rating / 5) * 100% */
     width: calc(var(--rating) / 5 * 100%); 
+}
+
+.imagen {
+    width: 100%; 
+    height: auto; 
+    display: block; 
+}
+
+.img-wrapper {
+    overflow: hidden; 
+    position: relative; 
+    height: 0;
+    padding-top: 75%; 
+    margin-bottom: 1rem;
+}
+
+.img-wrapper .imagen{
+    position: absolute; 
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+}
+
+a {
+    text-decoration: none !important; /* Quita el subrayado en todos los estados */
 }
