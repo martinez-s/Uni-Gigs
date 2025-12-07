@@ -1,0 +1,73 @@
+====== 2025-12-07 18:14:24 ======
+[DEBUG] RECIBIENDO POST
+Array
+(
+    [POST] => Array
+        (
+            [titulo] => Maldito
+            [carrera_id] => 6
+            [tipo_trabajo_id] => 1
+            [fecha-limit-req] => 2025-12-10
+            [materia_id] => 26
+            [precio] => 11
+            [descripcion] => Auxilio
+        )
+
+    [FILES] => Array
+        (
+            [archivos-request] => Array
+                (
+                    [name] => Array
+                        (
+                            [0] => WIN_20250306_21_47_00_Pro.jpg
+                            [1] => PENSUM-INGENIERÍA-INDUSTRIAL-28-0__300725020906 (1).pdf
+                            [2] => Pensum-15-6-diseño__111022072056 (1).pdf
+                        )
+
+                    [full_path] => Array
+                        (
+                            [0] => WIN_20250306_21_47_00_Pro.jpg
+                            [1] => PENSUM-INGENIERÍA-INDUSTRIAL-28-0__300725020906 (1).pdf
+                            [2] => Pensum-15-6-diseño__111022072056 (1).pdf
+                        )
+
+                    [type] => Array
+                        (
+                            [0] => image/jpeg
+                            [1] => application/pdf
+                            [2] => application/pdf
+                        )
+
+                    [tmp_name] => Array
+                        (
+                            [0] => C:\Users\Angel\AppData\Local\Temp\phpD744.tmp
+                            [1] => C:\Users\Angel\AppData\Local\Temp\phpD755.tmp
+                            [2] => C:\Users\Angel\AppData\Local\Temp\phpD756.tmp
+                        )
+
+                    [error] => Array
+                        (
+                            [0] => 0
+                            [1] => 0
+                            [2] => 0
+                        )
+
+                    [size] => Array
+                        (
+                            [0] => 145810
+                            [1] => 440777
+                            [2] => 201905
+                        )
+
+                )
+
+        )
+
+    [CONTENT_TYPE] => multipart/form-data; boundary=----WebKitFormBoundaryCwSiTVSd6aznad0G
+    [CONTENT_LENGTH] => 789816
+)
+
+--------------------------------
+[DEBUG] Archivos recibidos
+3
+--------------------------------
