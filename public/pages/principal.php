@@ -81,7 +81,7 @@ if ($nombre_result->num_rows > 0) {
                                 <span class="material-symbols-outlined">server_person</span>
                             </div>
                             <div class="card-contenido">
-                                <a href="request.php">
+                                <a href="../../request.php">
                                 <h3 class="titulo">Publicar un request</h3>
                                 </a>
                                 <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
