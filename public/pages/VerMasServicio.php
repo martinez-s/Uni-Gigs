@@ -1,43 +1,3 @@
-
-<?php 
-session_start();
-
-require_once __DIR__ . '/../../conect.php';
-
-// Si el archivo de conexión define $mysqli, úsalo como $conn
-if (!isset($conn) && isset($mysqli) && $mysqli instanceof mysqli) {
-    $conn = $mysqli;
-}
-
-// Si sigue sin existir, abortar con mensaje corto (evita exponer credenciales)
-if (!isset($conn) || !($conn instanceof mysqli)) {
-    error_log('Error: conexión DB no encontrada en principal.php');
-    header('HTTP/1.1 500 Internal Server Error');
-    echo 'Error interno de servidor.';
-    exit;
-}
-
-if (!isset($_SESSION['id_usuario'])) {
-    header("Location: ../../login.php");
-    exit();
-}
-
-$id_usuario = $_SESSION['id_usuario'];
-
-$stml_usuario = $conn->prepare("SELECT nombre FROM usuarios WHERE id_usuario = ?");
-$stml_usuario->bind_param("i", $id_usuario);
-$stml_usuario->execute();
-
-$nombre_result = $stml_usuario->get_result();
-if ($nombre_result->num_rows > 0) {
-    $usuario = $nombre_result->fetch_assoc();
-    $nombre = $usuario['nombre'];
-} else {
-    $nombre = "Usuario";
-}
-
-?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,60 +14,12 @@ if ($nombre_result->num_rows > 0) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="main.js"></script>
     
-    <?php include 'NavBar.php'; ?>
+    
 
-
-    <div id="Inicio" class="banner-container">
-        <div class="container-fluid px-5">
-            <div class="row align-items-center mt-5">
-                <div class="col-md-10 mb-4 mb-md-0">
-                    <h1 class="Titulo">Hola, <?php echo $nombre?></h1>
-                    <p class="texto mb-4 ">Comienza haciendo una publicación, descubre servicios o ayuda a otros a culminar sus tareas.</p> 
-                </div>
-                <div class="botones-agrupados d-flex flex-column flex-lg-row gap-3">
-                        <button class="servicio-card flex-grow-1" type="button">
-                            <div class="card-icono">
-                                <span class="material-symbols-outlined">server_person</span>
-                            </div>
-                            <div class="card-contenido">
-                                <a href="../../servicio.php">
-                                <h3 class="titulo">Ofrece un servicio</h3>
-                                </a>
-                                <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
-                            </div>
-                        </button>
-                        <button class="servicio-card flex-grow-1" type="button">
-                            <div class="card-icono">
-                                <span class="material-symbols-outlined">server_person</span>
-                            </div>
-                            <div class="card-contenido">
-                                <a href="../../request.php">
-                                <h3 class="titulo">Publicar un request</h3>
-                                </a>
-                                <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
-                            </div>
-                        </button>
-                    
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="Servicios" class="banner-container">
-    <div class="container-fluid px-5">
-        
-        <div class="row align-items-center mt-5">
-            <div class="col-md-12 mb-4 mb-md-0">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="Titulo mb-0">Explora diferentes servicios</h3> 
-                    <a href="VerMasServicio.php" class="mas text-decoration-none">Ver más</a>
-                </div>
-                <hr>
-            </div>
-        </div>
-
+    
         <?php
         include('../../conect.php');
+        include 'NavBar.php';
 
         if (isset($_POST['id_carrera_filtro']) && !empty($_POST['id_carrera_filtro'])) {
             $id_carrera_seleccionada = (int)$_POST['id_carrera_filtro'];
@@ -137,100 +49,19 @@ if ($nombre_result->num_rows > 0) {
 
         if ($resultado && $resultado->num_rows > 0) {
         ?>
-            <div class="row">
-            <?php
-                while ($row = $resultado->fetch_assoc()) {
-                ?>
-                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                        <div class="card"> <div class="card-body d-flex flex-column">
-                            
-                            <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
-                            <div class="separator-line"></div>
-                                <?php 
-                                if ($row['url_foto']) { 
-                                ?>
-                                    <div class="img-wrapper">
-                                    <img class="imagen" src="../../public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>" alt="Foto del servicio">
-                                    </div>
-                                <?php 
-                                } 
-                                ?>
-                            <h6 class="carrera">
-                                <span class="material-symbols-outlined">license</span>
-                                <?php echo htmlspecialchars($row['nombre_carrera']); ?>
-                            </h6>
-                        
-                            <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
-                            
-                            <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
-                                <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
-                                <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
-                            </div>
-                            
-                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
-                        </div>
-                        </div> 
-                    </div>
-                <?php
-                } 
-                ?>
-            </div>
-        <?php 
-        } else {
-            echo '<div class="col-12"><p class="alert alert-info">No se encontraron servicios para la carrera seleccionada.</p></div>';
-        }
-        ?>
-        </div>
-    </div>
 
-
-
-        
-
-    <div id="Requests" class="banner-container">
+        <div id="Servicios" class="banner-container">
     <div class="container-fluid px-5">
         
         <div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="Titulo mb-0">Explora diferentes Requests</h3> 
-                    <a href="VerMasRequest.php" class="mas text-decoration-none">Ver más</a>
+                    <h3 class="Titulo mb-0">Servicios</h3> 
                 </div>
                 <hr>
             </div>
         </div>
 
-        <?php
-        include('../../conect.php');
-
-        if (isset($_POST['id_carrera_filtro']) && !empty($_POST['id_carrera_filtro'])) {
-            $id_carrera_seleccionada = (int)$_POST['id_carrera_filtro'];
-        } else {
-            $id_carrera_seleccionada = 0; 
-        }
-
-        $sql = "SELECT 
-            r.id_requests, r.titulo, r.descripcion, r.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion,
-            MIN(f.url_foto) AS url_foto
-            FROM requests r
-            JOIN carreras c ON r.id_carrera = c.id_carrera
-            JOIN usuarios u ON r.id_usuario = u.id_usuario
-            LEFT JOIN fotos_requests f ON r.id_requests = f.id_request";
-
-        if ($id_carrera_seleccionada > 0) {
-            $sql .= " WHERE r.id_carrera = " . $id_carrera_seleccionada;
-        }
-
-        $sql .= " GROUP BY 
-            r.id_requests, r.titulo, r.descripcion, r.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion";
-
-
-        $resultado = $mysqli->query($sql);
-
-        if ($resultado && $resultado->num_rows > 0) {
-        ?>
             <div class="row">
             <?php
                 while ($row = $resultado->fetch_assoc()) {
@@ -278,6 +109,10 @@ if ($nombre_result->num_rows > 0) {
     </div>
 
 
+
+        
+
+    
 
 
 
