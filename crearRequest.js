@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', function() {
             const ext = fileName.split('.').pop().toLowerCase();
             if (['pdf'].includes(ext)) return '📄';
             if (['doc', 'docx'].includes(ext)) return '📝';
-            if (['zip', 'rar'].includes(ext)) return '📦';
             return '📎';
         }
 
@@ -108,7 +107,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         text: data.message,
                         icon: 'success'
                     }).then(() => {
-                        window.location.href = 'index.php';
+                        window.location.href = 'public/pages/principal.php';
                     });
                 } else {
                     Swal.fire('Error', data.message, 'error');
