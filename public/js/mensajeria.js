@@ -37,9 +37,9 @@ $(document).ready(function() {
         const file = files[0];
 
         // Validar tamaño máximo (10MB)
-        const MAX_SIZE = 10 * 1024 * 1024;
+        const MAX_SIZE = 50 * 1024 * 1024;
         if (file.size > MAX_SIZE) {
-            alert(`El archivo "${file.name}" es demasiado grande (máximo 10MB)`);
+            alert(`El archivo "${file.name}" es demasiado grande (máximo 50MB)`);
             $(this).val('');
             return;
         }
