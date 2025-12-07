@@ -131,7 +131,7 @@ if ($nombre_result->num_rows > 0) {
                     <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                     <div class="separator-line"></div>
                     <div class="img-wrapper">
-                    <img class="imagen" src="public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>">
+                    <img class="imagen" src="../img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>">
                     </div>
                     <h6 class="carrera">
                         <span class="material-symbols-outlined">license</span>
@@ -180,11 +180,11 @@ if ($nombre_result->num_rows > 0) {
         <?php
         include('../../conect.php');
         $sql = "SELECT 
-                    s.id_servicio, s.titulo, s.descripcion, s.precio,
+                    r.id_requests, r.titulo, r.descripcion, r.precio,
                     c.nombre_carrera, u.rating, u.porcentaje_completacion
-                FROM servicios s
-                JOIN carreras c ON s.id_carrera = c.id_carrera
-                JOIN usuarios u ON s.id_usuario = u.id_usuario
+                FROM requests r
+                JOIN carreras c ON r.id_carrera = c.id_carrera
+                JOIN usuarios u ON r.id_usuario = u.id_usuario
                 ";
 
         $resultado = $mysqli->query($sql);
