@@ -61,7 +61,7 @@ a{
 
 .btn_inicio{
     width: 100%;
-    margin-bottom:15px ;
+    margin-bottom:15px;
 }
 .btn_siguiente{
     width: 50%;
@@ -241,6 +241,24 @@ a{
     padding-top: 10%;
     padding-bottom: 10%;
 }
+.cont-edit{
+    height: 100%;
+    width: 90%;
+    margin-left: 10%;
+    margin-right: 5% ;
+    margin-top: 5%;
+    margin-bottom: 5%;
+    align-self: center;
+}
+
+.modal-body-edit{
+    height:100%;
+    width: 90%;
+    align-items: center;
+}
+
+
+
 .cont-publi{
     height: 100%;
     width: auto;
@@ -300,6 +318,9 @@ a{
     height: 40px;
     padding: 8px 12px; 
     box-sizing: border-box; 
+    background-color: #ffffff; 
+    border: 1px solid #ccc; 
+    border-radius: 5px;
 }
 
 
@@ -323,3 +344,4 @@ a{
     margin-top: -1px; /* Para superponer el borde del input y que parezcan una pieza */
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
 }
+

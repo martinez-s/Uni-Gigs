@@ -8,7 +8,6 @@ $id_usuario_logueado = 2;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // 1. Recibir y tipificar datos del formulario
     $titulo = $_POST['titulo'] ?? '';
     $descripcion = $_POST['descripcion'] ?? '';
     $precio = (float)($_POST['precio'] ?? 0); 
@@ -17,7 +16,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $carrera_id = (int)($_POST['carrera_id'] ?? 0);
     $materia_id = (int)($_POST['materia_id'] ?? 0);
     
-    // Validar datos mínimos
     if (empty($titulo) || $precio <= 0 || $tipo_trabajo_id == 0 || $carrera_id == 0 || $materia_id == 0) {
         
         $error_msg = "Faltan campos obligatorios o los valores son inválidos.";
@@ -30,13 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
     } else {
         
-        $fecha_creacion = date("Y-m-d");
-
 
         $sql_insert_servicio = "INSERT INTO servicios (
             titulo, descripcion, precio, fecha_creacion, id_tipo_trabajo, id_carrera, id_materia, id_usuario
         ) VALUES (
-            ?, ?, ?, ?, ?, ?, ?, ?
+            ?, ?, ?, CURDATE(), ?, ?, ?, ?
         )";
 
         $stmt = $mysqli->prepare($sql_insert_servicio);
@@ -51,8 +47,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </script>";
         } else {
             
-            $stmt->bind_param("ssdsiiii", 
-                $titulo, $descripcion, $precio, $fecha_creacion, 
+            $stmt->bind_param("ssdsiii", 
+                $titulo, $descripcion, $precio, 
                 $tipo_trabajo_id, $carrera_id, $materia_id, $id_usuario_logueado
             );
 
@@ -115,7 +111,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br>
             <input type="text" id="titulo" name="titulo" class="inputs-publi" required>          
         </div>
-            <div class="col-lg-6 col-md-12 espacio">
+        <div class="col-lg-6 col-md-12 espacio">
         <label for="carrera_visual_input" class="lb_modal">CARRERA</label>
         <br>
 
@@ -140,7 +136,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
             if ($result->num_rows > 0) {
                 while($row = $result->fetch_assoc()) {
-                    // Importante: data-nombre para JavaScript
                     echo '<option value="' . $row["id_carrera"] . '" data-nombre="' . htmlspecialchars($row["nombre_carrera"]) . '">' . htmlspecialchars($row["nombre_carrera"]) . '</option>';
                 }
             } else {
@@ -171,7 +166,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
                     if ($result->num_rows > 0) {
                         while($row = $result->fetch_assoc()) {
-                            // Importante: data-nombre para JavaScript
                             echo '<option value="' . $row["id_tipo_trabajo"] . '" data-nombre="' . htmlspecialchars($row["nombre"]) . '">' . htmlspecialchars($row["nombre"]) . '</option>';
                         }
                     } else {
@@ -204,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <br>
             <label for="precio" class="lb_modal">PRECIO</label>
             <br>
-            <input type="number" step="0.01" id="precio" name="precio" class="inputs" required>               
+            <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="inputs" required>               
         </div>
         <div class="col-lg-12 espacio">
             <label for="descripcion" class="lb_modal_des">DESCRIPCIÓN</label>
