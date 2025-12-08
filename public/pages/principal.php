@@ -131,7 +131,7 @@ if ($nombre_result->num_rows > 0) {
                     <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                     <div class="separator-line"></div>
                     <div class="img-wrapper">
-                    <img class="imagen" src="public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>">
+                    <img class="imagen" src="../img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>">
                     </div>
                     <h6 class="carrera">
                         <span class="material-symbols-outlined">license</span>
