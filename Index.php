@@ -1,5 +1,6 @@
 <?php
 session_start();
+include  'conect.php';
 $error_message = $_SESSION['error'] ?? null;
 $success_message = $_SESSION['success'] ?? null; 
 
@@ -226,7 +227,15 @@ include __DIR__ . '/app/includes/Navbar.php';
                                 <input type="text" name="universidad" class="inputs form-control"><br>
 
                                 <label for="carrera" class="lb_modal">CARRERA</label><br>
-                                <input type="text" name="carrera_texto" class="inputs form-control">
+                                <select id="carrera" name="carrera">
+                                    <?php
+                                    $query = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera ASC";
+                                    $result = $mysqli->query($query);
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo "<option value='" . $row['id_carrera'] . "'>" . $row['nombre_carrera'] . "</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center mt-4">
