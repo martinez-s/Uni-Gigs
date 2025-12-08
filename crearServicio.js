@@ -4,8 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const previewContainer = document.getElementById('preview-archivos');
     const mensajeVacio = document.getElementById('mensaje-vacio-imagen');
     const form = document.getElementById('formServicio');
-
+    const btnPublicar = document.getElementById('btn-publicar-servicio');
     let imagenSeleccionada = null;
+
 
     btnTrigger.addEventListener('click', () => {
         if (!imagenSeleccionada) {
@@ -18,7 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (!file) return;
         
-        // Validar que sea una imagen
+
         const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
         if (!validTypes.includes(file.type)) {
             Swal.fire('Formato no válido', 'Solo se permiten imágenes JPG, JPEG, PNG o GIF.', 'warning');
@@ -26,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
         
-        // Validar tamaño (máximo 5MB)
+
         if (file.size > 5 * 1024 * 1024) {
             Swal.fire('Archivo muy grande', 'La imagen no debe superar los 5MB.', 'warning');
             this.value = '';
@@ -81,12 +82,13 @@ document.addEventListener('DOMContentLoaded', function() {
         previewContainer.appendChild(divPreview);
     }
 
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
+
+    function submitServiceForm() {
+
         
         const formData = new FormData(form);
         
-        // Agregar la imagen si existe (mismo nombre que en servicio.php)
+
         if (imagenSeleccionada) {
             formData.append('imagen-servicio', imagenSeleccionada);
         }
@@ -121,5 +123,72 @@ document.addEventListener('DOMContentLoaded', function() {
             console.error('Error:', error);
             Swal.fire('Error', 'Hubo un problema de conexión', 'error');
         });
+    }
+
+
+    btnPublicar.addEventListener('click', function(e) {
+        
+
+        if (!form.checkValidity() || document.getElementById('carrera_id').value === '' || document.getElementById('materia_id').value === '') {
+            form.reportValidity();
+            if (document.getElementById('carrera_id').value === '' || document.getElementById('materia_id').value === '') {
+                Swal.fire('Advertencia', 'Por favor, seleccione una carrera y una materia válidas.', 'warning');
+            }
+            return;
+        }
+
+        btnPublicar.disabled = true;
+        btnPublicar.textContent = 'Verificando...';
+
+
+        fetch('check_metodos.php')
+            .then(response => response.json())
+            .then(data => {
+                btnPublicar.disabled = false;
+                btnPublicar.textContent = 'CREAR';
+
+                if (data.success && data.has_payment_method) {
+
+                    Swal.fire({
+                        title: 'Confirmar Publicación',
+                        text: "¿Estás seguro de que quieres publicar este servicio?",
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, Publicar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            submitServiceForm(); 
+                        }
+                    });
+
+                } else {
+
+                    Swal.fire({
+                        title: 'Método de Pago Requerido',
+                        text: "Debes registrar el método de Pago Móvil (obligatorio) antes de publicar tu servicio.",
+                        icon: 'warning',
+                        confirmButtonText: 'Ir a Registrar Pago'
+                    }).then(() => {
+
+                        const modalElement = document.getElementById('modalConTabs');
+                        if (modalElement && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                            const modal = new bootstrap.Modal(modalElement, {
+                                backdrop: 'static', 
+                                keyboard: false 
+                            });
+                            modal.show();
+                        }
+                    });
+                }
+            })
+            .catch(error => {
+                btnPublicar.disabled = false;
+                btnPublicar.textContent = 'CREAR';
+                console.error('Error checking payments:', error);
+                Swal.fire('Error de Conexión', 'Ocurrió un error al verificar los pagos.', 'error');
+            });
     });
+
+
 });
