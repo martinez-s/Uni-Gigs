@@ -347,7 +347,7 @@ a{
 
 #materia_custom_list,
 #tipo_trabajo_custom_list,
-#carrera_custom_list
+#carrera_custom_list, #banco_custom_list, #banco2_custom_list
 {
     position: absolute; 
     width: 100%; /* Alinea con el ancho del contenedor padre (.custom-select-container) */
@@ -361,3 +361,14 @@ a{
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
 }
 
+.conte_pago{
+    width: 80%; 
+    height: 90%; 
+    padding: 5%; 
+    margin-top: 1%;
+
+}
+
+.btn-regis{
+    align-items: center;
+}
