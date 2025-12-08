@@ -1,37 +1,31 @@
 <?php
-// 1. INICIO DE SESIÓN
 session_start();
-
-// Incluir conexión a la base de datos
 include('../../conect.php');
 
-// Variable para controlar qué ID vamos a consultar
 $id_servicio_seleccionado = null;
 $id_usuario_req = null;
 $id_usuario_ser = null;
 
-// 2. LÓGICA DE OBTENCIÓN DE DATOS (POST vs SESSION)
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
-    // CASO A: Venimos del formulario POST desde principal.php
+
     $id_servicio_seleccionado = intval($_POST['id_servicio']);
     $id_usuario_ser = intval($_POST['id_usuario']);
     $id_carrera = intval($_POST['id_carrera']);
-    
-    // Guardar en sesión para futuras recargas
+
     $_SESSION['current_service_id'] = $id_servicio_seleccionado;
     $_SESSION['service_user_id'] = $id_usuario_ser;
     $_SESSION['service_carrera_id'] = $id_carrera;
     
-    // Obtener ID del usuario logueado
     $id_usuario_req = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : null;
     
 } elseif (isset($_SESSION['current_service_id'])) {
-    // CASO B: Recarga de página
+
     $id_servicio_seleccionado = $_SESSION['current_service_id'];
     $id_usuario_ser = isset($_SESSION['service_user_id']) ? $_SESSION['service_user_id'] : null;
     $id_usuario_req = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : null;
 } else {
-    // CASO C: No hay datos, redirigir
+
     header("Location: index.php");
     exit();
 }
@@ -49,7 +43,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
     <link rel="stylesheet" href="stylesNav.css">
     
     <style>
-        /* CSS ESPECÍFICO PARA EL DISEÑO DE DETALLES */
+
         .img-placeholder {
             background-color: #f8f9fa;
             border-radius: 12px;
@@ -132,7 +126,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             font-size: 2rem;
         }
         
-        /* Ajuste de estrellas */
+
         .star-rating-display {
             display: inline-flex;
             align-items: center;
@@ -146,7 +140,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
     
     $data = null; 
 
-    // 3. CONSULTA SQL PARA SERVICIOS
     if ($id_servicio_seleccionado) {
         
         $sql = "SELECT 
@@ -163,7 +156,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             u.nombre AS nombre_usuario, 
             u.apellido AS apellido_usuario,
             u.id_usuario AS id_usuario,
-            u.url_foto_perfil,  /* Agregado para mostrar foto de perfil */
+            u.url_foto_perfil, 
             MIN(fs.url_foto) AS url_foto
         FROM 
             servicios s
@@ -296,13 +289,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
 
                 <div class="d-flex justify-content-center mb-4">
                 <?php 
-                // Mostrar foto de perfil del usuario
                 if (isset($data['url_foto_perfil']) && !empty($data['url_foto_perfil'])): 
                     $ruta_foto_perfil = "../../" . htmlspecialchars($data['url_foto_perfil']);
                 ?>
 
     
-                <?php if (!empty($ruta_foto_perfil)): // Verificamos si existe la URL ?>
+                <?php if (!empty($ruta_foto_perfil)):?>
                     
                     <img src="<?php echo htmlspecialchars($ruta_foto_perfil); ?>" 
                         alt="Foto de perfil" 
@@ -337,10 +329,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
                 </div>
 
                 <?php 
-                // Verificar si el usuario actual es el mismo que publicó el servicio
+
                 if ($id_usuario_req && $id_usuario_req != $data['id_usuario']):
-                    
-                    // Verificar si ya existe un chat activo
                     $sql_chatViejo = "SELECT id_chat FROM chats WHERE ((id_usuario1 = ? AND id_usuario2 = ?) OR (id_usuario1 = ? AND id_usuario2 = ?)) AND (estado = TRUE)";
                     $stmt_chatViejo = $mysqli->prepare($sql_chatViejo);
                     $stmt_chatViejo->bind_param("iiii", $id_usuario_req, $data['id_usuario'], $data['id_usuario'], $id_usuario_req);
@@ -359,7 +349,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
                     <?php endif; 
                     $stmt_chatViejo->close();
                 else: 
-                    // Usuario ve su propio servicio
                 ?>
                     <div class="alert alert-info text-center" role="alert">
                         ES TU PROPIA SOLICITUD.
@@ -405,8 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             let ratingVal = container.getAttribute('data-rating');
             const rating = ratingVal ? parseFloat(ratingVal) : 0;
             container.innerHTML = '';
-            
-            // Estilos inline para asegurar visualización
+
             container.style.display = 'inline-flex';
             container.style.alignItems = 'center';
 

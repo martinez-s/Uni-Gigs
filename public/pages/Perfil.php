@@ -41,7 +41,6 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="../../public/styles/styles.css">
-    <!-- Estilos específicos para el request -->
     <link rel="stylesheet" href="public/pages/StylesNav.css">
     <link rel="stylesheet" href="public/styles/crear_request.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -315,19 +314,15 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                   
                       <select id="banco_id" name="banco_id" style="display: none;"> 
                           <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+                          <?php                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
 
                               $result = $mysqli->query($sql);
                           
                               if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
                                   while($row = $result->fetch_assoc()) {
                                       echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
                                   }
                               } else {
-                                  // Mensaje si no hay datos o la consulta falló
                                   echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
                               }
                           ?>
@@ -367,18 +362,18 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                       <select id="banco2_id" name="banco2_id"  style="display: none;"> 
                           <option value="" selected disabled>Seleccione EL BANCO</option> 
                           <?php
-                          // Definición de la consulta SQL
+
                           $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
 
                               $result = $mysqli->query($sql);
                           
                               if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
+   
                                   while($row = $result->fetch_assoc()) {
                                       echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
                                   }
                               } else {
-                                  // Mensaje si no hay datos o la consulta falló
+
                                   echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
                               }
                           ?>
@@ -490,7 +485,6 @@ function editarDescripcion() {
         }
     });
 }
-// --- ELIMINAR SERVICIO ---
 function eliminarServicio(id) {
     Swal.fire({
         title: '¿Estás seguro?',
@@ -525,7 +519,6 @@ function eliminarServicio(id) {
     });
 }
 
-// --- ELIMINAR REQUEST ---
 function eliminarRequest(id) {
     Swal.fire({
         title: '¿Estás seguro?',

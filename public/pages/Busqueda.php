@@ -19,21 +19,15 @@
 include('../../conect.php');
 include 'NavBar.php'; 
 
-// 3. Inicializar variables de búsqueda
 $sql_query_completa = ''; 
 $termino_actual = ''; 
 $termino_para_sql = null; 
 $resultado = false;
 
-// Determinar si hay término de búsqueda POST
 if (isset($_POST['q_post']) && !empty($_POST['q_post'])) {
     $termino_actual = $_POST['q_post']; 
     $termino_para_sql = '%' . $termino_actual . '%';
 }
-
-// ===================================================================
-// 4. Consultas Base (SELECT 1 y SELECT 2) - Se incluye id_usuario y id_carrera
-// ===================================================================
 
 $sql_servicios = "
     SELECT 
@@ -69,7 +63,6 @@ $sql_servicios = "
         u.nombre, u.apellido, u.rating, u.porcentaje_completacion
 ";
 
-// Consulta para REQUESTS (Solicitudes)
 $sql_requests = "
     SELECT 
         r.id_requests AS id_item, 
@@ -103,20 +96,15 @@ $sql_requests = "
         r.fecha_creacion, c.nombre_carrera, m.nombre, tt.nombre, 
         u.nombre, u.apellido, u.rating, u.porcentaje_completacion
 ";
-// ===================================================================
-// 5. Lógica de Ejecución (Búsqueda o Todos)
-// ===================================================================
-if ($termino_para_sql) {
-    // A) Búsqueda Activa (Usa consultas preparadas)
 
-    // Definición de las cláusulas WHERE para la búsqueda
+if ($termino_para_sql) {
+
     $where_s = "WHERE s.titulo LIKE ? OR s.descripcion LIKE ? OR c.nombre_carrera LIKE ?";
     $where_r = "WHERE r.titulo LIKE ? OR r.descripcion LIKE ? OR c.nombre_carrera LIKE ?";
 
     $sql_servicios = str_replace('{CONDICION_BUSQUEDA_S}', $where_s, $sql_servicios);
     $sql_requests = str_replace('{CONDICION_BUSQUEDA_R}', $where_r, $sql_requests);
 
-    // Consulta final combinada (UNION ALL)
     $sql_query_completa = "
         ($sql_servicios)
         UNION ALL
@@ -125,12 +113,11 @@ if ($termino_para_sql) {
     ";
 
     $stmt = $mysqli->prepare($sql_query_completa);
-    
-    // Vincula 6 parámetros de cadena (s*6)
+
     if ($stmt) {
         $stmt->bind_param("ssssss", 
-            $termino_para_sql, $termino_para_sql, $termino_para_sql, // 3 para Servicios
-            $termino_para_sql, $termino_para_sql, $termino_para_sql  // 3 para Requests
+            $termino_para_sql, $termino_para_sql, $termino_para_sql,
+            $termino_para_sql, $termino_para_sql, $termino_para_sql
         );
         $stmt->execute();
         $resultado = $stmt->get_result();
@@ -140,13 +127,10 @@ if ($termino_para_sql) {
     }
 
 } else {
-    // B) Sin Búsqueda (Muestra todos los resultados)
-    
-    // Elimina los marcadores de condición (no hay WHERE)
+
     $sql_servicios = str_replace('{CONDICION_BUSQUEDA_S}', '', $sql_servicios);
     $sql_requests = str_replace('{CONDICION_BUSQUEDA_R}', '', $sql_requests);
-    
-    // Consulta final combinada (UNION ALL)
+
     $sql_query_completa = "
         ($sql_servicios)
         UNION ALL
@@ -199,11 +183,10 @@ if ($termino_para_sql) {
                                     </div>
                                 <?php 
                                 } elseif ($es_request) {
-                                    // Placeholder visual si es un request y NO tiene foto
                                 ?>
                                 <?php 
                                 } 
-                                // CIERRE DEL BLOQUE IF/ELSEIF DE IMÁGENES
+
                                 ?>
 
                                    <?php if ($es_request): ?>
@@ -251,7 +234,7 @@ if ($termino_para_sql) {
                             </div> 
                         </div>
                 <?php
-                } // FIN DEL WHILE
+                }
                 ?>
             </div>
         <?php 
@@ -265,7 +248,7 @@ if ($termino_para_sql) {
                 </div>
             </div>
         <?php
-        } // FIN DEL IF ($resultado)
+        }
         ?>
     
     </div> 
@@ -273,41 +256,34 @@ if ($termino_para_sql) {
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Seleccionar todos los contenedores de estrellas
+
     const ratingContainers = document.querySelectorAll('.star-rating-display');
 
     ratingContainers.forEach(container => {
-        // Obtener el valor del rating desde el atributo data-rating
+
         const rating = parseFloat(container.getAttribute('data-rating'));
-        
-        // Limpiar el contenido actual
+
         container.innerHTML = '';
 
-        // Generar las 5 estrellas
         for (let i = 1; i <= 5; i++) {
-            let iconName = 'star_border'; // Por defecto vacía
-            let colorClass = 'text-secondary'; // Color gris por defecto
+            let iconName = 'star_border';
+            let colorClass = 'text-secondary';
 
             if (rating >= i) {
-                // Estrella completa
                 iconName = 'star';
-                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
+                colorClass = 'text-warning';
             } else if (rating >= i - 0.5) {
-                // Media estrella
                 iconName = 'star_half';
                 colorClass = 'text-warning';
             }
 
-            // Crear el elemento span para el icono
             const star = document.createElement('span');
             star.className = `material-symbols-outlined ${colorClass}`;
             star.textContent = iconName;
-            
-            // Ajustar tamaño si es necesario (opcional)
+
             star.style.fontSize = '20px'; 
             star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
 
-            // Agregar al contenedor
             container.appendChild(star);
         }
     });
