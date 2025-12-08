@@ -253,36 +253,35 @@ hr {
     margin-bottom: 0.5rem; 
 }
 
-.star-rating-display {
-    --rating: attr(data-rating); /* Lee el valor del atributo data-rating */
-    --star-color-filled: gold;
-    --star-color-empty: #ccc;
+.star-rating-display .text-warning {
+    color: #ffc107 !important; /* Dorado */
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
     
-    display: inline-block;
-    font-size: 24px; 
-    position: relative;
-    width: 5em; /* Ancho para 5 estrellas */
-    color: var(--star-color-empty); /* Color de las estrellas vacías */
+/* Estilo para las estrellas vacías */
+.star-rating-display .text-secondary {
+    color: #e4e5e9 !important; /* Gris suave */
+}
+    
+    /* Alineación de las estrellas */
+    .star-rating-display {
+        display: flex;
+        align-items: center;
+    }
+
+.star-rating-display {
+    display: inline-flex; /* Hace que la caja se ajuste al contenido */
+    align-items: center;  /* Alinea verticalmente */
+    gap: 5px;               /* Asegura que no haya huecos flex */
+    line-height: 1;       /* Elimina altura extra */
 }
 
-/* 5 Estrellas Vacías de Fondo */
-.star-rating-display::before {
-    content: "★★★★★";
-    letter-spacing: 3px;
+.star-rating-display span {
+    margin-right: -3px;  
+    padding: 0;          
+    font-size: 26px;     
+    user-select: none;   
 }
-
-/* 5 Estrellas Llenas Superpuestas */
-.star-rating-display::after {
-    content: "★★★★★";
-    letter-spacing: 3px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: var(--star-color-filled);
-    overflow: hidden;
-    width: calc(var(--rating) / 5 * 100%); 
-}
-
 .imagen {
     width: 100%; 
     height: auto; 
@@ -480,3 +479,26 @@ input[type="search"]::-webkit-search-results-decoration {
             align-items: center;
             justify-content: center;
         }
+
+    /* Contenedor principal */
+.masonry-container {
+    column-count: 4; /* Número de columnas en pantalla grande */
+    column-gap: 1.5rem; /* Espacio entre columnas */
+}
+
+/* El item individual */
+.masonry-item {
+    break-inside: avoid; /* Evita que la tarjeta se parta en dos columnas */
+    margin-bottom: 1.5rem; /* Espacio inferior */
+}
+
+/* Responsividad (Media Queries) */
+@media (max-width: 1200px) {
+    .masonry-container { column-count: 3; }
+}
+@media (max-width: 768px) {
+    .masonry-container { column-count: 2; }
+}
+@media (max-width: 576px) {
+    .masonry-container { column-count: 1; }
+}

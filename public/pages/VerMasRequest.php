@@ -204,9 +204,7 @@
                             </div>
 
                             <div class="col-12 mt-3 d-flex gap-2"> 
-                                <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">
-                                    <button class="btn btn-secondary">Limpiar Filtros</button>
-                                </a>
+                                <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>" class="btn btn-outline-secondary">Limpiar Filtros</a>
                                 <button type="submit" class="btn btn-success">Aplicar Filtros</button>
                             </div>
                         </form>
