@@ -160,7 +160,7 @@ a{
 }
 .imagen_carnet {
     width: 80%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
-    height: 205px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
+    height: 275px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
     background-color: #e0e0e0; 
     border-radius: 0%;
     border: 1px solid #ccc; 
@@ -311,3 +311,23 @@ a{
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
 }
 
+.lb_modal_carnet{
+    font-size: 0.75rem;
+    margin-bottom: 0px; 
+    margin-top: 3px;
+}
+.lb_modal_des_carnet{
+    font-size: 0.75rem;
+    margin-bottom: 5px; 
+    margin-top: 5px;
+}
+.inputs_carnet, .inputs-publi_carnet {
+    width: 100%;
+    margin-bottom: 20px;
+    height: 40px;
+    padding: 8px 12px; 
+    box-sizing: border-box; 
+    background-color: #ffffff; 
+    border: 1px solid #ccc; 
+    border-radius: 5px;
+}

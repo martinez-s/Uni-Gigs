@@ -4,28 +4,58 @@ include('conect.php');
 
 if (isset($_POST['btn_finalizar'])) {
 
-    // 1. Recogida de datos
     $correo = trim($_POST['correo']);
     $fecha  = $_POST['fecha_nacimiento'];
     $clave  = $_POST['clave'];
     $clave2 = $_POST['clave_confirm'];
-    
-    // Datos del último modal
-    $nombre = trim($_POST['nombre']);
-    $apelli = trim($_POST['apellido']); // Ahora coincide con el HTML corregido
-    $cedula = trim($_POST['cedula']);   // Ahora existe en el HTML
-    $id_carrera = intval($_POST['carrera']); // Nuevo campo carrera
-    
-    // --- VALIDACIONES ---
 
-    // A. Contraseñas iguales
+    $nombre = trim($_POST['nombre']);
+    $apelli = trim($_POST['apellido']); 
+    $cedula = trim($_POST['cedula']);
+
+    $nombre_carrera_post = trim($_POST['carrera']);
+    $id_carrera = null;
+
+    $sql_carrera = "SELECT id_carrera FROM carreras WHERE nombre_carrera LIKE ? LIMIT 1";
+    if ($stmt_c = $mysqli->prepare($sql_carrera)) {
+        $param_carrera = "%" . $nombre_carrera_post . "%"; 
+        $stmt_c->bind_param("s", $param_carrera);
+        $stmt_c->execute();
+        $stmt_c->bind_result($id_encontrado);
+        if ($stmt_c->fetch()) {
+            $id_carrera = $id_encontrado;
+        }
+        $stmt_c->close();
+    }
+
+    if ($id_carrera === null) {
+        $_SESSION['error'] = "Error: La carrera detectada (" . htmlspecialchars($nombre_carrera_post) . ") no coincide con ninguna en nuestro sistema. Por favor intenta escanear de nuevo.";
+        header("Location: index.php");
+        exit();
+    }
+
+    if (substr(strtolower($correo), -14) !== "@unimar.edu.ve") {
+        $_SESSION['error'] = "El correo debe pertenecer al dominio @unimar.edu.ve";
+        header("Location: index.php");
+        exit();
+    }
+
+    $fecha_nac_obj = new DateTime($fecha);
+    $hoy_obj       = new DateTime();
+    $edad_obj      = $hoy_obj->diff($fecha_nac_obj);
+
+    if ($edad_obj->y < 16) {
+        $_SESSION['error'] = "Lo sentimos, debes tener al menos 16 años para registrarte.";
+        header("Location: index.php");
+        exit();
+    }
+
     if ($clave !== $clave2) {
         $_SESSION['error'] = "Las contraseñas no coinciden.";
         header("Location: index.php");
         exit();
     }
 
-    // B. Verificar duplicados
     $sql_check = "SELECT id_usuario FROM usuarios WHERE correo = ? OR cedula = ?";
     $stmt = $mysqli->prepare($sql_check);
     $stmt->bind_param("ss", $correo, $cedula);
@@ -39,15 +69,13 @@ if (isset($_POST['btn_finalizar'])) {
     }
     $stmt->close();
 
-    // --- SUBIDA DE ARCHIVOS ---
     $carpeta_destino = "public/img/imgusuarios/";
     if (!file_exists($carpeta_destino)) {
         mkdir($carpeta_destino, 0777, true);
     }
 
-    $ruta_foto_bd = "public/img/default_avatar.jpg"; // Imagen por defecto si no suben nada
+    $ruta_foto_bd = "public/img/default_avatar.jpg";
 
-    // Foto Perfil
     if (isset($_FILES['imagen_perfil']) && $_FILES['imagen_perfil']['error'] === UPLOAD_ERR_OK) {
         $nombre_archivo = uniqid() . "_p_" . basename($_FILES['imagen_perfil']['name']);
         $ruta_completa = $carpeta_destino . $nombre_archivo;
@@ -57,18 +85,13 @@ if (isset($_POST['btn_finalizar'])) {
         }
     }
 
-    // Foto Carnet (Si necesitas guardarla en BD, agrega el campo a la consulta INSERT)
     if (isset($_FILES['imagen_carnet']) && $_FILES['imagen_carnet']['error'] === UPLOAD_ERR_OK) {
         $nombre_carnet = uniqid() . "_carnet_" . basename($_FILES['imagen_carnet']['name']);
         move_uploaded_file($_FILES['imagen_carnet']['tmp_name'], $carpeta_destino . $nombre_carnet);
     }
 
-    // --- INSERCIÓN EN BD ---
-
-    // 1. Hash de contraseña (IMPORTANTE PARA SEGURIDAD)
     $clave_hash = password_hash($clave, PASSWORD_DEFAULT);
 
-    // Valores por defecto
     $estado = 1;
     $rating = 0;
     $porcentaje = 0.00;
@@ -78,7 +101,6 @@ if (isset($_POST['btn_finalizar'])) {
             (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     if ($insert = $mysqli->prepare($sql)) {
-        // Usamos $clave_hash en lugar de $clave
         $insert->bind_param("sssssssiiid", 
             $nombre, $apelli, $fecha, $clave_hash, $correo, $cedula, 
             $ruta_foto_bd, $estado, $rating, $porcentaje, $id_carrera
