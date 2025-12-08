@@ -2,14 +2,23 @@
 <?php 
 session_start();
 
+if (!isset($_SESSION['id_usuario'])) {
+
+    header("Location: ../../index.php");
+    exit();
+}
+
+if (isset($_SESSION['rol']) && $_SESSION['rol'] === 'admin') {
+    header("Location: ../../admin.php");
+    exit();
+}
+
 require_once __DIR__ . '/../../conect.php';
 
-// Si el archivo de conexión define $mysqli, úsalo como $conn
 if (!isset($conn) && isset($mysqli) && $mysqli instanceof mysqli) {
     $conn = $mysqli;
 }
 
-// Si sigue sin existir, abortar con mensaje corto (evita exponer credenciales)
 if (!isset($conn) || !($conn instanceof mysqli)) {
     error_log('Error: conexión DB no encontrada en principal.php');
     header('HTTP/1.1 500 Internal Server Error');
