@@ -16,19 +16,7 @@
     
  
 <?php
-// Configuración y Conexión a la Base de Datos
-
-// 1. Establecer la conexión (Asegúrate de que tus credenciales sean correctas)
-$mysqli = new mysqli("localhost", "root", "", "uni_gigs"); 
-
-if ($mysqli->connect_errno) {
-    die("Fallo al conectar a MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);
-}
-
-// Activar errores estrictos para la depuración de consultas SQL
-$mysqli->report_mode = MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT;
-
-// 2. Incluir la barra de navegación (debe ir después de la conexión si usa $mysqli)
+include('../../conect.php');
 include 'NavBar.php'; 
 
 // 3. Inicializar variables de búsqueda
@@ -51,19 +39,34 @@ $sql_servicios = "
     SELECT 
         s.id_servicio AS id_item, 
         'servicio' AS tipo, 
-        s.id_usuario,        /* <-- CRUCIAL: Añadido para el botón */
-        s.id_carrera,        /* <-- CRUCIAL: Añadido para el botón */
-        s.titulo, s.descripcion, s.precio,
-        c.nombre_carrera, u.rating, u.porcentaje_completacion,
+        s.id_usuario, 
+        s.id_carrera, 
+        s.titulo, 
+        s.descripcion, 
+        s.precio,
+        s.fecha_creacion,                               /* <-- CAMPO AÑADIDO */
+        
+        c.nombre_carrera, 
+        m.nombre AS nombre_materia,                     /* <-- CAMPO AÑADIDO */
+        tt.nombre AS tipo_trabajo_nombre,               /* <-- CAMPO AÑADIDO */
+        
+        u.nombre AS nombre_usuario,                     /* <-- CAMPO AÑADIDO */
+        u.apellido AS apellido_usuario,                 /* <-- CAMPO AÑADIDO */
+        u.rating, 
+        u.porcentaje_completacion,
+        
         MIN(f.url_foto) AS url_foto
     FROM servicios s
     JOIN carreras c ON s.id_carrera = c.id_carrera
     JOIN usuarios u ON s.id_usuario = u.id_usuario
+    JOIN materias m ON s.id_materia = m.id_materia        /* <-- JOIN AÑADIDO */
+    JOIN tipos_trabajos tt ON s.id_tipo_trabajo = tt.id_tipo_trabajo /* <-- JOIN AÑADIDO */
     LEFT JOIN fotos_servicios f ON s.id_servicio = f.id_servicio
     {CONDICION_BUSQUEDA_S}
     GROUP BY 
         s.id_servicio, s.id_usuario, s.id_carrera, s.titulo, s.descripcion, s.precio, 
-        c.nombre_carrera, u.rating, u.porcentaje_completacion
+        s.fecha_creacion, c.nombre_carrera, m.nombre, tt.nombre, 
+        u.nombre, u.apellido, u.rating, u.porcentaje_completacion
 ";
 
 // Consulta para REQUESTS (Solicitudes)
@@ -71,19 +74,34 @@ $sql_requests = "
     SELECT 
         r.id_requests AS id_item, 
         'request' AS tipo, 
-        r.id_usuario,        /* <-- CRUCIAL: Añadido para el botón */
-        r.id_carrera,        /* <-- CRUCIAL: Añadido para el botón */
-        r.titulo, r.descripcion, r.precio,
-        c.nombre_carrera, u.rating, u.porcentaje_completacion,
+        r.id_usuario, 
+        r.id_carrera, 
+        r.titulo, 
+        r.descripcion, 
+        r.precio,
+        r.fecha_creacion,                               /* <-- CAMPO AÑADIDO */
+        
+        c.nombre_carrera, 
+        m.nombre AS nombre_materia,                     /* <-- CAMPO AÑADIDO */
+        tt.nombre AS tipo_trabajo_nombre,               /* <-- CAMPO AÑADIDO */
+        
+        u.nombre AS nombre_usuario,                     /* <-- CAMPO AÑADIDO */
+        u.apellido AS apellido_usuario,                 /* <-- CAMPO AÑADIDO */
+        u.rating, 
+        u.porcentaje_completacion,
+        
         MIN(f.url_foto) AS url_foto
     FROM requests r
     JOIN carreras c ON r.id_carrera = c.id_carrera
     JOIN usuarios u ON r.id_usuario = u.id_usuario
+    JOIN materias m ON r.id_materia = m.id_materia        /* <-- JOIN AÑADIDO */
+    JOIN tipos_trabajos tt ON r.id_tipo_trabajo = tt.id_tipo_trabajo /* <-- JOIN AÑADIDO */
     LEFT JOIN fotos_requests f ON r.id_requests = f.id_request
     {CONDICION_BUSQUEDA_R}
     GROUP BY 
         r.id_requests, r.id_usuario, r.id_carrera, r.titulo, r.descripcion, r.precio, 
-        c.nombre_carrera, u.rating, u.porcentaje_completacion
+        r.fecha_creacion, c.nombre_carrera, m.nombre, tt.nombre, 
+        u.nombre, u.apellido, u.rating, u.porcentaje_completacion
 ";
 // ===================================================================
 // 5. Lógica de Ejecución (Búsqueda o Todos)

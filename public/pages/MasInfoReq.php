@@ -259,13 +259,30 @@ if ($id_request_seleccionado) {
                                   ? '../../' . htmlspecialchars($data['url_foto_perfil'])
                                   : null;
                 ?>
-                <?php if ($user_photo_url): ?>
-                    <img src="<?php echo $user_photo_url; ?>" alt="Foto de perfil de usuario" class="avatar-image shadow-sm">
+
+                <div class="d-flex justify-content-center mb-4">
+    
+                <?php if (!empty($user_photo_url)): // Verificamos si existe la URL ?>
+                    
+                    <img src="<?php echo htmlspecialchars($user_photo_url); ?>" 
+                        alt="Foto de perfil" 
+                        class="shadow-sm"
+                        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                
                 <?php else: ?>
-                    <div class="avatar-placeholder shadow-sm">
-                        <span class="fw-bold"><?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?></span>
+                    
+                    <div class="shadow-sm" 
+                        style="width: 120px; height: 120px; border-radius: 50%; background-color: #e9ecef; color: #adb5bd; font-size: 3.5rem; display: flex; align-items: center; justify-content: center;">
+                        
+                        <span class="fw-bold">
+                            <?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?>
+                        </span>
+                        
                     </div>
+                    
                 <?php endif; ?>
+            </div>
+
                 <h6 class="fw-bold text-dark mb-1">
                     <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>
                 </h6>
