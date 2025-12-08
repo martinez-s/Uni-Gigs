@@ -19,7 +19,7 @@ $chat_id = intval($_GET['chat_id']);
 $last_message_id = intval($_GET['last_message_id']);
 
 try {
-    // Verificar acceso
+
     $check_query = "SELECT * FROM chats WHERE id_chat = ? AND (id_usuario1 = ? OR id_usuario2 = ?)";
     $check_stmt = $mysqli->prepare($check_query);
     $check_stmt->bind_param('iii', $chat_id, $id_usuario, $id_usuario);
@@ -31,7 +31,7 @@ try {
         exit();
     }
     
-    // Obtener nuevos mensajes
+
     $query = "
         SELECT m.*, u.nombre, u.apellido 
         FROM mensajes m

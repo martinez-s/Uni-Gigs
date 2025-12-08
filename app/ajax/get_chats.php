@@ -50,14 +50,13 @@ try {
     ";
     
     $stmt = $mysqli->prepare($query);
-    // Asignamos los parámetros: 6 veces el id_usuario
     $stmt->bind_param('iiiiii', $id_usuario, $id_usuario, $id_usuario, $id_usuario, $id_usuario, $id_usuario);
     $stmt->execute();
     $result = $stmt->get_result();
     
     $chats = [];
     while ($row = $result->fetch_assoc()) {
-        // Lógica de formato de fecha
+ 
         $ultima_fecha_formateada = '';
         if ($row['ultima_fecha']) {
             $fecha = new DateTime($row['ultima_fecha']);
@@ -76,7 +75,6 @@ try {
             }
         }
         
-        // Cortar mensaje si es muy largo
         $ultimo_mensaje = $row['ultimo_mensaje'] ?? 'Sin mensajes aún';
         if (strlen($ultimo_mensaje) > 35) {
             $ultimo_mensaje = substr($ultimo_mensaje, 0, 35) . '...';
@@ -91,7 +89,7 @@ try {
             'ultimo_mensaje' => $ultimo_mensaje,
             'ultima_fecha' => $ultima_fecha_formateada,
             'estado' => $row['estado'],
-            'id_solicitante' => $row['id_solicitante'] // ¡Dato IMPORTANTE!
+            'id_solicitante' => $row['id_solicitante'] 
         ];
     }
     
