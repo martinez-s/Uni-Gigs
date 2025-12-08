@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../conect.php'; // Asegúrate que la ruta a conect.php sea correcta
+require_once __DIR__ . '/../../conect.php'; 
 
 header('Content-Type: application/json');
 
@@ -12,7 +12,6 @@ if (!isset($_SESSION['id_usuario'])) {
 $id_usuario = $_SESSION['id_usuario'];
 
 try {
-    // Consulta optimizada para traer todos los datos necesarios
     $query = "
         SELECT 
             c.id_chat,

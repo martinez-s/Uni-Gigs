@@ -27,24 +27,20 @@
 
     include 'NavBar.php';
 
-    // CONFIGURACIÓN DE PAGINACIÓN Y FILTROS
     $registros_por_pagina = 12;
-    // Usamos $_REQUEST para capturar tanto GET (paginación/filtros) como POST si fuera necesario
+
     $pagina_actual = isset($_REQUEST['pagina']) && is_numeric($_REQUEST['pagina']) ? (int)$_REQUEST['pagina'] : 1;
     if ($pagina_actual < 1) $pagina_actual = 1;
 
     $offset = ($pagina_actual - 1) * $registros_por_pagina;
 
-    // Captura de Filtros (Usamos nombres de variables consistentes)
     $id_carrera_seleccionada = isset($_REQUEST['id_carrera_filtro']) && is_numeric($_REQUEST['id_carrera_filtro']) ? (int)$_REQUEST['id_carrera_filtro'] : 0;
     $id_tipo_seleccionado = isset($_REQUEST['id_tipo_trabajo_filtro']) && is_numeric($_REQUEST['id_tipo_trabajo_filtro']) ? (int)$_REQUEST['id_tipo_trabajo_filtro'] : 0;
     $id_materia_seleccionada = isset($_REQUEST['id_materia_filtro']) && is_numeric($_REQUEST['id_materia_filtro']) ? (int)$_REQUEST['id_materia_filtro'] : 0;
 
-    // LÍMITES DE CARACTERES 
     $limite_titulo = 30;      
     $limite_descripcion = 79;
 
-    // CONSTRUCCIÓN DEL WHERE (Para reutilizar en Count y Select)
     $where_clauses = [];
     $param_types = "";
     $params = [];
@@ -65,7 +61,6 @@
         $params[] = $id_materia_seleccionada;
     }
 
-    // 1. CONSULTA DE CONTEO (TOTAL REGISTROS)
     $sql_count = "SELECT COUNT(r.id_requests) as total_registros FROM requests r";
     if (!empty($where_clauses)) {
         $sql_count .= " WHERE " . implode(" AND ", $where_clauses);
@@ -87,7 +82,6 @@
         $offset = ($pagina_actual - 1) * $registros_por_pagina;
     }
 
-    // 2. CONSULTA PRINCIPAL (DATA)
     $sql = "SELECT 
              r.id_requests, r.titulo, r.descripcion, r.precio,
              c.nombre_carrera, u.rating, u.porcentaje_completacion,
@@ -104,7 +98,6 @@
     $sql .= " GROUP BY r.id_requests, r.titulo, r.descripcion, r.precio, c.nombre_carrera, u.rating, u.porcentaje_completacion";
     $sql .= " LIMIT ? OFFSET ?";
     
-    // Añadimos limit y offset a los parámetros
     $param_types .= "ii";
     $params[] = $registros_por_pagina;
     $params[] = $offset;
@@ -116,7 +109,7 @@
     $stmt->close();
     ?>
 
-    <?php if ($resultado) { // Quitamos la comprobación num_rows > 0 aquí para mostrar el filtro aunque no haya resultados ?>
+    <?php if ($resultado) { ?>
 
         <div id="Requests" class="banner-container">
             <div class="container-fluid px-5">
@@ -176,8 +169,7 @@
                                     <option value="0" <?php if($id_materia_seleccionada == 0) echo 'selected'; ?>>Todas las Materias</option>
                                     
                                     <?php 
-                                    // CARGA INICIAL DE MATERIAS (Server Side)
-                                    // Si ya hay una carrera seleccionada al cargar la página, llenamos el select
+                        
                                     if ($id_carrera_seleccionada > 0) {
                                         $sql_materias = "
                                             SELECT m.id_materia, m.nombre 
@@ -262,7 +254,6 @@
                     <nav aria-label="Paginación de servicios" style="background-color: transparent">
                         <ul class="pagination **pag**">
                             <?php
-                            // Función auxiliar para mantener los filtros en los links
                             function crearEnlacePaginacion($pagina, $id_carrera, $id_tipo, $id_materia, $texto, $clase_li) {
                                 $url = htmlspecialchars($_SERVER["PHP_SELF"]) . "?pagina=" . $pagina;
                                 if ($id_carrera > 0) $url .= "&id_carrera_filtro=" . $id_carrera;
@@ -274,7 +265,6 @@
                                 echo '</li>';
                             }
 
-                            // Botón Anterior
                             $clase_anterior = ($pagina_actual <= 1) ? 'disabled' : '';
                             $pagina_anterior = $pagina_actual - 1;
                             if ($clase_anterior === 'disabled') {
@@ -283,13 +273,11 @@
                                 crearEnlacePaginacion($pagina_anterior, $id_carrera_seleccionada, $id_tipo_seleccionado, $id_materia_seleccionada, '<span aria-hidden="true">&laquo;</span>', $clase_anterior);
                             }
                             
-                            // Números
                             for ($i = 1; $i <= $total_paginas; $i++) {
                                 $clase_li = ($i == $pagina_actual) ? 'active' : '';
                                 crearEnlacePaginacion($i, $id_carrera_seleccionada, $id_tipo_seleccionado, $id_materia_seleccionada, $i, $clase_li);
                             }
 
-                            // Botón Siguiente
                             $clase_siguiente = ($pagina_actual >= $total_paginas) ? 'disabled' : '';
                             $pagina_siguiente = $pagina_actual + 1;
                             if ($clase_siguiente === 'disabled') {
@@ -465,41 +453,36 @@
 
     <script>
 document.addEventListener("DOMContentLoaded", function() {
-    // Seleccionar todos los contenedores de estrellas
+
     const ratingContainers = document.querySelectorAll('.star-rating-display');
 
     ratingContainers.forEach(container => {
-        // Obtener el valor del rating desde el atributo data-rating
+
         const rating = parseFloat(container.getAttribute('data-rating'));
         
-        // Limpiar el contenido actual
         container.innerHTML = '';
 
-        // Generar las 5 estrellas
         for (let i = 1; i <= 5; i++) {
-            let iconName = 'star_border'; // Por defecto vacía
-            let colorClass = 'text-secondary'; // Color gris por defecto
+            let iconName = 'star_border'; 
+            let colorClass = 'text-secondary'; 
 
             if (rating >= i) {
-                // Estrella completa
+
                 iconName = 'star';
-                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
+                colorClass = 'text-warning'; 
             } else if (rating >= i - 0.5) {
-                // Media estrella
+
                 iconName = 'star_half';
                 colorClass = 'text-warning';
             }
 
-            // Crear el elemento span para el icono
             const star = document.createElement('span');
             star.className = `material-symbols-outlined ${colorClass}`;
             star.textContent = iconName;
             
-            // Ajustar tamaño si es necesario (opcional)
             star.style.fontSize = '20px'; 
             star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
 
-            // Agregar al contenedor
             container.appendChild(star);
         }
     });
@@ -529,7 +512,6 @@ document.addEventListener("DOMContentLoaded", function() {
     </script>
 
     <script>
-        // AJAX PARA CARGAR MATERIAS DINÁMICAMENTE
         const selectCarrera = document.getElementById('id_carrera_filtro');
         const selectMateria = document.getElementById('id_materia_filtro');
 
@@ -537,11 +519,9 @@ document.addEventListener("DOMContentLoaded", function() {
             selectCarrera.addEventListener('change', function() {
                 const idCarrera = this.value; 
 
-                // Reiniciar select
                 selectMateria.innerHTML = '<option value="0" selected>Todas las Materias</option>';
 
                 if (idCarrera > 0) {
-                    // Indicador de carga
                     selectMateria.innerHTML = '<option value="0" disabled selected>Cargando...</option>';
 
                     fetch('obtener_materias.php', {

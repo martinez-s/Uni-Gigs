@@ -120,6 +120,6 @@ if (isset($_POST['btn_finalizar'])) {
     }
 
 } else {
-    header("Location: index.php"); // Si intentan entrar directo a registro.php
+    header("Location: index.php");
 }
 ?>

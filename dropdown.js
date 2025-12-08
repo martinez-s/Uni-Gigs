@@ -1,10 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
     
-    // ===================================================================
-    // 1. FUNCIONES REUTILIZABLES (Banco, Carrera, etc.)
-    // ===================================================================
-
-    // Función reutilizable para llenar la lista visual <ul> a partir del <select> oculto
     function loadCustomListLogic(selectOculto, listaCustom, inputVisual) {
         listaCustom.innerHTML = ''; 
         const options = selectOculto.querySelectorAll('option:not([value=""])');
@@ -22,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 listaCustom.style.display = 'none'; 
                 inputVisual.blur(); 
                 
-                // Dispara el evento 'change'
                 selectOculto.dispatchEvent(new Event('change')); 
             });
             
@@ -30,24 +24,19 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Función para configurar el comportamiento del select personalizado (búsqueda, focus, blur)
     function initCustomSelect(selectId, inputId, listId) {
         const selectOculto = document.getElementById(selectId);
         const inputVisual = document.getElementById(inputId);
         const listaCustom = document.getElementById(listId);
 
-        // ¡VERIFICACIÓN CRÍTICA! Si falta algún elemento, salimos.
         if (!inputVisual || !selectOculto || !listaCustom) {
             console.error(`Error: No se encontraron los elementos para el ID: ${selectId}. Verifique el HTML.`);
             return; 
         } 
 
         inputVisual.disabled = false; 
-
-        // Carga inicial de la lista visual desde el select oculto
         loadCustomListLogic(selectOculto, listaCustom, inputVisual);
         
-        // Manejar la búsqueda al escribir
         inputVisual.addEventListener('keyup', function() {
             const filter = this.value.toUpperCase();
             const items = listaCustom.querySelectorAll('li');
@@ -63,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
 
-        // Ocultar al perder el foco
         inputVisual.addEventListener('blur', function() {
             setTimeout(() => {
                 if (!listaCustom.contains(document.activeElement)) {
@@ -72,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 150); 
         });
 
-        // Mostrar lista al ganar el foco
         inputVisual.addEventListener('focus', function() {
             listaCustom.style.display = 'block';
             const items = listaCustom.querySelectorAll('li');
@@ -81,20 +68,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
         
     }
-    
-    // ===================================================================
-    // 2. FUNCIÓN AJAX PARA CARGAR MATERIAS (Dependencia de Carrera)
-    // ===================================================================
 
     function fetchMaterias(idCarrera) {
         const materiaSelectOculto = document.getElementById('materia_id');
         const materiaInputVisual = document.getElementById('materia_visual_input');
         const materiaCustomList = document.getElementById('materia_custom_list');
 
-        // Limpiar y resetear el select oculto de Materia
         materiaSelectOculto.innerHTML = '<option value="" selected disabled>Seleccione la materia</option>';
 
-        // Asegúrate de tener JQuery ($.ajax) cargado para que esto funcione
         $.ajax({
             url: 'fetch_materias.php', 
             type: 'GET',
@@ -110,15 +91,13 @@ document.addEventListener('DOMContentLoaded', function() {
                         materiaSelectOculto.appendChild(option);
                     });
                     
-                    // Recargar la lista visual de Materia
                     loadCustomListLogic(materiaSelectOculto, materiaCustomList, materiaInputVisual);
                     materiaInputVisual.placeholder = "Seleccione o busque una materia...";
-                    materiaInputVisual.disabled = false; // Habilitar al cargar datos
+                    materiaInputVisual.disabled = false; 
                 } else {
-                    // Si no hay datos
                     loadCustomListLogic(materiaSelectOculto, materiaCustomList, materiaInputVisual);
                     materiaInputVisual.placeholder = "No hay materias disponibles para esta carrera";
-                    materiaInputVisual.disabled = true; // Deshabilitar si está vacío
+                    materiaInputVisual.disabled = true; 
                 }
             },
             error: function() {
@@ -129,20 +108,12 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // ------------------------------------------------------------------
-    // 3. INICIALIZACIÓN Y LÓGICA DE INTERDEPENDENCIA
-    // ------------------------------------------------------------------
-
-    // === INICIALIZACIÓN DE TODOS LOS SELECTORES ===
     initCustomSelect('tipo_trabajo_id', 'tipo_trabajo_visual_input', 'tipo_trabajo_custom_list');
-    
-    // Inicialización de Carrera
+
     initCustomSelect('carrera_id', 'carrera_visual_input', 'carrera_custom_list');
     
-    // Inicialización del BANCO
     initCustomSelect('banco_id', 'banco_visual_input', 'banco_custom_list');
 
-    // Inicialización de Materia
     initCustomSelect('materia_id', 'materia_visual_input', 'materia_custom_list');
     initCustomSelect('carreraS_id', 'carreraS_visual_input', 'carreraS_custom_list');
 
@@ -156,9 +127,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const materiaCustomList = document.getElementById('materia_custom_list');
 
 
-
-
-    // Lógica para la CARGA INICIAL (página de edición)
     const initialIdCarrera = carreraSelectOculto ? carreraSelectOculto.value : null;
 
     if (initialIdCarrera && initialIdCarrera !== "") {
@@ -168,17 +136,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         fetchMaterias(initialIdCarrera);
     } else if (materiaInputVisual) {
-        // Si no hay carrera seleccionada al inicio
+
         materiaInputVisual.disabled = true;
         materiaInputVisual.placeholder = "Seleccione una carrera primero...";
     }
 
-    // Lógica para el evento CHANGE (cuando el usuario cambia la carrera)
     if (carreraSelectOculto) {
         carreraSelectOculto.addEventListener('change', function() {
             const idCarrera = this.value;
             
-            // Limpiamos y preparamos Materia para la nueva carga
             if (materiaInputVisual) {
                 materiaInputVisual.value = '';
                 materiaSelectOculto.value = ''; 
@@ -204,7 +170,6 @@ document.addEventListener('DOMContentLoaded', function() {
             success: function(response) {
                 if (response.success && response.data.length > 0) {
                     
-                    // Llenar el select oculto de Materia
                     response.data.forEach(materia => {
                         const option = document.createElement('option');
                         option.value = materia.id_materia;
@@ -213,12 +178,10 @@ document.addEventListener('DOMContentLoaded', function() {
                         materiaSelectOculto.appendChild(option);
                     });
                     
-                    // Recargar la lista visual usando la lógica reutilizable
                     loadCustomListLogic(materiaSelectOculto, materiaCustomList, materiaInputVisual);
                     materiaInputVisual.placeholder = "Seleccione o busque una materia...";
                     
                 } else {
-                    // Si no hay datos, refrescar con lista vacía
                     loadCustomListLogic(materiaSelectOculto, materiaCustomList, materiaInputVisual);
                     materiaInputVisual.placeholder = "No hay materias disponibles para esta carrera";
                 }

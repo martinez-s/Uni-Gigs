@@ -213,12 +213,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div id="preview-archivos" style="
                 border: 1px solid #ccc;
                 padding: 15px;
-                min-height: 100px; /* Para que sea visible aunque no haya archivos */
+                min-height: 100px; 
                 border-radius: 5px;
                 background-color: #f9f9f9;
                 display: flex; 
                 gap: 15px; 
-                flex-wrap: wrap; /* Permite que las miniaturas se envuelvan si hay muchas */
+                flex-wrap: wrap; 
             ">
                 <p id="mensaje-vacio" style="color: #888;">No hay archivos seleccionados.</p>
             </div> 

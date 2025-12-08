@@ -30,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $id_request = $stmt->insert_id;
             $archivos_procesados = 0;
 
-            // Procesar archivos
+
             if (isset($_FILES['archivos-request']) && !empty($_FILES['archivos-request']['name'][0])) {
                 $carpeta_destino = 'uploads/requests/';
                 $file_count = count($_FILES['archivos-request']['name']);
@@ -83,7 +83,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="public/styles/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Estilos específicos para el request -->
+
     <link rel="stylesheet" href="public/pages/StylesNav.css">
     <link rel="stylesheet" href="public/styles/crear_request.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -141,7 +141,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li> <?php
-                        // ... (Tu código PHP de consulta y bucle a continuación)
                         $sql_carreras = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera ASC";
                         $resultado_carreras = $mysqli->query($sql_carreras);
 

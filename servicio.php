@@ -4,7 +4,6 @@ include('conect.php');
 function hayMetodosDePagoRegistrados($mysqli, $id_usuario) {
     if (!$mysqli || $id_usuario == 0) return false;
     
-    // Consulta directa a la tabla que registra si el usuario tiene métodos de pago.
     $sql = "
         SELECT 1 FROM usuario_metodos_pago WHERE id_usuario = ? LIMIT 1
     ";
@@ -38,11 +37,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     if (!hayMetodosDePagoRegistrados($mysqli, $id_usuario_logueado)) {
-        // Devolver señal al JavaScript para mostrar el modal y recargar
         echo json_encode([
             'success' => false, 
             'message' => 'Debe registrar al menos un método de pago antes de publicar un servicio.',
-            'show_modal' => true // Señal clave para el JS
+            'show_modal' => true 
         ]);
         exit;
     }
@@ -67,13 +65,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $nombre_imagen = uniqid() . '_' . preg_replace('/[^a-zA-Z0-9\.]/', '_', $nombre_original);
                 $ruta_destino = $carpeta_destino . $nombre_imagen;
                 
-                // Validar que sea una imagen
                 $valid_extensions = ['jpg', 'jpeg', 'png', 'gif'];
                 $file_extension = strtolower(pathinfo($nombre_original, PATHINFO_EXTENSION));
                 
                 if (in_array($file_extension, $valid_extensions)) {
                     if (move_uploaded_file($tmp_file, $ruta_destino)) {
-                        // Guardar en la tabla fotos_servicios
+
                         $sql_foto = "INSERT INTO fotos_servicios (url_foto, id_servicio) VALUES (?, ?)";
                         $stmt_foto = $mysqli->prepare($sql_foto);
                         if ($stmt_foto) {
@@ -93,7 +90,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 'success' => true, 
                 'message' => 'Servicio creado correctamente' . ($imagen_procesada > 0 ? " con imagen adjunta" : ""),
                 'imagen' => $imagen_procesada,
-                'redirect' => 'public/pages/principal.php' // Redirige a la página principal
+                'redirect' => 'public/pages/principal.php' 
             ]);
         } else {
             echo json_encode(['success' => false, 'message' => 'Error en la base de datos: ' . $stmt->error]);
@@ -120,7 +117,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="public/styles/styles.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Estilos específicos para el request -->
+
     <link rel="stylesheet" href="public/pages/StylesNav.css">
     <link rel="stylesheet" href="public/styles/crear_request.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -178,7 +175,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                 </a>
                             </li>
                             <li><hr class="dropdown-divider"></li> <?php
-                        // ... (Tu código PHP de consulta y bucle a continuación)
+
                         $sql_carreras = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera ASC";
                         $resultado_carreras = $mysqli->query($sql_carreras);
 
@@ -317,29 +314,29 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <form id="formMetodosPago" action="modal_pagos.php" method="POST" enctype="multipart/form-data">
 <div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true" data-bs-backdrop="static">
-  <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-xl">
     <div class="modal-content">
-      <div class="modal-header">
+        <div class="modal-header">
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
+        </div>
+        <div class="modal-body">
         <ul class="nav nav-tabs" id="miTab" role="tablist">
-          <li class="nav-item" role="presentation">
+            <li class="nav-item" role="presentation">
             <button class="nav-link active" id="tab-uno-tab" data-bs-toggle="tab" data-bs-target="#tab-uno" type="button" role="tab" aria-controls="tab-uno" aria-selected="true">OBLIGATORIO</button>
-          </li>
-          <li class="nav-item" role="presentation">
+            </li>
+            <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-dos-tab" data-bs-toggle="tab" data-bs-target="#tab-dos" type="button" role="tab" aria-controls="tab-dos" aria-selected="false">OPCIONAL</button>
-          </li>
-          <li class="nav-item" role="presentation">
+            </li>
+            <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-tres-tab" data-bs-toggle="tab" data-bs-target="#tab-tres" type="button" role="tab" aria-controls="tab-tres" aria-selected="false">OPCIONAL</button>
-          </li>
+            </li>
             <li class="nav-item" role="presentation">
             <button class="nav-link" id="tab-cuatro-tab" data-bs-toggle="tab" data-bs-target="#tab-cuatro" type="button" role="tab" aria-controls="tab-cuatro" aria-selected="false">OPCIONAL</button>
-          </li>
+            </li>
         </ul>
         <div class="tab-content" id="miTabContent">
-          <div class="tab-pane fade show active" id="tab-uno" role="tabpanel" aria-labelledby="tab-uno-tab">
-              <div class="container conte_pago">
+            <div class="tab-pane fade show active" id="tab-uno" role="tabpanel" aria-labelledby="tab-uno-tab">
+                <div class="container conte_pago">
                 <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
                 <h2 class="lb_subtitulo text-center">PAGO MÓVIL</h2>
                 <div class="row">
@@ -351,46 +348,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="telefono" class="lb_modal">TELÉFONO</label><br>
                         <input type="text" name="telefono" class="form-control inputs">
                     </div>
-                  <div class="col-lg-12">
-                      <label for="banco_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco_id" name="banco_id" style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+                    <div class="col-lg-12">
+                        <label for="banco_visual_input" class="lb_modal">BANCO</label>
+                        <br>
+                        <div class="custom-select-container">
+                            <input 
+                                type="text" 
+                                id="banco_visual_input"  class="form-control dropdown_front" 
+                                placeholder="Seleccione o busque el banco..."
+                                autocomplete="off"
+                            >
+                            <ul id="banco_custom_list" class="list-group" style="display: none;">
+                            </ul>
+                        </div>
+                    
+                        <select id="banco_id" name="banco_id" style="display: none;"> 
+                            <option value="" selected disabled>Seleccione EL BANCO</option> 
+                            <?php
 
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
+                            $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+
+                                $result = $mysqli->query($sql);
+
+                                if ($result && $result->num_rows > 0) {
+
+                                    while($row = $result->fetch_assoc()) {
+                                        echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
+                                    }
+                                } else {
+
+                                    echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
+                                }
+                            ?>
+                        </select>
                     </div>
                 </div>
-              </div>
-          </div>
-          <div class="tab-pane fade" id="tab-dos" role="tabpanel" aria-labelledby="tab-dos-tab">
-              <div class="container conte_pago">
+                </div>
+            </div>
+            <div class="tab-pane fade" id="tab-dos" role="tabpanel" aria-labelledby="tab-dos-tab">
+                <div class="container conte_pago">
                 <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
                 <h2 class="lb_subtitulo text-center">TRANSFERENCIA BANCARIA</h2>
                 <div class="row">
@@ -402,76 +398,74 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label for="nro_cuenta" class="lb_modal">NUMERO DE CUENTA</label><br>
                         <input type="text" name="nro_cuenta" class="form-control inputs">
                     </div>
-                  <div class="col-lg-12">
-                      <label for="banco2_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco2_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco2_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco2_id" name="banco2_id"  style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+                    <div class="col-lg-12">
+                        <label for="banco2_visual_input" class="lb_modal">BANCO</label>
+                        <br>
+                                
+                        <div class="custom-select-container">
+                            <input 
+                                type="text" 
+                                id="banco2_visual_input"  class="form-control dropdown_front" 
+                                placeholder="Seleccione o busque el banco..."
+                                autocomplete="off"
+                            >
+                            <ul id="banco2_custom_list" class="list-group" style="display: none;">
+                            </ul>
+                        </div>
+                                
+                        <select id="banco2_id" name="banco2_id"  style="display: none;"> 
+                            <option value="" selected disabled>Seleccione EL BANCO</option> 
+                            <?php
 
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
+                            $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+
+                                $result = $mysqli->query($sql);
+                                
+                                if ($result && $result->num_rows > 0) {
+
+                                    while($row = $result->fetch_assoc()) {
+                                        echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
+                                    }
+                                } else {
+                                    echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
+                                }
+                            ?>
+                        </select>
                     </div>
                 </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-tres" role="tabpanel" aria-labelledby="tab-tres-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">BINANCE</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_binance" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_binance" class="form-control inputs">
+                </div>            
+            </div>
+            <div class="tab-pane fade" id="tab-tres" role="tabpanel" aria-labelledby="tab-tres-tab">
+                <div class="container conte_pago">
+                    <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
+                    <h2 class="lb_subtitulo text-center">BINANCE</h2>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label for="correo_binance" class="lb_modal">CORREO ASOCIADO</label><br>
+                            <input type="text" name="correo_binance" class="form-control inputs">
+                        </div>
                     </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-cuatro" role="tabpanel" aria-labelledby="tab-cuatro-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAYPAL</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_paypal" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_paypal" class="form-control inputs">
+                </div>            
+            </div>
+            <div class="tab-pane fade" id="tab-cuatro" role="tabpanel" aria-labelledby="tab-cuatro-tab">
+                <div class="container conte_pago">
+                    <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
+                    <h2 class="lb_subtitulo text-center">PAYPAL</h2>
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <label for="correo_paypal" class="lb_modal">CORREO ASOCIADO</label><br>
+                            <input type="text" name="correo_paypal" class="form-control inputs">
+                        </div>
                     </div>
-                </div>
-              </div>            
-          </div>
-          
+                </div>            
+            </div>
         </div>     
-      </div>
+        </div>
         <div class="modal-footer justify-content-center btn-regis">
             <button type="button" id="btnSubmitMetodosPago" class="btn_siguiente btn-secondary">REGISTRAR</button>
         </div>
     </div>
-  </div>
+    </div>
 </div>
 </form>
 
@@ -480,7 +474,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="dropdown.js"></script>
     <script src="crearServicio.js"> </script>
-  <script>
+<script>
 
     document.addEventListener('DOMContentLoaded', function() {
         const urlParams = new URLSearchParams(window.location.search);
@@ -648,21 +642,21 @@ if (pmStatus) {
 
 document.addEventListener('DOMContentLoaded', function() {
     
-    // --- Función Auxiliar para Validar Email ---
+
     function isValidEmail(email) {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9 сне1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return re.test(String(email).toLowerCase());
     }
 
     const formMetodosPago = document.getElementById('formMetodosPago');
-    const minDocLength = 8; // Mínimo de caracteres para documentos
+    const minDocLength = 8; 
     
     if (!formMetodosPago) {
         console.warn("El formulario 'formMetodosPago' no fue encontrado.");
         return;
     }
 
-    // Referencias a campos y elementos
+
     const pm_documento = formMetodosPago.querySelector('[name="documento_ident"]');
     const pm_telefono = formMetodosPago.querySelector('[name="telefono"]');
     const pm_banco_id = formMetodosPago.querySelector('[name="banco_id"]');
@@ -676,24 +670,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const correo_binance = formMetodosPago.querySelector('[name="correo_binance"]');
     const correo_paypal = formMetodosPago.querySelector('[name="correo_paypal"]');
     
-    // Referencia al botón de registro (DEBE tener type="button" en el HTML)
+
     const btnSubmitMetodos = document.getElementById('btnSubmitMetodosPago') || formMetodosPago.querySelector('button[type="submit"]');
     const modalElement = document.getElementById('modalConTabs'); 
 
     
-    // --- LÓGICA DE VALIDACIÓN PRINCIPAL (Al hacer click en el botón) ---
-    // NOTA: Se escucha el 'click' del botón en lugar del 'submit' del formulario para mayor control.
+
     if (btnSubmitMetodos) {
         btnSubmitMetodos.addEventListener('click', function(e) {
             
-            // Si el botón es type="submit", se previene el envío automático
+
             if (this.type === 'submit') {
                 e.preventDefault(); 
             }
 
             const errors = [];
             
-            // --- 1. PAGO MÓVIL (OBLIGATORIO) ---
+
             
             const isPmComplete = pm_documento.value.trim() && pm_telefono.value.trim() && pm_banco_id.value !== "";
 
@@ -713,8 +706,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 pm_banco_visual_input.classList.remove('is-invalid');
             }
 
-
-            // --- 2. TRANSFERENCIA BANCARIA (OPCIONAL PERO COMPLETO) ---
             const isTrPartiallyFilled = tr_documento.value.trim() || tr_nro_cuenta.value.trim() || tr_banco_id.value;
             const isTrComplete = tr_documento.value.trim() && tr_nro_cuenta.value.trim() && tr_banco_id.value;
 
@@ -740,8 +731,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 tr_banco_visual_input.classList.remove('is-invalid');
             }
 
-
-            // --- 3. BINANCE (OPCIONAL CON FORMATO DE EMAIL) ---
             if (correo_binance && correo_binance.value.trim()) {
                 if (!isValidEmail(correo_binance.value.trim())) {
                     errors.push('El correo de Binance no tiene un formato válido.');
@@ -753,8 +742,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 correo_binance.classList.remove('is-invalid');
             }
 
-
-            // --- 4. PAYPAL (OPCIONAL CON FORMATO DE EMAIL) ---
             if (correo_paypal && correo_paypal.value.trim()) {
                 if (!isValidEmail(correo_paypal.value.trim())) {
                     errors.push('El correo de Paypal no tiene un formato válido.');
@@ -766,13 +753,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 correo_paypal.classList.remove('is-invalid');
             }
 
-
-            // --- MANEJO DE ERRORES Y ENVÍO ---
             if (errors.length > 0) {
                 
                 const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
                 
-                // *** ESTO MUESTRA EL ERROR Y DEJA EL MODAL ABIERTO ***
                 Swal.fire({
                     title: 'Campos Incompletos o Inválidos',
                     html: errorHtml,
@@ -780,12 +764,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     confirmButtonText: 'Corregir'
                 });
                 
-                return; // Detiene el envío
+                return; 
             }
 
-            // Si la validación pasa: 
-            
-            // 1. Ocultar el modal manualmente (SOLO ÉXITO)
             if (modalElement && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
                 const modalInstance = bootstrap.Modal.getInstance(modalElement);
                 if (modalInstance) {
@@ -793,7 +774,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
 
-            // 2. Mostrar SweetAlert de carga antes de enviar
             Swal.fire({
                 title: 'Registrando Métodos de Pago...',
                 text: 'Será redirigido para continuar con la publicación.',
@@ -803,13 +783,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             
-            // 3. Envía el formulario
             formMetodosPago.submit(); 
         });
     }
 
-
-    // --- Función para limpiar la clase 'is-invalid' al escribir/seleccionar ---
     const fieldsToClean = [
         pm_documento, pm_telefono, pm_banco_visual_input,
         tr_documento, tr_nro_cuenta, tr_banco_visual_input,
@@ -835,24 +812,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 });
 
-
-// ====================================================================
-// ============ SEGUNDO BLOQUE: Validación de formServicio ============
-// ====================================================================
-
-
 document.addEventListener('DOMContentLoaded', function() {
     
     const formServicio = document.getElementById('formServicio');
 
     if (formServicio) {
         formServicio.addEventListener('submit', function(e) {
-            e.preventDefault(); // Detener el envío por defecto para realizar la validación
+            e.preventDefault(); 
 
             const form = this;
             const errors = [];
             
-            // --- 1. Obtener y Limpiar Valores ---
             
             const tituloInput = form.querySelector('[name="titulo"]');
             const titulo = tituloInput ? tituloInput.value.trim() : '';
@@ -876,45 +846,39 @@ document.addEventListener('DOMContentLoaded', function() {
             const materiaIdSelect = form.querySelector('#materia_id');
             const materia_id = materiaIdSelect ? materiaIdSelect.value : '';
             
-            // Limpiamos las clases de error de todos los inputs antes de volver a validar
             document.querySelectorAll('.inputs-publi, .form-control, textarea').forEach(input => {
                 input.classList.remove('is-invalid');
             });
             
-            // --- 2. VALIDACIÓN DE CAMPOS DEL SERVICIO ---
-            
-            // a. Título
             if (!titulo) {
                 errors.push('El campo **TÍTULO** es obligatorio.');
                 tituloInput && tituloInput.classList.add('is-invalid');
             } else if (titulo.length < 5) {
                  errors.push('El **TÍTULO** debe tener al menos 5 caracteres.');
-                 tituloInput && tituloInput.classList.add('is-invalid');
+                tituloInput && tituloInput.classList.add('is-invalid');
             }
             
-            // b. Descripción
+
             if (!descripcion) {
                 errors.push('El campo **DESCRIPCIÓN** es obligatorio.');
                 descripcionInput && descripcionInput.classList.add('is-invalid');
             } else if (descripcion.length < 20) {
                  errors.push('La **DESCRIPCIÓN** debe ser más detallada (mínimo 20 caracteres).');
-                 descripcionInput && descripcionInput.classList.add('is-invalid');
+                descripcionInput && descripcionInput.classList.add('is-invalid');
             }
 
-            // c. Precio
             if (isNaN(precio) || precio <= 0) {
                 errors.push('El **PRECIO** debe ser un número válido y mayor que cero.');
                 precioInput && precioInput.classList.add('is-invalid');
             }
 
-            // d. Validación de campos Select
             
             if (!carrera_id) {
                 errors.push('Debe seleccionar una **CARRERA** válida de la lista.');
                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
             } else if (carreraVisualInput && /\d/.test(carreraVisualInput.value)) { 
                  errors.push('El campo **CARRERA** no puede contener números.');
-                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
             }
 
             if (!tipo_trabajo_id) {
@@ -922,7 +886,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
             } else if (tipoTrabajoVisualInput && /\d/.test(tipoTrabajoVisualInput.value)) { 
                  errors.push('El campo **TIPO DE TRABAJO** no puede contener números.');
-                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
             }
 
             if (!materia_id) {
@@ -930,10 +894,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
             } else if (materiaVisualInput && /\d/.test(materiaVisualInput.value)) { 
                  errors.push('El campo **MATERIA** no puede contener números.');
-                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
             }
             
-            // --- 3. MOSTRAR ERRORES Y DETENER ENVÍO ---
             if (errors.length > 0) {
                 const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
                 
@@ -946,7 +909,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 return; 
             }
 
-            // --- 4. SI LA VALIDACIÓN PASA, CONTINUAR CON ENVÍO AJAX ---
             
             const formData = new FormData(form);
             const fileInput = document.getElementById('input-archivos-servicio');
@@ -991,7 +953,6 @@ document.addEventListener('DOMContentLoaded', function() {
                             allowOutsideClick: false,
                             allowEscapeKey: false
                         }).then(() => {
-                            // Se asume que este es el modal de métodos de pago
                             window.location.href = window.location.pathname + '?show_modal=true'; 
                         });
 
@@ -1011,7 +972,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- MEJORA UX: RESTRIJO ESCRITURA EN TIEMPO REAL ---
     const textOnlyInputs = ['carrera_visual_input', 'tipo_trabajo_visual_input', 'materia_visual_input'];
 
     textOnlyInputs.forEach(id => {
@@ -1019,7 +979,7 @@ document.addEventListener('DOMContentLoaded', function() {
         if (input) {
             input.addEventListener('keypress', function(e) {
                 const charCode = (e.which) ? e.which : e.keyCode;
-                if (charCode >= 48 && charCode <= 57) { // ASCII para 0-9
+                if (charCode >= 48 && charCode <= 57) { 
                     e.preventDefault();
                 }
             });
@@ -1029,8 +989,6 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-
-    // --- LIMPIEZA DE ERRORES VISUALES AL INTERACTUAR ---
     
     document.querySelectorAll('.inputs-publi, .inputs, textarea, .form-control').forEach(input => {
         input.addEventListener('input', function() {
@@ -1054,19 +1012,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
-// ... (Segundo bloque de código JS para formServicio - SIN CAMBIOS ya que no afecta) ...
+
 document.addEventListener('DOMContentLoaded', function() {
     
     const formServicio = document.getElementById('formServicio');
 
     if (formServicio) {
         formServicio.addEventListener('submit', function(e) {
-            e.preventDefault(); // Detener el envío por defecto para realizar la validación
+            e.preventDefault(); 
 
             const form = this;
             const errors = [];
             
-            // --- 1. Obtener y Limpiar Valores ---
             
             const tituloInput = form.querySelector('[name="titulo"]');
             const titulo = tituloInput ? tituloInput.value.trim() : '';
@@ -1077,12 +1034,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const descripcionInput = form.querySelector('[name="descripcion"]');
             const descripcion = descripcionInput ? descripcionInput.value.trim() : '';
             
-            // Campos de Dropdown Visuales (Para validar contenido y marcar error visual)
             const carreraVisualInput = document.getElementById('carrera_visual_input');
             const tipoTrabajoVisualInput = document.getElementById('tipo_trabajo_visual_input');
             const materiaVisualInput = document.getElementById('materia_visual_input');
             
-            // Campos de Dropdown Ocultos (los que contienen el ID real)
             const carreraIdSelect = form.querySelector('#carrera_id');
             const carrera_id = carreraIdSelect ? carreraIdSelect.value : '';
 
@@ -1092,68 +1047,56 @@ document.addEventListener('DOMContentLoaded', function() {
             const materiaIdSelect = form.querySelector('#materia_id');
             const materia_id = materiaIdSelect ? materiaIdSelect.value : '';
             
-            // Limpiamos las clases de error de todos los inputs antes de volver a validar
             document.querySelectorAll('.inputs-publi, .form-control, textarea').forEach(input => {
                 input.classList.remove('is-invalid');
             });
             
-            // --- 2. VALIDACIÓN DE CAMPOS DEL SERVICIO ---
-            
-            // a. Título (Obligatorio, longitud, y no debe contener solo números)
             if (!titulo) {
                 errors.push('El campo **TÍTULO** es obligatorio.');
                 tituloInput && tituloInput.classList.add('is-invalid');
             } else if (titulo.length < 5) {
                  errors.push('El **TÍTULO** debe tener al menos 5 caracteres.');
-                 tituloInput && tituloInput.classList.add('is-invalid');
+                tituloInput && tituloInput.classList.add('is-invalid');
             }
             
-            // b. Descripción
             if (!descripcion) {
                 errors.push('El campo **DESCRIPCIÓN** es obligatorio.');
                 descripcionInput && descripcionInput.classList.add('is-invalid');
             } else if (descripcion.length < 20) {
                  errors.push('La **DESCRIPCIÓN** debe ser más detallada (mínimo 20 caracteres).');
-                 descripcionInput && descripcionInput.classList.add('is-invalid');
+                descripcionInput && descripcionInput.classList.add('is-invalid');
             }
 
-            // c. Precio
             if (isNaN(precio) || precio <= 0) {
                 errors.push('El **PRECIO** debe ser un número válido y mayor que cero.');
                 precioInput && precioInput.classList.add('is-invalid');
             }
-
-            // d. Validación de campos Select (Asegurando que el ID real no sea vacío)
-            
-            // Carrera (Validación de selección)
             if (!carrera_id) {
                 errors.push('Debe seleccionar una **CARRERA** válida de la lista.');
                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
-            } else if (/\d/.test(carreraVisualInput.value)) { // Validación: No debe tener números en el texto visual
+            } else if (/\d/.test(carreraVisualInput.value)) { 
                  errors.push('El campo **CARRERA** no puede contener números.');
-                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
             }
 
-            // Tipo de Trabajo (Validación de selección y sin números)
+
             if (!tipo_trabajo_id) {
                 errors.push('Debe seleccionar un **TIPO DE TRABAJO** válido de la lista.');
                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
-            } else if (/\d/.test(tipoTrabajoVisualInput.value)) { // Validación: No debe tener números en el texto visual
+            } else if (/\d/.test(tipoTrabajoVisualInput.value)) { 
                  errors.push('El campo **TIPO DE TRABAJO** no puede contener números.');
-                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
             }
 
-
-            // Materia (Validación de selección y sin números)
             if (!materia_id) {
                 errors.push('Debe seleccionar una **MATERIA** válida de la lista.');
                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
-            } else if (/\d/.test(materiaVisualInput.value)) { // Validación: No debe tener números en el texto visual
+            } else if (/\d/.test(materiaVisualInput.value)) { 
                  errors.push('El campo **MATERIA** no puede contener números.');
-                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
             }
             
-            // --- 3. MOSTRAR ERRORES Y DETENER ENVÍO ---
+
             if (errors.length > 0) {
                 const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
                 
@@ -1165,8 +1108,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 });
                 return; 
             }
-
-            // --- 4. SI LA VALIDACIÓN PASA, CONTINUAR CON ENVÍO AJAX (Tu código original) ---
             
             const formData = new FormData(form);
             const fileInput = document.getElementById('input-archivos-servicio');
@@ -1230,30 +1171,24 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // --- MEJORA UX: RESTRIJO ESCRITURA EN TIEMPO REAL (on keypress) ---
     const textOnlyInputs = ['carrera_visual_input', 'tipo_trabajo_visual_input', 'materia_visual_input'];
 
     textOnlyInputs.forEach(id => {
         const input = document.getElementById(id);
         if (input) {
             input.addEventListener('keypress', function(e) {
-                // Permitir letras, espacios y algunos caracteres comunes
-                // Si el carácter presionado es un dígito (0-9), prevenir la entrada.
+
                 const charCode = (e.which) ? e.which : e.keyCode;
-                if (charCode >= 48 && charCode <= 57) { // ASCII para 0-9
+                if (charCode >= 48 && charCode <= 57) { 
                     e.preventDefault();
                 }
             });
-            
-            // También limpio números si se pegan (on paste) o se arrastran
+
             input.addEventListener('input', function() {
-                // Elimina cualquier dígito que se haya colado
                 this.value = this.value.replace(/[0-9]/g, ''); 
             });
         }
     });
-
-    // --- LIMPIEZA DE ERRORES VISUALES AL INTERACTUAR ---
     
     document.querySelectorAll('.inputs-publi, .inputs, textarea, .form-control').forEach(input => {
         input.addEventListener('input', function() {

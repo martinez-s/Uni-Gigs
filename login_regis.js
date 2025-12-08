@@ -79,57 +79,55 @@ document.addEventListener('DOMContentLoaded', function() {
     const labelBoton = document.querySelector('label[for="input-archivos-request"]');
     const MAX_FILES = 3;
 
-    // Array para almacenar y gestionar los archivos seleccionados
+
     let archivosAlmacenados = [];
 
-    // 1. Escuchador del evento de cambio del input
+
     inputArchivos.addEventListener('change', function() {
         // Obtener los archivos recién seleccionados
         const nuevosArchivos = Array.from(this.files);
         
-        // 2. Comprobar el límite máximo
+
         if (archivosAlmacenados.length + nuevosArchivos.length > MAX_FILES) {
             alert(`Solo puedes subir un total de ${MAX_FILES} archivos. Ya tienes ${archivosAlmacenados.length} seleccionados.`);
             this.value = ''; 
             return;
         }
 
-        // 3. Agregar los nuevos archivos al array de almacenamiento
+
         archivosAlmacenados.push(...nuevosArchivos);
         
-        // 4. Actualizar la visualización y el input real
+
         actualizarTodo();
         
-        // 5. Limpiar el valor del input para que el evento 'change' se active de nuevo
+
         this.value = '';
     });
 
-    // Función principal para renderizar miniaturas y actualizar el input
+
     function actualizarTodo() {
         mostrarMiniaturas(archivosAlmacenados);
         actualizarInputReal();
     }
 
-    // Función para actualizar el input oculto con la lista de archivos gestionada
+
     function actualizarInputReal() {
         const dataTransfer = new DataTransfer();
         archivosAlmacenados.forEach(file => {
             dataTransfer.items.add(file);
         });
-        // Asignamos el FileList real al input para que se envíe con el formulario
+
         inputArchivos.files = dataTransfer.files;
 
-        // Actualizar el texto del botón
+
         labelBoton.textContent = archivosAlmacenados.length >= MAX_FILES 
             ? 'Límite Alcanzado (3)' 
             : `Seleccionar Archivos (${archivosAlmacenados.length}/${MAX_FILES})`;
     }
 
 
-    // --- Funciones de Previsualización (Miniaturas y Eliminación) ---
-
     function mostrarMiniaturas(files) {
-        previewContainer.innerHTML = ''; // Limpiar previsualizaciones
+        previewContainer.innerHTML = '';
         
         if (files.length === 0) {
             previewContainer.appendChild(mensajeVacio);
@@ -146,12 +144,12 @@ document.addEventListener('DOMContentLoaded', function() {
         const divPreview = document.createElement('div');
         divPreview.style.textAlign = 'center';
         divPreview.style.maxWidth = '90px'; 
-        divPreview.style.position = 'relative'; // Para posicionar el botón de eliminar
+        divPreview.style.position = 'relative'; 
         
-        // ------------------ Botón de Eliminar ------------------
+
         const btnEliminar = document.createElement('span');
         btnEliminar.textContent = '✖';
-        btnEliminar.className = 'btn-eliminar-archivo'; // Clase para estilos CSS si es necesario
+        btnEliminar.className = 'btn-eliminar-archivo'; 
         btnEliminar.style.position = 'absolute';
         btnEliminar.style.top = '-5px';
         btnEliminar.style.right = '-5px';
@@ -164,14 +162,12 @@ document.addEventListener('DOMContentLoaded', function() {
         btnEliminar.style.lineHeight = '20px';
         btnEliminar.style.fontSize = '12px';
         
-        // Manejador de evento para eliminar el archivo
+
         btnEliminar.onclick = () => {
             eliminarArchivo(index);
         };
         divPreview.appendChild(btnEliminar);
-        // --------------------------------------------------------
 
-        // ... Lógica de la miniatura (misma que antes) ...
         const mediaBox = document.createElement('div');
         mediaBox.style.width = '75px';
         mediaBox.style.height = '75px';
@@ -213,11 +209,11 @@ document.addEventListener('DOMContentLoaded', function() {
         return divPreview;
     }
 
-    // Nueva función para eliminar un archivo del array
+
     function eliminarArchivo(index) {
-        // Eliminar 1 elemento a partir del índice dado
+
         archivosAlmacenados.splice(index, 1);
-        // Actualizar la vista y el input real
+
         actualizarTodo();
     }
 

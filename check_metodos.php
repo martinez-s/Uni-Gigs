@@ -1,5 +1,4 @@
 
-
 <?php
 
 
@@ -31,11 +30,10 @@ if ($id_usuario > 0 && isset($mysqli) && $mysqli instanceof mysqli) {
     $has_methods = has_registered_payment_method($mysqli, $id_usuario);
 }
 
-// Retornar el resultado para el JavaScript
 echo json_encode(['success' => true, 'has_payment_method' => $has_methods]);
 
 if (isset($mysqli) && $mysqli instanceof mysqli) {
-    $mysqli->close(); // Mejor práctica: cerrar la conexión.
+    $mysqli->close();
 }
 exit;
 ?>

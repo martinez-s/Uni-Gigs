@@ -1,24 +1,14 @@
 <?php
 session_start();
 
-// ==========================================
-// 1. SEGURIDAD BLINDADA (EL PORTERO)
-// ==========================================
-// Si no hay sesión iniciada O el rol no es 'admin'
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-    // Redirigir al login
+
     header("Location: index.php"); 
-    exit(); // DETIENE TODO: Nadie puede ver el código de abajo
+    exit(); 
 }
 
-// Si pasa el filtro, cargamos la base de datos
 include('conect.php');
 
-// ==========================================
-// 2. LÓGICA DE BASE DE DATOS (POST/GET)
-// ==========================================
-
-// A. ACTUALIZAR TASA
 if (isset($_POST['btn_actualizar_tasa'])) {
     $nueva_tasa = $_POST['tasa_cambio'];
     $stmt = $mysqli->prepare("UPDATE configuracion SET tasa_dolar = ? WHERE id = 1");
@@ -30,7 +20,6 @@ if (isset($_POST['btn_actualizar_tasa'])) {
     $stmt->close();
 }
 
-// B. ELIMINAR USUARIO
 if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar' && isset($_GET['id'])) {
     $id_borrar = intval($_GET['id']);
     try {
@@ -46,7 +35,6 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'eliminar' && isset($_GET['id']
     }
 }
 
-// C. CAMBIAR ESTADO
 if (isset($_GET['accion']) && $_GET['accion'] == 'cambiar_estado' && isset($_GET['id'])) {
     $id_estado = intval($_GET['id']);
     if ($mysqli->query("UPDATE usuarios SET estado = NOT estado WHERE id_usuario = $id_estado")) {
@@ -55,9 +43,6 @@ if (isset($_GET['accion']) && $_GET['accion'] == 'cambiar_estado' && isset($_GET
     }
 }
 
-// ==========================================
-// 3. CONSULTAS SQL
-// ==========================================
 $res_tasa = $mysqli->query("SELECT tasa_dolar, ultima_actualizacion FROM configuracion WHERE id = 1");
 $row_tasa = ($res_tasa) ? $res_tasa->fetch_assoc() : ['tasa_dolar' => 0, 'ultima_actualizacion' => date('Y-m-d')];
 $tasa_actual = $row_tasa['tasa_dolar'];

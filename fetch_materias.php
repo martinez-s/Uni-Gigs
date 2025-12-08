@@ -1,5 +1,5 @@
 <?php
-// Asegúrate de que tu archivo de conexión esté incluido
+
 include('conect.php'); 
 
 header('Content-Type: application/json');
@@ -9,7 +9,6 @@ if (isset($_GET['id_carrera']) && is_numeric($_GET['id_carrera'])) {
     $id_carrera = (int)$_GET['id_carrera'];
     $materias = [];
 
-    // 🔑 CONSULTA SQL CORREGIDA: Usando JOIN con materias_carreras
     $sql = "
         SELECT 
             m.id_materia, 
@@ -38,7 +37,7 @@ if (isset($_GET['id_carrera']) && is_numeric($_GET['id_carrera'])) {
         echo json_encode(['success' => true, 'data' => $materias]);
         $stmt->close();
     } else {
-        // En caso de un error en la sintaxis SQL (poco probable con la corrección)
+
         echo json_encode(['success' => false, 'message' => 'Error al preparar la consulta SQL.']);
     }
 

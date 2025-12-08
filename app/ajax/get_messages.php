@@ -18,7 +18,6 @@ $id_usuario = $_SESSION['id_usuario'];
 $chat_id = intval($_GET['chat_id']);
 
 try {
-    // Verificar acceso
     $check_query = "SELECT * FROM chats WHERE id_chat = ? AND (id_usuario1 = ? OR id_usuario2 = ?)";
     $check_stmt = $mysqli->prepare($check_query);
     $check_stmt->bind_param('iii', $chat_id, $id_usuario, $id_usuario);
@@ -51,7 +50,6 @@ try {
         $hora = $fecha->format('H:i');
         $fecha_completa = $fecha->format('d/m/Y H:i');
         
-        // Formatear tamaño de archivo si existe
         $file_size_formatted = '';
         if (!empty($row['nombre_archivo'])) {
             $file_path = __DIR__ . '/../' . $row['url_archivo'];
@@ -88,7 +86,6 @@ try {
     $response['message'] = $e->getMessage();
 }
 
-// Función para formatear tamaño de archivo
 function formatFileSize($bytes) {
     if ($bytes >= 1073741824) {
         return number_format($bytes / 1073741824, 2) . ' GB';

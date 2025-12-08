@@ -55,10 +55,10 @@ function insert_pm_data($mysqli, $id_usuario, $metodo_id, $fields, $campos_ids) 
         
         if (!$stmt_ump->execute()) {
 
-             if ($mysqli->errno == 1062) { 
-                  throw new Exception("Ya existe un registro para este método.");
-             }
-             throw new Exception("Error ejecutando UMP: " . $stmt_ump->error);
+                if ($mysqli->errno == 1062) { 
+                    throw new Exception("Ya existe un registro para este método.");
+                }
+                throw new Exception("Error ejecutando UMP: " . $stmt_ump->error);
         }
         $id_usuario_metodo_pago = $mysqli->insert_id; 
         $stmt_ump->close();
@@ -130,7 +130,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $result = insert_pm_data($mysqli, $id_usuario_logueado, 2, $tr_fields, $campos_ids);
             if ($result !== true) $payment_method_errors[] = "TRANSFERENCIA - {$result}";
         } elseif ($is_tr_partially_filled) {
-            $payment_method_errors[] = "TRANSFERENCIA - Error: Debe llenar **todos** los campos.";
+            $payment_method_errors[] = "TRANSFERENCIA - Error: Debe llenar todos los campos.";
         }
         
 

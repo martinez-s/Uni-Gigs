@@ -1,12 +1,12 @@
 <?php
-// scanner_ajax.php
+
 header('Content-Type: application/json');
 
-// 1. CONFIGURACIÓN
-$apiKey = "K83980801188957"; 
-$upload_dir = "public/img/temp/"; // Carpeta temporal para procesar
 
-// Respuesta por defecto
+$apiKey = "K83980801188957"; 
+$upload_dir = "public/img/temp/"; 
+
+
 $response = [
     'success' => false,
     'message' => '',
@@ -15,7 +15,7 @@ $response = [
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
     
-    // Crear carpeta si no existe
+
     if (!file_exists($upload_dir)) { mkdir($upload_dir, 0777, true); }
 
     $file_name = uniqid() . "_" . basename($_FILES['imagen_carnet']['name']);
@@ -23,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
     
     if(move_uploaded_file($_FILES['imagen_carnet']['tmp_name'], $uploaded_path)) {
         
-        // --- PROCESAMIENTO GD (Brillo/Contraste) ---
         $ocr_image_path = $uploaded_path;
         if (extension_loaded('gd')) {
             $info = getimagesize($uploaded_path);
@@ -41,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
             }
         }
 
-        // --- PETICIÓN A OCR.SPACE ---
         $fileData = new CURLFile($uploaded_path);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, "https://api.ocr.space/parse/image");
@@ -61,7 +59,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
         $result = curl_exec($ch);
         curl_close($ch);
 
-        // --- PARSEO DE DATOS ---
         if ($result) {
             $json = json_decode($result, true);
             
@@ -70,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
                 $lines = explode("\n", str_replace(["\r", "\t"], "", $raw_text));
                 $clean_lines = array_values(array_filter($lines, function($v){ return strlen(trim($v)) > 1; }));
 
-                // Variables a extraer
+
                 $nombre = ""; $apellido = ""; $cedula = ""; 
                 $carrera = ""; $universidad = "";
 
@@ -79,7 +76,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
                 foreach ($clean_lines as $i => $line) {
                     $line_upper = strtoupper(trim($line));
 
-                    // 1. UNIVERSIDAD
                     if (empty($universidad)) {
                         if (strpos($line_upper, 'UNIMAR') !== false || strpos($line_upper, 'UNIVERSIDAD DE MARGARITA') !== false) {
                             $universidad = "UNIVERSIDAD DE MARGARITA";
@@ -88,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
                         }
                     }
 
-                    // 2. CÉDULA
+
                     if (empty($cedula) && preg_match('/(?:C\.?I\.?|V|E)?\s*[-:.]?\s*([VE])?\s*[-]?\s*(\d{6,9})\b/i', $line_upper, $matches)) {
                         if (strpos($line_upper, 'RIF') === false) {
                             $prefijo = !empty($matches[1]) ? $matches[1] : 'V';
@@ -96,20 +92,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
                         }
                     }
 
-                    // 3. ANCLA
+
                     if (strpos($line_upper, 'ESTUDIANTE') !== false || strpos($line_upper, 'TUDIANTE') !== false) {
                         $idx_estudiante = $i;
                     }
                 }
 
-                // 4. DATOS RELATIVOS
                 if ($idx_estudiante !== -1) {
-                    // Carrera
+
                     if (isset($clean_lines[$idx_estudiante + 1])) {
                         $carrera = preg_replace('/[^A-ZÁÉÍÓÚÑ\s]/u', '', strtoupper($clean_lines[$idx_estudiante + 1]));
                         $carrera = str_replace("INGENIERIA", "INGENIERÍA", $carrera);
                     }
-                    // Nombres
+
                     $nombres_raw = [];
                     for ($k = 1; $k <= 3; $k++) {
                         if (isset($clean_lines[$idx_estudiante - $k])) {
@@ -131,7 +126,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
                     }
                 }
 
-                // PREPARAR RESPUESTA EXITOSA
                 $response['success'] = true;
                 $response['data'] = [
                     'nombre' => $nombre,
@@ -147,7 +141,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['imagen_carnet'])) {
             $response['message'] = 'Error al conectar con OCR.space';
         }
 
-        // Limpieza: Borrar imagen temporal
         unlink($uploaded_path);
     } else {
         $response['message'] = 'Error al subir la imagen al servidor.';

@@ -36,18 +36,18 @@ include('conect.php');
                       <select id="banco_id" name="banco_id" required style="display: none;"> 
                           <option value="" selected disabled>Seleccione EL BANCO</option> 
                           <?php
-                          // Definición de la consulta SQL
+
                           $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
 
                               $result = $mysqli->query($sql);
                           
                               if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
+
                                   while($row = $result->fetch_assoc()) {
                                       echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
                                   }
                               } else {
-                                  // Mensaje si no hay datos o la consulta falló
+
                                   echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
                               }
                           ?>

@@ -266,7 +266,6 @@ include __DIR__ . '/app/includes/Navbar.php';
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        // --- 1. MANEJO DE ERRORES/ÉXITOS DESDE PHP ---
         <?php if ($error_message): ?>
             Swal.fire({
                 icon: "error",
@@ -275,8 +274,7 @@ include __DIR__ . '/app/includes/Navbar.php';
                 confirmButtonColor: '#d33',
                 confirmButtonText: 'Reintentar'
             }).then((result) => {
-                // Si el error es de login, abrir modal login. Si es genérico, abrir el que corresponda.
-                // Por defecto abrimos registro si falló algo del registro
+
                 var registroModal = new bootstrap.Modal(document.getElementById('modal_registro'));
                 registroModal.show();
             });
@@ -295,15 +293,14 @@ include __DIR__ . '/app/includes/Navbar.php';
         <?php endif; ?>
     });
 
-    // --- 2. VALIDACIÓN DEL PASO 1 (BOTÓN SIGUIENTE) ---
+
     function validarPaso1() {
-        // Obtenemos los inputs
+
         const correoInput = document.querySelector('#form_registro input[name="correo"]');
         const clave = document.querySelector('#form_registro input[name="clave"]');
         const fechaInput = document.querySelector('#form_registro input[name="fecha_nacimiento"]');
         const clave2 = document.querySelector('#form_registro input[name="clave_confirm"]');
 
-        // Validaciones básicas de HTML (Campos vacíos)
         let esValido = true;
         if (!correoInput.checkValidity()) { correoInput.reportValidity(); esValido = false; } 
         else if (!clave.checkValidity()) { clave.reportValidity(); esValido = false; } 
@@ -312,14 +309,12 @@ include __DIR__ . '/app/includes/Navbar.php';
 
         if (!esValido) return;
 
-        // A. Validar Dominio Unimar
         const correo = correoInput.value.trim().toLowerCase();
         if (!correo.endsWith("@unimar.edu.ve")) {
             Swal.fire({ icon: "error", title: "Correo incorrecto", text: "Solo se permite el registro con correo institucional (@unimar.edu.ve)." });
             return;
         }
 
-        // B. Validar Edad (16 años)
         const fechaNacimiento = new Date(fechaInput.value);
         const hoy = new Date();
         let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
@@ -333,13 +328,11 @@ include __DIR__ . '/app/includes/Navbar.php';
             return;
         }
 
-        // C. Validar Contraseñas
         if (clave.value !== clave2.value) {
             Swal.fire({ icon: "warning", title: "Contraseñas no coinciden", text: "Verifica que ambas contraseñas sean iguales." });
             return;
         }
 
-        // Si todo está bien, pasamos al siguiente modal
         const modal1El = document.getElementById('modal_registro');
         const modal1 = bootstrap.Modal.getInstance(modal1El) || new bootstrap.Modal(modal1El);
         
@@ -404,9 +397,9 @@ async function procesarCarnet(input) {
                 }
 
                 if (!datos.carrera || datos.carrera === 'NO DETECTADA') {
-                     document.getElementById('reg_carrera').removeAttribute('readonly');
-                     document.getElementById('reg_carrera').style.backgroundColor = '#fff'; 
-                     Swal.fire('Atención', 'Por favor escribe tu carrera manualmente.', 'info');
+                        document.getElementById('reg_carrera').removeAttribute('readonly');
+                        document.getElementById('reg_carrera').style.backgroundColor = '#fff'; 
+                        Swal.fire('Atención', 'Por favor escribe tu carrera manualmente.', 'info');
                 }
 
             } else {

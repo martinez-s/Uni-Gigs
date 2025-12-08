@@ -57,8 +57,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt = $mysqli->prepare($sql_update_servicio);
 
         if ($stmt) {
-            // Bind params: s=string, d=double, i=int
-            // titulo(s), desc(s), precio(d), tipo(i), carrera(i), materia(i), id_serv(i), id_user(i)
+            
             $stmt->bind_param("ssdiiiii", 
                 $titulo, $descripcion, $precio,
                 $tipo_trabajo_id, $carrera_id, $materia_id,
@@ -93,9 +92,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 }
 
-// ---------------------------------------------------------
-// BLOQUE 2: OBTENER DATOS ACTUALES
-// ---------------------------------------------------------
 $servicio_data = null; 
 $nombre_carrera_precargada = '';
 $nombre_tipo_trabajo_precargada = '';
@@ -112,7 +108,6 @@ if ($stmt_fetch) {
     if ($result_fetch->num_rows === 1) {
         $servicio_data = $result_fetch->fetch_assoc();
 
-        // Obtener nombres auxiliares (igual que en request)
         if ($servicio_data['id_carrera']) {
             $stmt_c = $mysqli->prepare("SELECT nombre_carrera FROM carreras WHERE id_carrera = ?");
             $stmt_c->bind_param("i", $servicio_data['id_carrera']);
@@ -276,29 +271,26 @@ if ($stmt_fetch) {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         
-        // Obtenemos el formulario por ID
+
         const form = document.getElementById('formEditarServicio'); 
 
-        // Auxiliar para limpiar números
+
         const cleanNumbers = (value) => value.replace(/[0-9]/g, '');
 
         if (form) {
             form.addEventListener('submit', function(e) {
-                e.preventDefault(); // Detener envío
+                e.preventDefault(); 
 
                 const errors = [];
-                
-                // Obtener Valores
+
                 const titulo = form.querySelector('[name="titulo"]').value.trim();
                 const precio = parseFloat(form.querySelector('[name="precio"]').value);
                 const descripcion = document.getElementById('descripcion_input').value.trim();
                 
-                // IDs Ocultos
                 const carrera_id = form.querySelector('#carrera_id').value;
                 const tipo_trabajo_id = form.querySelector('#tipo_trabajo_id').value;
                 const materia_id = form.querySelector('#materia_id').value;
                 
-                // Validaciones
                 if (!titulo || titulo.length < 5) errors.push('Título muy corto.');
                 if (!descripcion || descripcion.length < 20) errors.push('Descripción muy corta.');
                 if (isNaN(precio) || precio <= 0) errors.push('Precio inválido.');
@@ -307,11 +299,11 @@ if ($stmt_fetch) {
                 if (!tipo_trabajo_id) errors.push('Seleccione un Tipo de Trabajo.');
                 if (!materia_id) errors.push('Seleccione una Materia.');
 
-                // Mostrar errores o enviar
+
                 if (errors.length > 0) {
                     Swal.fire({ title: 'Error', html: errors.join('<br>'), icon: 'warning' });
                 } else {
-                    form.submit(); // Enviar si todo está bien
+                    form.submit(); 
                 }
             });
         }
@@ -330,7 +322,7 @@ if ($stmt_fetch) {
                 files.forEach(file => {
                     const item = document.createElement('div');
                     item.className = 'd-flex align-items-center me-3 mb-2 p-2 border rounded bg-white';
-                    item.innerHTML = `<span>${file.name}</span>`; // Simplificado para brevedad
+                    item.innerHTML = `<span>${file.name}</span>`; 
                     previewContainer.appendChild(item);
                 });
             });
