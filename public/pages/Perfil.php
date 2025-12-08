@@ -61,11 +61,6 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                         <span class="material-symbols-outlined" style="font-size: 1.4rem; padding:0;">logout</span>
                     </button>
                 </div>
-                <div class="profile-banner">
-                    <button type="button" class="btn-report-banner" title="Cerrar Sesión" data-bs-toggle="modal" data-bs-target="#modalConTabs">
-                        <span class="material-symbols-outlined" style="font-size: 1.4rem; padding:0;">logout</span>
-                    </button>
-                </div>
 
                 <div class="profile-avatar-container">
                     <img src="../../<?php echo htmlspecialchars($rutaFoto); ?>" alt="Foto de perfil" class="profile-avatar">
@@ -96,7 +91,13 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                         </button>
 
                     </div>
-
+                    <div>
+                        <button type="button" class="btn d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalConTabs" 
+                                style="border: 1px solid #ced4da; border-radius: 50px; padding: 8px 20px; font-size: 0.9rem; background-color: #fff;">
+                            <span class="material-symbols-outlined" style="font-size: 1.2rem; color: #203864;">credit_card</span>
+                            Añadir métodos de pago
+                        </button>
+                    </div>
                     <div class="profile-stats-row w-100">
                         <div class="stat-item">
                             <div class="stat-number justify-content-center">
@@ -157,6 +158,18 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                 <?php while ($row = $resultado_ser->fetch_assoc()) { ?>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div class="card"> <div class="card-body d-flex flex-column">
+                            <div class="position-absolute top-0 end-0 p-2 d-flex gap-1" style="z-index: 5;">
+                                <a href="../../edit_servicio.php?id=<?php echo $row['id_servicio']; ?>" 
+                                   class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                   style="width: 32px; height: 32px;" title="Editar">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #ffc107;">edit</span>
+                                </a>
+                                <button onclick="eliminarServicio(<?php echo $row['id_servicio']; ?>)" 
+                                        class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                        style="width: 32px; height: 32px;" title="Eliminar">
+                                    <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #dc3545;">delete</span>
+                                </button>
+                            </div>
                             <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                             <div class="separator-line"></div>
                                 <?php if ($row['url_foto']) { ?>
@@ -196,7 +209,6 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         </div>
 
         <?php
-        // Reutilizamos la misma consulta, filtrando por el ID de sesión
         $sql = "SELECT 
                     r.id_requests, r.titulo, r.descripcion, r.precio,
                     c.nombre_carrera, u.rating, u.porcentaje_completacion
@@ -216,6 +228,18 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
             <?php while ($row = $resultado->fetch_assoc()) { ?>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                     <div class="card"> <div class="card-body d-flex flex-column">
+                        <div class="position-absolute top-0 end-0 p-2 d-flex gap-1" style="z-index: 5;">
+                            <a href="../../edit_request.php?id=<?php echo $row['id_requests']; ?>" 
+                               class="btn btn-light btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                               style="width: 32px; height: 32px;" title="Editar">
+                                <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #ffc107;">edit</span>
+                            </a>
+                            <button onclick="eliminarRequest(<?php echo $row['id_requests']; ?>)" 
+                                    class="btn btn-dark btn-sm rounded-circle shadow-sm d-flex align-items-center justify-content-center" 
+                                    style="width: 32px; height: 32px;" title="Eliminar">
+                                <span class="material-symbols-outlined" style="font-size: 1.1rem; color: #dc3545;">delete</span>
+                            </button>
+                        </div>
                         <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                         <div class="separator-line"></div>
                         <h6 class="carrera">
@@ -237,328 +261,6 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
     </div>
 </div>
 
-
-<form action="../modal_pagos.php" method="POST" enctype="multipart/form-data">
-<div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <ul class="nav nav-tabs" id="miTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-uno-tab" data-bs-toggle="tab" data-bs-target="#tab-uno" type="button" role="tab" aria-controls="tab-uno" aria-selected="true">OBLIGATORIO</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-dos-tab" data-bs-toggle="tab" data-bs-target="#tab-dos" type="button" role="tab" aria-controls="tab-dos" aria-selected="false">OPCIONAL</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-tres-tab" data-bs-toggle="tab" data-bs-target="#tab-tres" type="button" role="tab" aria-controls="tab-tres" aria-selected="false">OPCIONAL</button>
-          </li>
-            <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-cuatro-tab" data-bs-toggle="tab" data-bs-target="#tab-cuatro" type="button" role="tab" aria-controls="tab-cuatro" aria-selected="false">OPCIONAL</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="miTabContent">
-          <div class="tab-pane fade show active" id="tab-uno" role="tabpanel" aria-labelledby="tab-uno-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAGO MÓVIL</h2>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="documento_ident" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
-                        <input type="text" name="documento_ident" class="form-control inputs">
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="telefono" class="lb_modal">TELÉFONO</label><br>
-                        <input type="text" name="telefono" class="form-control inputs">
-                    </div>
-                  <div class="col-lg-12">
-                      <label for="banco_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco_id" name="banco_id" style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
-
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
-                    </div>
-                </div>
-              </div>
-          </div>
-          <div class="tab-pane fade" id="tab-dos" role="tabpanel" aria-labelledby="tab-dos-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">TRANSFERENCIA BANCARIA</h2>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="documento_identidad" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
-                        <input type="text" name="documento_identidad" class="form-control inputs">
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="nro_cuenta" class="lb_modal">NUMERO DE CUENTA</label><br>
-                        <input type="text" name="nro_cuenta" class="form-control inputs">
-                    </div>
-                  <div class="col-lg-12">
-                      <label for="banco2_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco2_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco2_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco2_id" name="banco2_id"  style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
-
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
-                    </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-tres" role="tabpanel" aria-labelledby="tab-tres-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">BINANCE</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_binance" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_binance" class="form-control inputs">
-                    </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-cuatro" role="tabpanel" aria-labelledby="tab-cuatro-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAYPAL</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_paypal" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_paypal" class="form-control inputs">
-                    </div>
-                </div>
-              </div>            
-          </div>
-          
-        </div>
-        
-        
-      </div>
-      <div class="modal-footer justify-content-center btn-regis">
-        <button type="submit" class="btn btn-secondary"">REGISTRAR</button>
-      </div>
-    </div>
-  </div>
-</div>
-</form>
-
-<form id="formMetodosPago" action="modal_pagos.php" method="POST" enctype="multipart/form-data">
-<div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true" data-bs-backdrop="static">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <ul class="nav nav-tabs" id="miTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-uno-tab" data-bs-toggle="tab" data-bs-target="#tab-uno" type="button" role="tab" aria-controls="tab-uno" aria-selected="true">OBLIGATORIO</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-dos-tab" data-bs-toggle="tab" data-bs-target="#tab-dos" type="button" role="tab" aria-controls="tab-dos" aria-selected="false">OPCIONAL</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-tres-tab" data-bs-toggle="tab" data-bs-target="#tab-tres" type="button" role="tab" aria-controls="tab-tres" aria-selected="false">OPCIONAL</button>
-          </li>
-            <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-cuatro-tab" data-bs-toggle="tab" data-bs-target="#tab-cuatro" type="button" role="tab" aria-controls="tab-cuatro" aria-selected="false">OPCIONAL</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="miTabContent">
-          <div class="tab-pane fade show active" id="tab-uno" role="tabpanel" aria-labelledby="tab-uno-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAGO MÓVIL</h2>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="documento_ident" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
-                        <input type="text" name="documento_ident" class="form-control inputs">
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="telefono" class="lb_modal">TELÉFONO</label><br>
-                        <input type="text" name="telefono" class="form-control inputs">
-                    </div>
-                  <div class="col-lg-12">
-                      <label for="banco_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco_id" name="banco_id" style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
-
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
-                    </div>
-                </div>
-              </div>
-          </div>
-          <div class="tab-pane fade" id="tab-dos" role="tabpanel" aria-labelledby="tab-dos-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">TRANSFERENCIA BANCARIA</h2>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="documento_identidad" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
-                        <input type="text" name="documento_identidad" class="form-control inputs">
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="nro_cuenta" class="lb_modal">NUMERO DE CUENTA</label><br>
-                        <input type="text" name="nro_cuenta" class="form-control inputs">
-                    </div>
-                  <div class="col-lg-12">
-                      <label for="banco2_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco2_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco2_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco2_id" name="banco2_id"  style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
-
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
-                    </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-tres" role="tabpanel" aria-labelledby="tab-tres-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">BINANCE</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_binance" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_binance" class="form-control inputs">
-                    </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-cuatro" role="tabpanel" aria-labelledby="tab-cuatro-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAYPAL</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_paypal" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_paypal" class="form-control inputs">
-                    </div>
-                </div>
-              </div>            
-          </div>
-          
-        </div>     
-      </div>
-        <div class="modal-footer justify-content-center btn-regis">
-            <button type="button" id="btnSubmitMetodosPago" class="btn_siguiente btn-secondary">REGISTRAR</button>
-        </div>
-    </div>
-  </div>
-</div>
-</form>
 <?php include '../../app/includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -621,6 +323,75 @@ function editarDescripcion() {
             });
         } else if (result.isConfirmed && !result.value.success) {
              Swal.fire('Error', result.value.message || 'No se pudo guardar.', 'error');
+        }
+    });
+}
+// --- ELIMINAR SERVICIO ---
+function eliminarServicio(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "No podrás revertir esto. Se borrará tu servicio permanentemente.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('../../delete_servicio.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('¡Eliminado!', data.message, 'success')
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un problema de conexión.', 'error');
+            });
+        }
+    });
+}
+
+// --- ELIMINAR REQUEST ---
+function eliminarRequest(id) {
+    Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se borrará este request de forma permanente.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch('../../delete_request.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: id })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('¡Eliminado!', data.message, 'success')
+                    .then(() => location.reload());
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                Swal.fire('Error', 'Hubo un problema de conexión.', 'error');
+            });
         }
     });
 }
