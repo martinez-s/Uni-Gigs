@@ -44,14 +44,15 @@ if (isset($_POST['q_post']) && !empty($_POST['q_post'])) {
 }
 
 // ===================================================================
-// 4. Consultas Base (SELECT 1 y SELECT 2)
+// 4. Consultas Base (SELECT 1 y SELECT 2) - Se incluye id_usuario y id_carrera
 // ===================================================================
 
-// Consulta para SERVICIOS
 $sql_servicios = "
     SELECT 
         s.id_servicio AS id_item, 
         'servicio' AS tipo, 
+        s.id_usuario,        /* <-- CRUCIAL: Añadido para el botón */
+        s.id_carrera,        /* <-- CRUCIAL: Añadido para el botón */
         s.titulo, s.descripcion, s.precio,
         c.nombre_carrera, u.rating, u.porcentaje_completacion,
         MIN(f.url_foto) AS url_foto
@@ -61,32 +62,32 @@ $sql_servicios = "
     LEFT JOIN fotos_servicios f ON s.id_servicio = f.id_servicio
     {CONDICION_BUSQUEDA_S}
     GROUP BY 
-        s.id_servicio, s.titulo, s.descripcion, s.precio, 
+        s.id_servicio, s.id_usuario, s.id_carrera, s.titulo, s.descripcion, s.precio, 
         c.nombre_carrera, u.rating, u.porcentaje_completacion
 ";
 
-// Consulta para REQUESTS (Solicitudes) - CORREGIDA: Eliminamos el JOIN innecesario a 'usuarios' 
+// Consulta para REQUESTS (Solicitudes)
 $sql_requests = "
     SELECT 
         r.id_requests AS id_item, 
         'request' AS tipo, 
+        r.id_usuario,        /* <-- CRUCIAL: Añadido para el botón */
+        r.id_carrera,        /* <-- CRUCIAL: Añadido para el botón */
         r.titulo, r.descripcion, r.precio,
         c.nombre_carrera, u.rating, u.porcentaje_completacion,
         MIN(f.url_foto) AS url_foto
-    FROM requests r  -- ¡Cambiado de 'servicios s' a 'requests r'!
+    FROM requests r
     JOIN carreras c ON r.id_carrera = c.id_carrera
     JOIN usuarios u ON r.id_usuario = u.id_usuario
     LEFT JOIN fotos_requests f ON r.id_requests = f.id_request
-    {CONDICION_BUSQUEDA_R}  -- ¡Cambiado de {CONDICION_BUSQUEDA_S} a {CONDICION_BUSQUEDA_R}!
+    {CONDICION_BUSQUEDA_R}
     GROUP BY 
-        r.id_requests, r.titulo, r.descripcion, r.precio, 
+        r.id_requests, r.id_usuario, r.id_carrera, r.titulo, r.descripcion, r.precio, 
         c.nombre_carrera, u.rating, u.porcentaje_completacion
 ";
-
 // ===================================================================
 // 5. Lógica de Ejecución (Búsqueda o Todos)
 // ===================================================================
-
 if ($termino_para_sql) {
     // A) Búsqueda Activa (Usa consultas preparadas)
 
@@ -166,10 +167,8 @@ if ($termino_para_sql) {
                         <div class="card">
                             <div class="card-body d-flex flex-column">
                                 
-
                                 <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                                 
-
                                 <div class="separator-line"></div>
                                 
                                 <?php 
@@ -189,46 +188,55 @@ if ($termino_para_sql) {
                                 // CIERRE DEL BLOQUE IF/ELSEIF DE IMÁGENES
                                 ?>
 
-                                 <?php if ($es_request): ?>
-                                    <h6 class="EsReq">
-                                        Request
-                                    </h6>
-                                <?php elseif ($es_servicio): ?>
-                                    <h6 class="EsSer">
-                                        Servicio
-                                    </h6>
-                                <?php endif; ?>
-                                
-                                
-                                <h6 class="carrera">
-                                    <span class="material-symbols-outlined">license</span>
-                                    <?php echo htmlspecialchars($row['nombre_carrera']); ?>
-                                </h6>
-                            
-                                <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
-                                
-                                <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
+                                   <?php if ($es_request): ?>
+                                        <h6 class="EsReq">
+                                            Request
+                                        </h6>
+                                    <?php elseif ($es_servicio): ?>
+                                        <h6 class="EsSer">
+                                            Servicio
+                                        </h6>
+                                    <?php endif; ?>
                                     
-                                    <?php if (!empty($row['rating'])): ?>
-                                        <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
-                                    <?php else: ?>
-                                        <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
-                                    <?php endif; ?>
+                                    
+                                    <h6 class="carrera">
+                                        <span class="material-symbols-outlined">license</span>
+                                        <?php echo htmlspecialchars($row['nombre_carrera']); ?>
+                                    </h6>
+                                
+                                    <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                                    
+                                    <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
+                                        
+                                        <?php if (!empty($row['rating'])): ?>
+                                            <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
+                                        <?php else: ?>
+                                            <div class="star-rating-display" data-rating="0"></div>
+                                        <?php endif; ?>
 
-                                    <?php if (!empty($row['precio'])): ?>
-                                        <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
-                                    <?php else: ?>
-                                        <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5>  
-                                    <?php endif; ?>
-                                </div>
-                                <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
-                            </div>
-                        </div> 
-                    </div>
+                                        <?php if (!empty($row['precio'])): ?>
+                                            <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+                                        <?php else: ?>
+                                            <h5 class="Precio mb-0">Precio no listado</h5>  
+                                        <?php endif; ?>
+                                    </div>
+                                    
+                                    <form action="<?php echo $es_servicio ? 'MasInfoSer.php' : 'MasInfoReq.php'; ?>" method="POST" class="mt-auto">
+                                        <input type="hidden" name="<?php echo $es_servicio ? 'id_servicio' : 'id_request'; ?>" value="<?php echo htmlspecialchars($row['id_item']); ?>">
+                                        
+                                        <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($row['id_usuario']); ?>">
+                                        <input type="hidden" name="id_carrera" value="<?php echo htmlspecialchars($row['id_carrera']); ?>">
+                                        
+                                        <button type="submit" class="btn btn-primary w-100">Más información</button>
+                                    </form>
+                                    </div>
+                            </div> 
+                        </div>
                 <?php
                 } // FIN DEL WHILE
                 ?>
-            </div><?php 
+            </div>
+        <?php 
         } else { 
         ?>
             <div class="row">
@@ -245,9 +253,48 @@ if ($termino_para_sql) {
     </div> 
 </div>
 
-   
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionar todos los contenedores de estrellas
+    const ratingContainers = document.querySelectorAll('.star-rating-display');
 
+    ratingContainers.forEach(container => {
+        // Obtener el valor del rating desde el atributo data-rating
+        const rating = parseFloat(container.getAttribute('data-rating'));
+        
+        // Limpiar el contenido actual
+        container.innerHTML = '';
 
+        // Generar las 5 estrellas
+        for (let i = 1; i <= 5; i++) {
+            let iconName = 'star_border'; // Por defecto vacía
+            let colorClass = 'text-secondary'; // Color gris por defecto
+
+            if (rating >= i) {
+                // Estrella completa
+                iconName = 'star';
+                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
+            } else if (rating >= i - 0.5) {
+                // Media estrella
+                iconName = 'star_half';
+                colorClass = 'text-warning';
+            }
+
+            // Crear el elemento span para el icono
+            const star = document.createElement('span');
+            star.className = `material-symbols-outlined ${colorClass}`;
+            star.textContent = iconName;
+            
+            // Ajustar tamaño si es necesario (opcional)
+            star.style.fontSize = '20px'; 
+            star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+
+            // Agregar al contenedor
+            container.appendChild(star);
+        }
+    });
+});
+</script>
 
 
 

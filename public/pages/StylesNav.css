@@ -260,35 +260,35 @@ hr {
     margin-bottom: 0.5rem; 
 }
 
-.star-rating-display {
-    --rating: attr(data-rating); /* Lee el valor del atributo data-rating */
-    --star-color-filled: gold;
-    --star-color-empty: #ccc;
+.star-rating-display .text-warning {
+    color: #ffc107 !important; /* Dorado */
+    text-shadow: 1px 1px 1px rgba(0,0,0,0.1);
+}
     
-    display: inline-block;
-    font-size: 24px; 
-    position: relative;
-    width: 5em; /* Ancho para 5 estrellas */
-    color: var(--star-color-empty); /* Color de las estrellas vacías */
+/* Estilo para las estrellas vacías */
+.star-rating-display .text-secondary {
+    color: #e4e5e9 !important; /* Gris suave */
+}
+    
+    /* Alineación de las estrellas */
+    .star-rating-display {
+        display: flex;
+        align-items: center;
+    }
+
+.star-rating-display {
+    display: inline-flex; /* Hace que la caja se ajuste al contenido */
+    align-items: center;  /* Alinea verticalmente */
+    gap: 5px;               /* Asegura que no haya huecos flex */
+    line-height: 1;       /* Elimina altura extra */
 }
 
-/* 5 Estrellas Vacías de Fondo */
-.star-rating-display::before {
-    content: "★★★★★";
-    letter-spacing: 3px;
+.star-rating-display span {
+    margin-right: -3px;  
+    padding: 0;          
+    font-size: 26px;     
+    user-select: none;   
 }
-
-.star-rating-display::after {
-    content: "★★★★★";
-    letter-spacing: 3px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: var(--star-color-filled);
-    overflow: hidden;
-    width: calc(var(--rating) / 5 * 100%); 
-}
-
 .imagen {
     width: 100%; 
     height: auto; 
@@ -355,7 +355,6 @@ input[type="search"]::-webkit-search-results-decoration {
     border-radius: 10px;
 }
 
-/*PERFFFFFFIIIIIIIIIIIIIILLLLLLLLLLLL*/
 
 .profile-banner {
     height: 165px;
@@ -512,7 +511,7 @@ input[type="search"]::-webkit-search-results-decoration {
     border: 1px solid #ced4da; /* Mismo borde que el input */
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra muy ligera */
-    /* **CRÍTICO para visibilidad en móvil** */
+    /* *CRÍTICO para visibilidad en móvil* */
     z-index: 100001; 
 }
 
@@ -610,3 +609,180 @@ input[type="search"]::-webkit-search-results-decoration {
             align-items: center;
             justify-content: center;
         }
+
+    /* Contenedor principal */
+.masonry-container {
+    column-count: 4; /* Número de columnas en pantalla grande */
+    column-gap: 1.5rem; /* Espacio entre columnas */
+}
+
+/* El item individual */
+.masonry-item {
+    break-inside: avoid; /* Evita que la tarjeta se parta en dos columnas */
+    margin-bottom: 1.5rem; /* Espacio inferior */
+}
+
+/* Responsividad (Media Queries) */
+@media (max-width: 1200px) {
+    .masonry-container { column-count: 3; }
+}
+@media (max-width: 768px) {
+    .masonry-container { column-count: 2; }
+}
+@media (max-width: 576px) {
+    .masonry-container { column-count: 1; }
+}
+
+/* --- Estilos Mejorados para Detalle --- */
+
+/* Contenedor de la imagen */
+.img-placeholder {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tarjetas de detalles pequeños (Carrera, Fecha, etc) */
+.detail-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-color: #dee2e6;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #212529;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Destacar el precio */
+.price-card {
+    background-color: #f0fdf4; /* Verde muy suave */
+    border-color: #bbf7d0;
+}
+.price-card .detail-value {
+    color: #15803d; /* Verde oscuro */
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Descripción */
+.desc-box {
+    background-color: #fff;
+    border-left: 4px solid #203864; /* Tu color corporativo */
+    padding: 20px;
+    border-radius: 4px;
+    color: #495057;
+    line-height: 1.6;
+}
+
+/* Tarjeta de Usuario */
+.user-card-modern {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 20px; /* Se queda fija al hacer scroll */
+    text-align: center;
+    border: 1px solid #f0f0f0;
+}
+
+.avatar-placeholder {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 2rem;
+}
+
+.report-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #adb5bd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.report-btn:hover { color: #dc3545; }
+
+.avatar-container {
+    /* Define un tamaño fijo para el contenedor */
+    width: 130px;  /* Ejemplo: 80 píxeles */
+    height: 130px; /* Ejemplo: 80 píxeles */
+    
+    /* Hace que el contenedor sea circular */
+    border-radius: 50%;
+    
+    /* CRUCIAL: Oculta cualquier parte de la imagen que intente salirse */
+    overflow: hidden;
+    
+    /* Ayuda a centrar el contenido (la imagen o el placeholder) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Estilo opcional: si quieres un borde o margen */
+    border: 2px solid #ddd;
+}
+
+/* 2. Estilo de la Imagen: Asegura que la imagen se ajuste al contenedor */
+.avatar-container .avatar-image {
+    /* Asegura que la imagen llene el contenedor completamente */
+    width: 100%;
+    height: 100%;
+    
+    /* CRUCIAL: Esto recorta la imagen sin distorsionarla para llenar el espacio */
+    object-fit: cover; 
+    
+    /* Opcional: Esto ya no es tan necesario si el contenedor es circular */
+    border-radius: 50%; 
+}
+
+/* 3. Estilo del Placeholder: Asegura que el marcador de posición llene el contenedor */
+.avatar-container .avatar-placeholder {
+    /* Asegura que el placeholder llene el contenedor (debe tener el mismo tamaño del .avatar-container) */
+    width: 100%;
+    height: 100%;
+    
+    /* Centra la letra dentro del placeholder */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Estilo visual */
+    background-color: #f0f0f0;
+    font-size: 36px;
+    color: #333;
+}
