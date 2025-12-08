@@ -1,7 +1,25 @@
 <?php
 session_start();
 include('conect.php'); 
-
+function hayMetodosDePagoRegistrados($mysqli, $id_usuario) {
+    if (!$mysqli || $id_usuario == 0) return false;
+    
+    // Consulta directa a la tabla que registra si el usuario tiene métodos de pago.
+    $sql = "
+        SELECT 1 FROM usuario_metodos_pago WHERE id_usuario = ? LIMIT 1
+    ";
+    
+    $stmt = $mysqli->prepare($sql);
+    if ($stmt) {
+        $stmt->bind_param("i", $id_usuario);
+        $stmt->execute();
+        $stmt->store_result();
+        $count = $stmt->num_rows;
+        $stmt->close();
+        return $count > 0;
+    }
+    return false; 
+}
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     header('Content-Type: application/json');
     
@@ -16,6 +34,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
     if (empty($titulo) || $precio <= 0 || $tipo_trabajo_id == 0 || $carrera_id == 0 || $materia_id == 0) {
         echo json_encode(['success' => false, 'message' => 'Faltan campos obligatorios']);
+        exit;
+    }
+
+    if (!hayMetodosDePagoRegistrados($mysqli, $id_usuario_logueado)) {
+        // Devolver señal al JavaScript para mostrar el modal y recargar
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Debe registrar al menos un método de pago antes de publicar un servicio.',
+            'show_modal' => true // Señal clave para el JS
+        ]);
         exit;
     }
 
@@ -75,8 +103,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo json_encode(['success' => false, 'message' => 'Error preparando la consulta: ' . $mysqli->error]);
     }
     exit;
+
+
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -193,7 +224,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <h3 class="Titulo titu_crear">PUBLICAR UN SERVICIO</h3>
     </div>
     
-    <form id="formServicio">
+    <form id="formServicio" method="POST" enctype="multipart/form-data" action="servicio.php">
         <div class="row">
             <div class="col-lg-12">
                 <label for="titulo" class="lb_modal">TÍTULO</label>
@@ -262,7 +293,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <textarea id="descripcion_input" name="descripcion" class="inputs" rows="4" required></textarea>            
                 
                 <div class="mt-3">
-                    <input type="file" id="input-archivos-servicio" accept="image/*" style="display: none;"> 
+                    <input type="file" id="input-archivos-servicio" name="imagen-servicio" accept="image/*" style="display: none;"> 
                     
                     <button type="button" class="btn btn-secondary" id="btn-trigger-image">
                         <i class="bi bi-cloud-arrow-up-fill"></i> Seleccionar Imagen (Opcional)
@@ -277,15 +308,342 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
 
             <div class="d-flex justify-content-center mt-4">
-                <button type="submit" class="btn_siguiente">CREAR</button>
+                <button type="submit" id="btn-publicar-servicio" class="btn_siguiente">CREAR</button>
             </div>
         </div>
     </form>
 </div>
 
+
+<form id="formMetodosPago" action="modal_pagos.php" method="POST" enctype="multipart/form-data">
+<div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <ul class="nav nav-tabs" id="miTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active" id="tab-uno-tab" data-bs-toggle="tab" data-bs-target="#tab-uno" type="button" role="tab" aria-controls="tab-uno" aria-selected="true">OBLIGATORIO</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-dos-tab" data-bs-toggle="tab" data-bs-target="#tab-dos" type="button" role="tab" aria-controls="tab-dos" aria-selected="false">OPCIONAL</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-tres-tab" data-bs-toggle="tab" data-bs-target="#tab-tres" type="button" role="tab" aria-controls="tab-tres" aria-selected="false">OPCIONAL</button>
+          </li>
+            <li class="nav-item" role="presentation">
+            <button class="nav-link" id="tab-cuatro-tab" data-bs-toggle="tab" data-bs-target="#tab-cuatro" type="button" role="tab" aria-controls="tab-cuatro" aria-selected="false">OPCIONAL</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="miTabContent">
+          <div class="tab-pane fade show active" id="tab-uno" role="tabpanel" aria-labelledby="tab-uno-tab">
+              <div class="container conte_pago">
+                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
+                <h2 class="lb_subtitulo text-center">PAGO MÓVIL</h2>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <label for="documento_ident" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
+                        <input type="text" name="documento_ident" class="form-control inputs">
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label for="telefono" class="lb_modal">TELÉFONO</label><br>
+                        <input type="text" name="telefono" class="form-control inputs">
+                    </div>
+                  <div class="col-lg-12">
+                      <label for="banco_visual_input" class="lb_modal">BANCO</label>
+                      <br>
+                  
+                      <div class="custom-select-container">
+                          <input 
+                              type="text" 
+                              id="banco_visual_input"  class="form-control dropdown_front" 
+                              placeholder="Seleccione o busque el banco..."
+                              autocomplete="off"
+                          >
+                          <ul id="banco_custom_list" class="list-group" style="display: none;">
+                          </ul>
+                      </div>
+                  
+                      <select id="banco_id" name="banco_id" style="display: none;"> 
+                          <option value="" selected disabled>Seleccione EL BANCO</option> 
+                          <?php
+                          // Definición de la consulta SQL
+                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+
+                              $result = $mysqli->query($sql);
+                          
+                              if ($result && $result->num_rows > 0) {
+                                  // Si hay resultados, genera las opciones
+                                  while($row = $result->fetch_assoc()) {
+                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
+                                  }
+                              } else {
+                                  // Mensaje si no hay datos o la consulta falló
+                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
+                              }
+                          ?>
+                      </select>
+                    </div>
+                </div>
+              </div>
+          </div>
+          <div class="tab-pane fade" id="tab-dos" role="tabpanel" aria-labelledby="tab-dos-tab">
+              <div class="container conte_pago">
+                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
+                <h2 class="lb_subtitulo text-center">TRANSFERENCIA BANCARIA</h2>
+                <div class="row">
+                    <div class="col-lg-6 col-md-12">
+                        <label for="documento_identidad" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
+                        <input type="text" name="documento_identidad" class="form-control inputs">
+                    </div>
+                    <div class="col-lg-6 col-md-12">
+                        <label for="nro_cuenta" class="lb_modal">NUMERO DE CUENTA</label><br>
+                        <input type="text" name="nro_cuenta" class="form-control inputs">
+                    </div>
+                  <div class="col-lg-12">
+                      <label for="banco2_visual_input" class="lb_modal">BANCO</label>
+                      <br>
+                  
+                      <div class="custom-select-container">
+                          <input 
+                              type="text" 
+                              id="banco2_visual_input"  class="form-control dropdown_front" 
+                              placeholder="Seleccione o busque el banco..."
+                              autocomplete="off"
+                          >
+                          <ul id="banco2_custom_list" class="list-group" style="display: none;">
+                          </ul>
+                      </div>
+                  
+                      <select id="banco2_id" name="banco2_id"  style="display: none;"> 
+                          <option value="" selected disabled>Seleccione EL BANCO</option> 
+                          <?php
+                          // Definición de la consulta SQL
+                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
+
+                              $result = $mysqli->query($sql);
+                          
+                              if ($result && $result->num_rows > 0) {
+                                  // Si hay resultados, genera las opciones
+                                  while($row = $result->fetch_assoc()) {
+                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
+                                  }
+                              } else {
+                                  // Mensaje si no hay datos o la consulta falló
+                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
+                              }
+                          ?>
+                      </select>
+                    </div>
+                </div>
+              </div>            
+          </div>
+          <div class="tab-pane fade" id="tab-tres" role="tabpanel" aria-labelledby="tab-tres-tab">
+              <div class="container conte_pago">
+                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
+                <h2 class="lb_subtitulo text-center">BINANCE</h2>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label for="correo_binance" class="lb_modal">CORREO ASOCIADO</label><br>
+                        <input type="text" name="correo_binance" class="form-control inputs">
+                    </div>
+                </div>
+              </div>            
+          </div>
+          <div class="tab-pane fade" id="tab-cuatro" role="tabpanel" aria-labelledby="tab-cuatro-tab">
+              <div class="container conte_pago">
+                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
+                <h2 class="lb_subtitulo text-center">PAYPAL</h2>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <label for="correo_paypal" class="lb_modal">CORREO ASOCIADO</label><br>
+                        <input type="text" name="correo_paypal" class="form-control inputs">
+                    </div>
+                </div>
+              </div>            
+          </div>
+          
+        </div>
+        
+        
+      </div>
+      <div class="modal-footer justify-content-center btn-regis">
+        <button type="submit" class="btn btn-secondary"">REGISTRAR</button>
+      </div>
+    </div>
+  </div>
+</div>
+</form>
+
+
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="dropdown.js"></script>
     <script src="crearServicio.js"> </script>
+  <script>
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const showModalFlag = urlParams.get('show_modal');
+        const reintentarPublicacion = urlParams.get('reintentar_publicacion');
+        const pmStatus = urlParams.get('pm_status');
+        const msg = urlParams.get('msg');
+        
+        const modalElement = document.getElementById('modalConTabs');
+        const formServicio = document.getElementById('formServicio');
+
+
+        if (showModalFlag === 'true' && modalElement) {
+            history.replaceState(null, '', window.location.pathname); 
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const modal = new bootstrap.Modal(modalElement, {
+                    backdrop: 'static', 
+                    keyboard: false 
+                });
+                modal.show();
+            }
+        } 
+
+
+if (pmStatus) {
+
+    
+    let title = '';
+    let icon = '';
+    let text = '';
+    
+    if (pmStatus === 'success') {
+        title = '¡Métodos de Pago Registrados!';
+        icon = 'success';
+
+        text = 'Sus métodos de pago están listos. Ahora debe llenar los campos del servicio y presionar **CREAR** para publicar.';
+    } else if (pmStatus === 'warning' && msg) {
+        title = 'Registro con Advertencia';
+        icon = 'warning';
+
+        text = decodeURIComponent(msg) + "\n\nDebe llenar los campos del servicio y presionar **CREAR** para publicar.";
+    } else if (pmStatus === 'error' && msg) {
+
+        title = 'Error de Pago Obligatorio';
+        icon = 'error';
+        text = decodeURIComponent(msg);
+        
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            confirmButtonText: 'Volver al Registro'
+        }).then(() => {
+            window.location.href = window.location.pathname + '?show_modal=true';
+        });
+        return; 
+    }
+    
+    if (title) {
+
+        Swal.fire({
+            title: title,
+            text: text,
+            icon: icon,
+            showConfirmButton: true, 
+            confirmButtonText: 'Entendido, Publicaré Ahora'
+        }).then(() => {
+
+            history.replaceState(null, '', window.location.pathname); 
+        });
+    }
+}
+
+        document.getElementById('formServicio').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const fileInput = document.getElementById('input-archivos-servicio');
+            
+            if (fileInput.files.length > 0) {
+                formData.append('imagen-servicio', fileInput.files[0]);
+            }
+            
+
+            if (!document.querySelector('.swal2-loading')) {
+                Swal.fire({
+                    title: 'Publicando Servicio...',
+                    text: 'Verificando datos y métodos de pago.',
+                    allowOutsideClick: false,
+                    didOpen: () => { Swal.showLoading(); }
+                });
+            }
+
+            fetch('servicio.php', { 
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                if (!response.ok) { throw new Error('Network response was not ok'); }
+                return response.json();
+            })
+            .then(data => {
+                Swal.close(); 
+
+                if (data.success) {
+
+                    Swal.fire('¡Éxito!', data.message, 'success').then(() => {
+                        if (data.redirect) {
+                            window.location.href = data.redirect;
+                        }
+                    });
+                } else if (data.show_modal) {
+
+                    Swal.fire({
+                        title: 'Método de Pago Requerido',
+                        text: data.message,
+                        icon: 'warning',
+                        confirmButtonText: 'Registrar Método',
+                        allowOutsideClick: false,
+                        allowEscapeKey: false
+                    }).then(() => {
+                        window.location.href = window.location.pathname + '?show_modal=true';
+                    });
+
+                } else {
+
+                    Swal.fire('Error', data.message, 'error');
+                }
+            })
+            .catch(error => {
+                Swal.close();
+                console.error('Error en la petición:', error);
+                Swal.fire('Error', 'Ocurrió un error al intentar crear el servicio.', 'error');
+            });
+        });
+
+
+
+        const formMetodosPago = document.getElementById('formMetodosPago');
+        if (formMetodosPago) {
+            formMetodosPago.addEventListener('submit', function(e) {
+
+                const modalElement = document.getElementById('modalConTabs');
+                if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide(); 
+                    }
+                }
+
+                Swal.fire({
+                    title: 'Registrando Métodos de Pago...',
+                    text: 'Será redirigido para continuar con la publicación.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+            });
+        }
+    });
+</script>
 </body>
 </html>
