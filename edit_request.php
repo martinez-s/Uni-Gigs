@@ -288,8 +288,9 @@ if ($stmt_fetch) {
                     <br>
                     <input 
                         type="number" 
-                        step="0.01" 
-                        min="0.00" 
+                        step="0.5" 
+                        min="1.00" 
+                        max="1000.00"
                         id="precio" 
                         name="precio" 
                         class="inputs" 
