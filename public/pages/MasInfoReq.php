@@ -111,125 +111,183 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
     }
     ?>
 
-    <div class="container my-5">
-        
-        <?php if ($data): // Muestra los detalles si se encontró el registro ?>
+<div class="container my-5">
+    
+    <?php if ($data): ?>
 
-        <div class="row align-items-center mb-4">
-            <div class="col-md-8 mb-2 mb-md-0">
-                <h2 class="fw-normal mb-0">
-                    <?php echo htmlspecialchars($data['titulo']); ?>
-                </h2>
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-2">Request #<?php echo $data['id_requests']; ?></span>
+            <h2 class="fw-bold text-dark mb-0">
+                <?php echo htmlspecialchars($data['titulo']); ?>
+            </h2>
+        </div>
+        </div>
+
+    <div class="row g-4">
+        
+        <div class="col-lg-9">
+            
+            <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">DETALLES Y PRESUPUESTO</h5>
+            
+            <div class="row g-3 mb-4">
+                
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Carrera</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-primary" style="font-size: 18px;">school</span>
+                            <span class="text-truncate" style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['nombre_carrera']); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Materia</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-info" style="font-size: 18px;">book_2</span>
+                            <span class="text-truncate" style="font-size: 0.9rem;"><?php echo isset($data['materia']) ? htmlspecialchars($data['materia']) : 'General'; ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Tipo</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">work</span>
+                            <span style="font-size: 0.9rem;"><?php echo isset($data['tipo_trabajo']) ? htmlspecialchars($data['tipo_trabajo']) : 'Varios'; ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Publicado</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-muted" style="font-size: 18px;">calendar_today</span>
+                            <span style="font-size: 0.9rem;">
+                                <?php echo isset($data['fecha_creacion']) ? date('d/m/Y', strtotime($data['fecha_creacion'])) : 'N/A'; ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Límite Entrega</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-danger" style="font-size: 18px;">event_busy</span>
+                            <span style="font-size: 0.9rem;">
+                                <?php echo isset($data['fecha_limite']) ? date('d/m/Y', strtotime($data['fecha_limite'])) : 'Sin fecha'; ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card price-card">
+                        <span class="detail-label text-success">Presupuesto</span>
+                        <div class="detail-value text-success">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">payments</span>
+                            <span style="font-size: 1.1rem; font-weight: 800;">
+                                <?php echo '$' . number_format($data['precio'], 2, '.', ','); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="col-md-4 text-md-end">
-                <div class="gray-box py-2 px-3 d-inline-block w-auto">
-                    <?php 
-                        if (isset($data['fecha_creacion']) && $data['fecha_creacion']) {
-                            echo date('d/m/Y', strtotime($data['fecha_creacion']));
-                        } else {
-                            echo "FECHA NO DISP.";
-                        }
-                    ?>
+
+            <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">DESCRIPCIÓN DEL PROYECTO</h5>
+            <div class="desc-box shadow-sm" style="min-height: 2.75rem;">
+                <?php echo nl2br(htmlspecialchars($data['descripcion'])); ?>
+            </div>
+
+        </div>
+
+        <div class="col-lg-3">
+            <div class="user-card-modern">
+                <div class="report-btn" title="Reportar solicitud">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">flag</span>
+                </div>
+
+                <div class="avatar-placeholder shadow-sm">
+                    <span class="fw-bold"><?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?></span>
+                </div>
+                
+                <h6 class="fw-bold text-dark mb-1">
+                    <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>
+                </h6>
+                <p class="text-muted small mb-3">Solicitante</p>
+                
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="star-rating-display" data-rating="<?php echo isset($data['rating']) ? htmlspecialchars($data['rating']) : 0; ?>"></div>
+                </div>
+                <div class="d-flex justify-content-center mb-4">
+                    <h6 style="font-size: 0.8rem;">Gigs Completados: <?php echo htmlspecialchars($data['porcentaje_completacion']); ?>%</h6>
+                </div>
+
+                <button class="btn btn-primary w-100 py-2 fw-bold shadow-sm rounded-pill">
+                    ACEPTAR TRABAJO
+                </button>
+                
+                <div class="mt-3 text-center">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="bi bi-shield-check me-1"></i>Pago protegido
+                    </small>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
-            
-            <div class="col-lg-4 col-md-12">
-                <div class="img-placeholder">
-                    <?php if (!empty($data['url_foto'])): ?>
-                        <img src="../../public/img/imgSer/<?php echo htmlspecialchars($data['url_foto']); ?>" alt="Imagen solicitud" style="width: 100%; height: auto; display: block; object-fit: cover;">
-                    <?php else: ?>
-                        <div class="text-center py-5 bg-light">IMAGEN NO DISPONIBLE</div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <div class="col-lg-5 col-md-8">
-                <div class="mb-3">
-                    <span class="h6">INFORMACION</span>
-                </div>
-
-                <div class="row g-2 mb-2">
-                    <div class="col-6">
-                        <div class="gray-box py-2">
-                            <?php echo htmlspecialchars($data['nombre_carrera']); ?>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="gray-box py-2">
-                            <?php 
-                                if (isset($data['fecha_limite']) && $data['fecha_limite']) {
-                                    echo date('d/m/Y', strtotime($data['fecha_limite']));
-                                } else {
-                                    echo "SIN FECHA LIMITE";
-                                }
-                            ?>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-2 mb-3">
-                    <div class="col-4">
-                        <div class="gray-box py-2">
-                            <?php echo isset($data['materia']) ? htmlspecialchars($data['materia']) : 'General'; ?>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="gray-box py-2 px-1" style="font-size: 0.8rem;">
-                            <?php echo isset($data['tipo_trabajo']) ? htmlspecialchars($data['tipo_trabajo']) : 'Varios'; ?>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="gray-box py-2">
-                            <?php echo '$' . number_format($data['precio'], 2, '.', ','); ?>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="border-dark my-4">
-
-                <div class="desc-box">
-                    <?php echo nl2br(htmlspecialchars($data['descripcion'])); ?>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-4">
-                <div class="user-card">
-                    <div class="alert-btn">!</div>
-
-                    <div class="d-flex flex-column align-items-center mt-4">
-                        <div class="avatar-circle mb-2" style="background-color: #ccc; width: 60px; height: 60px; border-radius: 50%;"></div>
-                        
-                        <h6 class="mb-3">
-                            <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>
-                        </h6>
-                        
-                        <div class="bg-white py-1 px-4 mb-3 w-100 text-center border">
-                            <?php echo htmlspecialchars($data['rating']); ?> / 5
-                        </div>
-                    </div>
-
-                    <button class="btn btn-secondary mt-auto w-100">ACEPTAR</button>
-                </div>
-            </div>
-
-        </div>
-        
-        <?php elseif ($id_request_seleccionado === null): ?>
-            <div class="alert alert-info text-center mt-5">
-                <h4>No has seleccionado ningún request.</h4>
-                <a href="index.php" class="btn btn-primary mt-3">Volver a la lista</a>
-            </div>
-            
-        <?php else: ?>
-            <div class="alert alert-danger text-center mt-5">
-                <h4>Error: El request ID (<?php echo $id_request_seleccionado; ?>) solicitado no existe o fue eliminado.</h4>
-                <a href="index.php" class="btn btn-primary mt-3">Volver</a>
-            </div>
-        <?php endif; ?>
     </div>
+    
+    <?php elseif ($id_request_seleccionado === null): ?>
+        <div class="text-center py-5">
+            <div class="mb-3">
+                <span class="material-symbols-outlined text-muted" style="font-size: 64px;">search_off</span>
+            </div>
+            <h4 class="fw-light">No has seleccionado ninguna solicitud.</h4>
+            <a href="index.php" class="btn btn-outline-primary mt-3 px-4 rounded-pill">Volver al inicio</a>
+        </div>
+        
+    <?php else: ?>
+        <div class="text-center py-5">
+             <div class="mb-3">
+                <span class="material-symbols-outlined text-danger" style="font-size: 64px;">error_outline</span>
+            </div>
+            <h4 class="text-danger">Solicitud no encontrada</h4>
+            <p class="text-muted">El ID solicitado no existe o fue eliminado.</p>
+            <a href="index.php" class="btn btn-secondary mt-3 px-4 rounded-pill">Volver</a>
+        </div>
+    <?php endif; ?>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <footer>
@@ -390,6 +448,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
     </div>
 </footer>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionar todos los contenedores de estrellas
+    const ratingContainers = document.querySelectorAll('.star-rating-display');
+
+    ratingContainers.forEach(container => {
+        // Obtener el valor del rating desde el atributo data-rating
+        const rating = parseFloat(container.getAttribute('data-rating'));
+        
+        // Limpiar el contenido actual
+        container.innerHTML = '';
+
+        // Generar las 5 estrellas
+        for (let i = 1; i <= 5; i++) {
+            let iconName = 'star_border'; // Por defecto vacía
+            let colorClass = 'text-secondary'; // Color gris por defecto
+
+            if (rating >= i) {
+                // Estrella completa
+                iconName = 'star';
+                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
+            } else if (rating >= i - 0.5) {
+                // Media estrella
+                iconName = 'star_half';
+                colorClass = 'text-warning';
+            }
+
+            // Crear el elemento span para el icono
+            const star = document.createElement('span');
+            star.className = `material-symbols-outlined ${colorClass}`;
+            star.textContent = iconName;
+            
+            // Ajustar tamaño si es necesario (opcional)
+            star.style.fontSize = '28px'; 
+            star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+
+            // Agregar al contenedor
+            container.appendChild(star);
+        }
+    });
+});
+</script>
     
 </body>
 </html>

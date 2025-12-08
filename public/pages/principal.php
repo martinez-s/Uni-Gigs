@@ -73,7 +73,7 @@ if ($nombre_result->num_rows > 0) {
                                 <span class="material-symbols-outlined">server_person</span>
                             </div>
                             <div class="card-contenido">
-                                <a href="../../request.php">
+                                <a href="../../servicio.php">
                                 <h3 class="titulo">Ofrece un servicio</h3>
                                 </a>
                                 <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
@@ -169,11 +169,11 @@ if ($nombre_result->num_rows > 0) {
 
         if ($resultado && $resultado->num_rows > 0) {
         ?>
-            <div class="masonry-container">
+            <div class="row">
             <?php
                 while ($row = $resultado->fetch_assoc()) {
                 ?>
-                    <div class="masonry-item">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div class="card"> <div class="card-body d-flex flex-column">
                             
                             <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
@@ -275,11 +275,11 @@ if ($nombre_result->num_rows > 0) {
 
         if ($resultado && $resultado->num_rows > 0) {
         ?>
-            <div class="masonry-container">
+            <div class="row">
             <?php
                 while ($row = $resultado->fetch_assoc()) {
                 ?>
-                    <div class="masonry-item">
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div class="card"> <div class="card-body d-flex flex-column">
                             
                             <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
@@ -324,7 +324,7 @@ if ($nombre_result->num_rows > 0) {
             echo '<div class="col-12"><p class="alert alert-info">No se encontraron servicios para la carrera seleccionada.</p></div>';
         }
         ?>
-    </div>
+    </div>  
 
 
 

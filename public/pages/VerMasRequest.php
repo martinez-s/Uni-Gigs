@@ -457,6 +457,48 @@
     </div>
     </footer>
 
+    <script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionar todos los contenedores de estrellas
+    const ratingContainers = document.querySelectorAll('.star-rating-display');
+
+    ratingContainers.forEach(container => {
+        // Obtener el valor del rating desde el atributo data-rating
+        const rating = parseFloat(container.getAttribute('data-rating'));
+        
+        // Limpiar el contenido actual
+        container.innerHTML = '';
+
+        // Generar las 5 estrellas
+        for (let i = 1; i <= 5; i++) {
+            let iconName = 'star_border'; // Por defecto vacía
+            let colorClass = 'text-secondary'; // Color gris por defecto
+
+            if (rating >= i) {
+                // Estrella completa
+                iconName = 'star';
+                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
+            } else if (rating >= i - 0.5) {
+                // Media estrella
+                iconName = 'star_half';
+                colorClass = 'text-warning';
+            }
+
+            // Crear el elemento span para el icono
+            const star = document.createElement('span');
+            star.className = `material-symbols-outlined ${colorClass}`;
+            star.textContent = iconName;
+            
+            // Ajustar tamaño si es necesario (opcional)
+            star.style.fontSize = '20px'; 
+            star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+
+            // Agregar al contenedor
+            container.appendChild(star);
+        }
+    });
+});
+</script>
 
 
     <script>

@@ -502,3 +502,108 @@ input[type="search"]::-webkit-search-results-decoration {
 @media (max-width: 576px) {
     .masonry-container { column-count: 1; }
 }
+
+/* --- Estilos Mejorados para Detalle --- */
+
+/* Contenedor de la imagen */
+.img-placeholder {
+    background-color: #f8f9fa;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    min-height: 250px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Tarjetas de detalles pequeños (Carrera, Fecha, etc) */
+.detail-card {
+    background-color: #fff;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 15px;
+    height: 100%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.detail-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border-color: #dee2e6;
+}
+
+.detail-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+    margin-bottom: 5px;
+    display: block;
+}
+
+.detail-value {
+    font-weight: 600;
+    color: #212529;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Destacar el precio */
+.price-card {
+    background-color: #f0fdf4; /* Verde muy suave */
+    border-color: #bbf7d0;
+}
+.price-card .detail-value {
+    color: #15803d; /* Verde oscuro */
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+
+/* Descripción */
+.desc-box {
+    background-color: #fff;
+    border-left: 4px solid #203864; /* Tu color corporativo */
+    padding: 20px;
+    border-radius: 4px;
+    color: #495057;
+    line-height: 1.6;
+}
+
+/* Tarjeta de Usuario */
+.user-card-modern {
+    background-color: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+    position: sticky;
+    top: 20px; /* Se queda fija al hacer scroll */
+    text-align: center;
+    border: 1px solid #f0f0f0;
+}
+
+.avatar-placeholder {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background-color: #e9ecef;
+    margin: 0 auto 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+    font-size: 2rem;
+}
+
+.report-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    color: #adb5bd;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.report-btn:hover { color: #dc3545; }
+
