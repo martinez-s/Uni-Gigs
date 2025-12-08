@@ -19,7 +19,7 @@
 // Configuración y Conexión a la Base de Datos
 
 // 1. Establecer la conexión (Asegúrate de que tus credenciales sean correctas)
-$mysqli = new mysqli("localhost", "root", "", "uni-gigs"); 
+$mysqli = new mysqli("localhost", "root", "", "uni_gigs"); 
 
 if ($mysqli->connect_errno) {
     die("Fallo al conectar a MySQL: (" . $mysqli->connect_errno . ") " . $mysqli->connect_error);

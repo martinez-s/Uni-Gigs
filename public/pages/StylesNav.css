@@ -278,7 +278,6 @@ hr {
     letter-spacing: 3px;
 }
 
-/* 5 Estrellas Llenas Superpuestas */
 .star-rating-display::after {
     content: "★★★★★";
     letter-spacing: 3px;

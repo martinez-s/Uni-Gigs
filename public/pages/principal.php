@@ -65,28 +65,29 @@ if ($nombre_result->num_rows > 0) {
                     <p class="texto mb-4 ">Comienza haciendo una publicación, descubre servicios o ayuda a otros a culminar sus tareas.</p> 
                 </div>
                 <div class="botones-agrupados d-flex flex-column flex-lg-row gap-3">
-                    <button class="servicio-card flex-grow-1" type="button">
-                        <div class="card-icono">
-                            <span class="material-symbols-outlined">server_person</span>
-                        </div>
-                        <a href="../../servicio.php">
-                        <div class="card-contenido">
-                            <h3 class="titulo">Ofrece un servicio</h3>
-                            <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
-                        </div>
-                        </a>
-                    </button>
-                    <button class="servicio-card flex-grow-1" type="button">
-                        <div class="card-icono">
-                            <span class="material-symbols-outlined">server_person</span>
-                        </div>
-                        <a href="../../request.php">
-                        <div class="card-contenido">
-                            <h3 class="titulo">Publicar un request</h3>
-                            <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
-                        </a>
-                        </div>
-                    </button>    
+                        <button class="servicio-card flex-grow-1" type="button">
+                            <div class="card-icono">
+                                <span class="material-symbols-outlined">server_person</span>
+                            </div>
+                            <div class="card-contenido">
+                                <a href="../../servicio.php">
+                                <h3 class="titulo">Ofrece un servicio</h3>
+                                </a>
+                                <p class="subtitulo">Estoy desesperado quiero chamba, pagame por favor, hago trabajos bonitos</p>
+                            </div>
+                        </button>
+                        <button class="servicio-card flex-grow-1" type="button">
+                            <div class="card-icono">
+                                <span class="material-symbols-outlined">server_person</span>
+                            </div>
+                            <div class="card-contenido">
+                                <a href="../../request.php">
+                                <h3 class="titulo">Publicar un request</h3>
+                                </a>
+                                <p class="subtitulo">Ayuda coy a raspar una materia, ofrezco a mi perro y jalobolas </p>
+                            </div>
+                        </button>
+                    
                 </div>
             </div>
         </div>
