@@ -10,13 +10,16 @@ $(document).ready(function() {
     let selectedFiles = [];
     let fileUploadQueue = [];
     let isUploading = false;
+    let currentChatActive = true; // Nueva variable para rastrear estado del chat
     
-
     loadChats();
-    
+    updateChatButtonsState();
 
     $('#attach-btn').click(function() {
-        $('#file-input').click();
+        // Solo permitir clic si el botón no está deshabilitado
+        if (!$(this).prop('disabled')) {
+            $('#file-input').click();
+        }
     });
 
     $('#file-input').on('change', function(e) {
@@ -104,6 +107,7 @@ $(document).ready(function() {
             container.append(previewHtml).show();
         }
     }
+    
     window.removeSelectedFile = function(fileNameOrId) {
         selectedFiles = selectedFiles.filter(f => f.name !== fileNameOrId);
         $('#file-preview-container').empty().hide();
@@ -116,29 +120,13 @@ $(document).ready(function() {
         const text = ($('#message-input').val() || '').trim();
         const hasText = text.length > 0;
         const hasFile = selectedFiles.length > 0;
-        const enable = hasChat && (hasText || hasFile);
+        const enable = hasChat && currentChatActive && (hasText || hasFile);
         $('#send-btn').prop('disabled', !enable);
     }
 
     // enlazar input para actualizar estado en tiempo real
     $('#message-input').on('input', updateSendButtonState);
 
-    function selectChat(chatId, otherId) {
-        currentChatId = chatId;
-        lastMessageId = 0;
-
-        $('#chat-title').text(otherUserName);
-        $('#current-chat-id').val(chatId);
-        $('#message-input').prop('disabled', false).focus();
-        $('#chat-actions').removeClass('d-none');
-
-        updateChatHeader();
-        loadMessages(chatId);
-        startMessageRefresh();
-
-        updateSendButtonState();
-    }
-    
     function formatFileSize(bytes) {
         if (bytes >= 1073741824) {
             return (bytes / 1073741824).toFixed(2) + ' GB';
@@ -189,21 +177,19 @@ $(document).ready(function() {
             chatsList.append(chatElement);
         });
         
-    $('.chat-item').click(function() {
-        $('.chat-item').removeClass('active-chat');
-        $(this).addClass('active-chat');
-        
-        const chatId = $(this).data('chat-id');
-        const otherId = $(this).data('other-id');
-        otherUserName = $(this).data('other-name');
-        otherUserPhoto = $(this).data('other-photo');
-        const estado = $(this).data('estado'); 
-        selectChat(chatId, otherId, estado);
-    });
-// ...existing code...
+        $('.chat-item').click(function() {
+            $('.chat-item').removeClass('active-chat');
+            $(this).addClass('active-chat');
+            
+            const chatId = $(this).data('chat-id');
+            const otherId = $(this).data('other-id');
+            otherUserName = $(this).data('other-name');
+            otherUserPhoto = $(this).data('other-photo');
+            const estado = $(this).data('estado'); 
+            selectChat(chatId, otherId, estado);
+        });
     }
     
-    // ...existing code...
     function createChatElement(chat) {
         const nombreCompleto = chat.nombre_otro_usuario + ' ' + chat.apellido_otro_usuario;
         
@@ -249,36 +235,63 @@ $(document).ready(function() {
             </div>
         `;
     }
-// ...existing code...
-    
-    // ...existing code...
+
+    // Función para actualizar estado de botones
+    function updateChatButtonsState() {
+        const hasChat = !!currentChatId;
+        
+        if (!hasChat) {
+            // No hay chat seleccionado
+            $('#attach-btn').prop('disabled', true);
+            $('#message-input').prop('disabled', true);
+            $('#message-input').attr('placeholder', 'Selecciona un chat...');
+            $('#send-btn').prop('disabled', true);
+            return;
+        }
+        
+        const isActive = currentChatActive;
+        
+        // Habilitar/deshabilitar botón de adjuntar
+        $('#attach-btn').prop('disabled', !isActive);
+        
+        // Habilitar/deshabilitar input de mensaje
+        $('#message-input').prop('disabled', !isActive);
+        
+        // Actualizar placeholder del input
+        if (!isActive) {
+            $('#message-input').attr('placeholder', 'Chat inactivo');
+        } else {
+            $('#message-input').attr('placeholder', 'Escribe un mensaje o adjunta un archivo...').focus();
+        }
+        
+        // Actualizar estado del botón de enviar
+        updateSendButtonState();
+    }
+
+    // Modificar la función selectChat para usar el estado del chat
     function selectChat(chatId, otherId, estado) {
         currentChatId = chatId;
         lastMessageId = 0;
         
+        // Determinar si el chat está activo
+        currentChatActive = (estado === 1 || estado === '1' || estado === true || estado === 'true');
+        
         $('#chat-title').text(otherUserName);
         $('#current-chat-id').val(chatId);
-
-        // Si el chat está inactivo (estado == 0 / false) mantener input deshabilitado
-        const isActive = (estado === 1 || estado === '1' || estado === true || estado === 'true');
-        if (!isActive) {
-            $('#message-input').prop('disabled', true).val('').attr('placeholder', 'Chat inactivo');
-            $('#send-btn').prop('disabled', true);
-            // opcional: ocultar acciones si existe contenedor
-            $('#chat-actions').addClass('d-none');
-        } else {
-            $('#message-input').prop('disabled', false).attr('placeholder', 'Escribe un mensaje...').focus();
+        
+        // Actualizar estados de todos los botones
+        updateChatButtonsState();
+        
+        if (currentChatActive) {
             $('#chat-actions').removeClass('d-none');
+        } else {
+            $('#chat-actions').addClass('d-none');
         }
-
+        
         updateChatHeader();
         loadMessages(chatId);
         startMessageRefresh();
-
-        // actualizar estado del botón al seleccionar chat
-        if (typeof updateSendButtonState === 'function') updateSendButtonState();
     }
-// ...existing code...
     
     function updateChatHeader() {
         if (otherUserPhoto) {
@@ -487,7 +500,7 @@ $(document).ready(function() {
         
         // Deshabilitar botones durante el envío
         $('#send-btn').prop('disabled', true);
-        $('#attach-btn').css('pointer-events', 'none');
+        $('#attach-btn').prop('disabled', true);
         $('#message-input').prop('disabled', true);
         
         let fileData = null;
@@ -570,11 +583,13 @@ $(document).ready(function() {
     
     // Resetear formulario después del envío
     function resetForm() {
-        $('#message-input').val('').prop('disabled', false).focus();
+        $('#message-input').val('');
         $('#send-btn').prop('disabled', true);
-        $('#attach-btn').css('pointer-events', 'auto');
         $('#file-preview-container').empty().hide();
         selectedFiles = [];
+        
+        // Actualizar estado de botones según el chat actual
+        updateChatButtonsState();
     }
     
     // ============================================
@@ -659,6 +674,4 @@ $(document).ready(function() {
             clearInterval(refreshInterval);
         }
     });
-
-    
 });

@@ -287,9 +287,14 @@ $nombre_usuario = $_SESSION['nombre'];
                     <div class="p-3 border-top bg-white shadow-sm">
                         <div class="d-flex align-items-center">
                             <!-- Botón para adjuntar archivos -->
-                            <div class="attachment-btn" id="attach-btn" title="Adjuntar archivo">
-                                <i class="bi bi-paperclip fs-4 text-secondary"></i>
-                            </div>
+                            <button type="button" 
+                                class="attachment-btn" 
+                                id="attach-btn" 
+                                title="Adjuntar archivo"
+                                disabled
+                                style="border: none; background: none; cursor: pointer;">
+                            <i class="bi bi-paperclip fs-4 text-secondary"></i>
+                        </button>
                             
                             <!-- Input oculto para archivos -->
                             <input type="file" id="file-input">
