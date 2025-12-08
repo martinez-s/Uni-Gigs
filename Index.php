@@ -193,59 +193,58 @@ include __DIR__ . '/app/includes/Navbar.php';
         </div>
     </div>
 
-    <div class="modal fade" id="modal_registro3" aria-hidden="true" aria-labelledby="modal_registro3" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="container conte_regis">
-                        <h1 class="Titulo titu_modal">REGISTRATE</h1>
-                        <h2 class="lb_subtitulo text-center">VERIFICACION DE ESTUDIANTE</h2>
-                        <div class="row">
-                            <div class="col-lg-6 col-md-12 flex-column justify-content-center">
-                                <div class="contenedor_carnet text-center">
-                                    <p class="p_carnet">SUBE UNA FOTO DE TU <br> CARNET ESTUDIANTIL</p>
-                                    <label for="input-imagen-carnet" class="imagen_carnet" style="cursor: pointer; border: 2px dashed #ccc; padding: 20px; display: block;">
-                                        <span class="texto-placeholder">+</span>
-                                    </label>
-                                    <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*" style="display: none;">
-                                </div>
-                            </div>
-                            <div class="col-lg-6 col-md-12 flex-column justify-content-center columna_regis3">
-                                <label for="nombre" class="lb_modal">NOMBRE</label><br>
-                                <input type="text" name="nombre" class="inputs form-control" required><br>
+<div class="modal fade" id="modal_registro3" aria-hidden="true" aria-labelledby="modal_registro3" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="container conte_regis">
+                    <h1 class="Titulo titu_modal">REGISTRATE</h1>
+                    <h2 class="lb_subtitulo text-center">VERIFICACION DE ESTUDIANTE</h2>
+                    
+                    <div id="ocr_loading" class="text-center mb-3" style="display:none;">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <p class="text-primary fw-bold">Analizando carnet con IA...</p>
+                    </div>
 
-                                <label for="apellido" class="lb_modal">APELLIDO</label><br>
-                                <input type="text" name="apellido" class="inputs form-control" required><br>
-
-                                <label for="cedula" class="lb_modal">CÉDULA</label><br>
-                                <input type="text" name="cedula" class="inputs form-control" required><br>
-
-                                <label for="universidad" class="lb_modal">UNIVERSIDAD</label><br>
-                                <input type="text" name="universidad" class="inputs form-control"><br>
-
-                                <label for="carrera" class="lb_modal">CARRERA</label><br>
-                                <select id="carrera" name="carrera">
-                                    <?php
-                                    $query = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera ASC";
-                                    $result = $mysqli->query($query);
-                                    while ($row = $result->fetch_assoc()) {
-                                        echo "<option value='" . $row['id_carrera'] . "'>" . $row['nombre_carrera'] . "</option>";
-                                    }
-                                    ?>
-                                </select>
+                    <div class="row">
+                        <div class="col-lg-6 col-md-12 flex-column justify-content-center">
+                            <div class="contenedor_carnet text-center">
+                                <p class="p_carnet">SUBE UNA FOTO DE TU <br> CARNET ESTUDIANTIL</p>
+                                <label for="input-imagen-carnet" class="imagen_carnet" style="cursor: pointer; border: 2px dashed #0d6efd; padding: 20px; display: block; background: #f8f9fa;">
+                                    <i class="bi bi-camera-fill fs-2 text-primary"></i>
+                                </label>
+                                <input type="file" id="input-imagen-carnet" name="imagen_carnet" accept="image/*" style="display: none;" onchange="procesarCarnet(this)">
                             </div>
                         </div>
-                        <div class="d-flex justify-content-center mt-4">
-                            <button type="submit" name="btn_finalizar" class="btn_fin">FINALIZAR REGISTRO</button>
+
+                        <div class="col-lg-6 col-md-12 flex-column justify-content-center columna_regis3">
+                            <label for="reg_nombre" class="lb_modal_carnet">NOMBRE</label><br>
+                            <input type="text" name="nombre" id="reg_nombre" class="inputs_carnet form-control_carnet" required readonly style="background-color: #e9ecef;"><br>
+
+                            <label for="reg_apellido" class="lb_modal_carnet">APELLIDO</label><br>
+                            <input type="text" name="apellido" id="reg_apellido" class="inputs_carnet form-control_carnet" required readonly style="background-color: #e9ecef;"><br>
+
+                            <label for="reg_cedula" class="lb_modal_carnet">CÉDULA</label><br>
+                            <input type="text" name="cedula" id="reg_cedula" class="inputs_carnet form-control_carnet" required readonly style="background-color: #e9ecef;"><br>
+
+                            <label for="reg_universidad" class="lb_modal_carnet">UNIVERSIDAD</label><br>
+                            <input type="text" name="universidad" id="reg_universidad" class="inputs_carnet form-control_carnet" readonly style="background-color: #e9ecef;"><br>
+
+                            <label for="reg_carrera" class="lb_modal_carnet">CARRERA</label><br>
+                            <input type="text" name="carrera" id="reg_carrera" class="inputs_carnet form-control_carnet" required readonly style="background-color: #e9ecef;"><br>
                         </div>
+                    </div>
+                    <div class="d-flex justify-content-center mt-4">
+                        <button type="submit" name="btn_finalizar" class="btn_fin">FINALIZAR REGISTRO</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 </form>
     <div id="Registro" class="container-fluid p-5 bg-light">
@@ -262,105 +261,173 @@ include __DIR__ . '/app/includes/Navbar.php';
 
 <?php include __DIR__ . '/app/includes/Footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="login_regis.js"></script> 
 
-    <script src="login_regis.js"></script>
-
-<!-- Scripts que deberia poner en otro archivo -->
 <script>
-        // <?php if ($error_message): ?>
+    document.addEventListener('DOMContentLoaded', function() {
         
-        const errorMessage = "<?php echo htmlspecialchars($error_message); ?>";
-        
-        Swal.fire({
+        // --- 1. MANEJO DE ERRORES/ÉXITOS DESDE PHP ---
+        <?php if ($error_message): ?>
+            Swal.fire({
                 icon: "error",
-                title: "Error de inicio de sesión",
-                text: errorMessage, 
+                title: "Atención",
+                text: "<?php echo htmlspecialchars($error_message); ?>",
+                confirmButtonColor: '#d33',
+                confirmButtonText: 'Reintentar'
+            }).then((result) => {
+                // Si el error es de login, abrir modal login. Si es genérico, abrir el que corresponda.
+                // Por defecto abrimos registro si falló algo del registro
+                var registroModal = new bootstrap.Modal(document.getElementById('modal_registro'));
+                registroModal.show();
             });
-        
-            var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
-            loginModal.show();
-        
         <?php endif; ?>
-        
-</script>  
-<script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Manejo de Errores (PHP -> JS)
-            <?php if ($error_message): ?>
-                Swal.fire({
-                    icon: "error",
-                    title: "Oops...",
-                    text: "<?php echo htmlspecialchars($error_message); ?>",
-                    confirmButtonColor: '#3085d6',
-                    confirmButtonText: 'Reintentar'
-                }).then((result) => {
-                    // Si hubo error, volvemos a abrir el modal de registro
-                    var registroModal = new bootstrap.Modal(document.getElementById('modal_registro'));
-                    registroModal.show();
-                });
-            <?php endif; ?>
 
-            // Manejo de Éxito
-            <?php if ($success_message): ?>
-                Swal.fire({
-                    icon: "success",
-                    title: "¡Listo!",
-                    text: "<?php echo htmlspecialchars($success_message); ?>",
-                    confirmButtonColor: '#28a745',
-                }).then((result) => {
-                    // Si fue exitoso, abrimos el modal de login
-                    var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
-                    loginModal.show();
-                });
-            <?php endif; ?>
-        });
-</script>
-<script>
-function validarPaso1() {
-        // 1. Obtenemos los inputs ESPECÍFICOS del formulario de registro usando el ID
-        const correo = document.querySelector('#form_registro input[name="correo"]');
+        <?php if ($success_message): ?>
+            Swal.fire({
+                icon: "success",
+                title: "¡Listo!",
+                text: "<?php echo htmlspecialchars($success_message); ?>",
+                confirmButtonColor: '#28a745',
+            }).then((result) => {
+                var loginModal = new bootstrap.Modal(document.getElementById('modal_login'));
+                loginModal.show();
+            });
+        <?php endif; ?>
+    });
+
+    // --- 2. VALIDACIÓN DEL PASO 1 (BOTÓN SIGUIENTE) ---
+    function validarPaso1() {
+        // Obtenemos los inputs
+        const correoInput = document.querySelector('#form_registro input[name="correo"]');
         const clave = document.querySelector('#form_registro input[name="clave"]');
-        const fecha = document.querySelector('#form_registro input[name="fecha_nacimiento"]');
+        const fechaInput = document.querySelector('#form_registro input[name="fecha_nacimiento"]');
         const clave2 = document.querySelector('#form_registro input[name="clave_confirm"]');
 
-        // 2. Verificamos validación
-        // Nota: checkValidity() devuelve true si el campo cumple con 'required', tipo email, etc.
+        // Validaciones básicas de HTML (Campos vacíos)
         let esValido = true;
+        if (!correoInput.checkValidity()) { correoInput.reportValidity(); esValido = false; } 
+        else if (!clave.checkValidity()) { clave.reportValidity(); esValido = false; } 
+        else if (!fechaInput.checkValidity()) { fechaInput.reportValidity(); esValido = false; } 
+        else if (!clave2.checkValidity()) { clave2.reportValidity(); esValido = false; }
 
-        if (!correo.checkValidity()) {
-            correo.reportValidity();
-            esValido = false;
-        } else if (!clave.checkValidity()) {
-            clave.reportValidity();
-            esValido = false;
-        } else if (!fecha.checkValidity()) {
-            fecha.reportValidity();
-            esValido = false;
-        } else if (!clave2.checkValidity()) {
-            clave2.reportValidity();
-            esValido = false;
-        }
-
-        // Si algún campo falló, detenemos la función aquí
         if (!esValido) return;
 
-        // 3. Validación extra: Que las contraseñas coincidan visualmente antes de enviar
-        if (clave.value !== clave2.value) {
-            Swal.fire({
-                icon: "warning",
-                title: "Contraseñas no coinciden",
-                text: "Por favor verifica que ambas contraseñas sean iguales."
-            });
+        // A. Validar Dominio Unimar
+        const correo = correoInput.value.trim().toLowerCase();
+        if (!correo.endsWith("@unimar.edu.ve")) {
+            Swal.fire({ icon: "error", title: "Correo incorrecto", text: "Solo se permite el registro con correo institucional (@unimar.edu.ve)." });
             return;
         }
 
-        // 4. Si todo está bien, cambiamos de modal
-        const modal1 = bootstrap.Modal.getInstance(document.getElementById('modal_registro'));
-        const modal2 = new bootstrap.Modal(document.getElementById('modal_registro2'));
+        // B. Validar Edad (16 años)
+        const fechaNacimiento = new Date(fechaInput.value);
+        const hoy = new Date();
+        let edad = hoy.getFullYear() - fechaNacimiento.getFullYear();
+        const mesDiff = hoy.getMonth() - fechaNacimiento.getMonth();
+        if (mesDiff < 0 || (mesDiff === 0 && hoy.getDate() < fechaNacimiento.getDate())) {
+            edad--;
+        }
+
+        if (edad < 16) {
+            Swal.fire({ icon: "warning", title: "Edad insuficiente", text: "Debes tener al menos 16 años para registrarte." });
+            return;
+        }
+
+        // C. Validar Contraseñas
+        if (clave.value !== clave2.value) {
+            Swal.fire({ icon: "warning", title: "Contraseñas no coinciden", text: "Verifica que ambas contraseñas sean iguales." });
+            return;
+        }
+
+        // Si todo está bien, pasamos al siguiente modal
+        const modal1El = document.getElementById('modal_registro');
+        const modal1 = bootstrap.Modal.getInstance(modal1El) || new bootstrap.Modal(modal1El);
+        
+        const modal2El = document.getElementById('modal_registro2');
+        const modal2 = new bootstrap.Modal(modal2El);
 
         modal1.hide();
         modal2.show();
+    }
+
+    async function procesarCarnet(input) {
+        if (input.files && input.files[0]) {
+            
+            document.getElementById('ocr_loading').style.display = 'block';
+            document.body.style.cursor = 'wait';
+
+            const formData = new FormData();
+            formData.append('imagen_carnet', input.files[0]);
+
+            try {
+                const respuesta = await fetch('scanner_ajax.php', { method: 'POST', body: formData });
+                const resultado = await respuesta.json();
+
+                document.getElementById('ocr_loading').style.display = 'none';
+                document.body.style.cursor = 'default';
+
+                if (resultado.success) {
+                    const datos = resultado.data;
+
+                    document.getElementById('reg_nombre').value = datos.nombre || '';
+                    document.getElementById('reg_apellido').value = datos.apellido || '';
+                    document.getElementById('reg_cedula').value = datos.cedula || '';
+                    document.getElementById('reg_universidad').value = datos.universidad || '';
+                    document.getElementById('reg_carrera').value = datos.carrera || 'NO DETECTADA';
+
+                    const correoInput = document.querySelector('#form_registro input[name="correo"]'); 
+                    
+                    const correoUsuario = correoInput.value.trim().toLowerCase();
+
+                    if (datos.nombre && datos.apellido && datos.cedula) {
+                        const correoTeorico = construirCorreoUnimar(datos.nombre, datos.apellido, datos.cedula);
+
+                        if (correoUsuario !== correoTeorico) {
+                            Swal.fire({
+                                icon: 'warning',
+                                title: 'Posible error en el correo',
+                                html: `El correo ingresado (<b>${correoUsuario}</b>) no coincide con el formato de tu carnet (<b>${correoTeorico}</b>).<br><br>¿Deseas corregirlo?`,
+                                showCancelButton: true,
+                                confirmButtonText: 'Sí, corregir',
+                                cancelButtonText: 'No, dejarlo así'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    correoInput.value = correoTeorico;
+                                    Swal.fire('Corregido', 'El correo ha sido actualizado.', 'success');
+                                }
+                            });
+                        } else {
+                            Swal.fire({ icon: 'success', title: '¡Verificación Exitosa!', text: 'Los datos coinciden correctamente.' });
+                        }
+                    }
+
+                } else {
+                    Swal.fire({ icon: 'warning', title: 'No se pudo leer', text: resultado.message || 'Intenta con una foto más clara.' });
+                }
+
+            } catch (error) {
+                console.error(error);
+                document.getElementById('ocr_loading').style.display = 'none';
+                document.body.style.cursor = 'default';
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Error de conexión con el servidor.' });
+            }
+        }
+    }
+
+    function construirCorreoUnimar(nombre, apellido, cedula) {
+        const limpiar = (texto) => {
+            return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                        .replace(/Ñ/g, "n").replace(/ñ/g, "n")
+                        .toLowerCase().trim();
+        };
+        const primerNombre = limpiar(nombre).split(" ")[0];
+        const letraNombre = primerNombre.charAt(0);
+        const primerApellido = limpiar(apellido).split(" ")[0];
+        const soloNumeros = cedula.replace(/\D/g, ''); 
+        const ultimos4 = soloNumeros.slice(-4);
+
+        return `${letraNombre}${primerApellido}.${ultimos4}@unimar.edu.ve`;
     }
 </script>
 </body>
