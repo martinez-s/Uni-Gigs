@@ -40,7 +40,7 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../public/styles/styles.css">
+    <link rel="stylesheet" href="../../public/styles/styles.css">
     <!-- Estilos específicos para el request -->
     <link rel="stylesheet" href="public/pages/StylesNav.css">
     <link rel="stylesheet" href="public/styles/crear_request.css">
@@ -121,7 +121,7 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         </div>
     </div>
 </div>
-<div id="Servicios" class="banner-container pb-5">
+<div id="Servicios" class="banner-containerr pb-5">
     <div class="container-fluid px-5">
         <div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
