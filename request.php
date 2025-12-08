@@ -31,7 +31,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
     } else {
         
-        $fecha_creacion = date("Y-m-d");
+
 
 
         $sql_insert_request = "INSERT INTO requests (
