@@ -1,30 +1,25 @@
 <?php
-// 1. INICIO DE SESIÓN
-// Debe ser lo primero en el script.
 session_start();
 
-// Variable para controlar qué ID vamos a consultar
 $id_request_seleccionado = null;
+$data = null; 
 
-// 2. LÓGICA DE OBTENCIÓN DE DATOS (POST vs SESSION)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
-    // CASO A: Venimos del formulario POST (Click en "Más información")
     
-    // Limpiamos y guardamos los IDs que vienen del formulario
     $id_request = intval($_POST['id_request']);
     $id_usuario = intval($_POST['id_usuario']);
     $id_carrera = intval($_POST['id_carrera']);
     
-    // Guardamos en sesión para mantener el estado si el usuario refresca (F5)
+
     $_SESSION['current_request_id'] = $id_request;
     $_SESSION['request_user_id'] = $id_usuario;
     $_SESSION['request_carrera_id'] = $id_carrera;
     
-    // Definimos el ID que usaremos para la consulta
+
     $id_request_seleccionado = $id_request;
 
 } elseif (isset($_SESSION['current_request_id'])) {
-    // CASO B: Recarga de página (GET) o navegación interna, usamos la sesión.
+
     $id_request_seleccionado = $_SESSION['current_request_id'];
 }
 ?>
@@ -46,190 +41,291 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
     <script src="main.js"></script>
     
     <?php
-    // Inclusión de archivos necesarios
-    include('../../conect.php'); // Asegúrate de que esta ruta sea correcta y que defina $mysqli
-    include 'NavBar.php'; // Asegúrate de que este archivo no tenga session_start()
+
+include('../../conect.php');
+include 'NavBar.php'; 
+
+if ($id_request_seleccionado) {
     
-    $data = null; // Inicializamos la variable que contendrá el resultado del request
+    $sql = "SELECT 
+        r.id_requests, 
+        r.titulo, 
+        r.descripcion, 
+        r.precio, 
+        r.fecha_creacion, 
+        r.fecha_limite, 
 
-    // 3. CONSULTA SQL SEGURA (SOLO SI TENEMOS UN ID VÁLIDO)
-    if ($id_request_seleccionado) {
+        m.nombre AS nombre_materia, 
+        tt.nombre AS tipo_trabajo_nombre,
+        c.nombre_carrera, 
+
+        u.rating, 
+        u.porcentaje_completacion, 
+        u.nombre AS nombre_usuario, 
+        u.apellido AS apellido_usuario,
+        u.url_foto_perfil, 
+
+        MIN(fr.url_foto) AS url_foto
+    FROM 
+        requests r
+    JOIN 
+        carreras c ON r.id_carrera = c.id_carrera
+    JOIN 
+        usuarios u ON r.id_usuario = u.id_usuario
+    JOIN 
+        materias m ON r.id_materia = m.id_materia
+    JOIN 
+        tipos_trabajos tt ON r.id_tipo_trabajo = tt.id_tipo_trabajo
+    LEFT JOIN 
+        fotos_requests fr ON r.id_requests = fr.id_request
+    WHERE 
+        r.id_requests = ? 
+    GROUP BY 
+        r.id_requests, r.titulo, r.descripcion, r.precio, r.fecha_creacion, r.fecha_limite, 
+        m.nombre, tt.nombre, c.nombre_carrera, 
+        u.rating, u.porcentaje_completacion, u.nombre, u.apellido, u.url_foto_perfil"
+        ;
+
+    if ($stmt = $mysqli->prepare($sql)) {
+
+        $stmt->bind_param("i", $id_request_seleccionado);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
         
-        $sql = "SELECT 
-            r.id_requests, 
-            r.titulo, 
-            r.descripcion, 
-            r.precio, 
-            r.fecha_creacion, 
-            r.fecha_limite, 
-            -- Nombres completos obtenidos de tablas externas
-            m.nombre AS nombre_materia, 
-            tt.nombre AS tipo_trabajo_nombre,
-            c.nombre_carrera, 
-            -- Información del usuario
-            u.rating, 
-            u.porcentaje_completacion, 
-            u.nombre AS nombre_usuario, 
-            u.apellido AS apellido_usuario,
-            -- Foto del request (solo la primera)
-            MIN(fr.url_foto) AS url_foto
-        FROM 
-            requests r
-        JOIN 
-            carreras c ON r.id_carrera = c.id_carrera
-        JOIN 
-            usuarios u ON r.id_usuario = u.id_usuario
-        -- Nuevo JOIN para obtener el nombre de la materia
-        JOIN 
-            materias m ON r.id_materia = m.id_materia
-        -- Nuevo JOIN para obtener el nombre del tipo de trabajo
-        JOIN 
-            tipos_trabajos tt ON r.id_tipo_trabajo = tt.id_tipo_trabajo
-        LEFT JOIN 
-            fotos_requests fr ON r.id_requests = fr.id_request
-        WHERE 
-            r.id_requests = ? 
-        GROUP BY 
-            r.id_requests, r.titulo, r.descripcion, r.precio, r.fecha_creacion, r.fecha_limite, 
-            m.nombre, tt.nombre, c.nombre_carrera, 
-            u.rating, u.porcentaje_completacion, u.nombre, u.apellido"
-            ;
-        // Preparamos la consulta
-        if ($stmt = $mysqli->prepare($sql)) {
-            // Vinculamos el ID (i = integer)
-            $stmt->bind_param("i", $id_request_seleccionado);
-            $stmt->execute();
-            $resultado = $stmt->get_result();
-            
-            // Obtenemos el único registro
-            $data = $resultado->fetch_assoc();
-            $stmt->close();
-        } else {
-            // Error de conexión o de sintaxis en la consulta
-            echo "<p class='alert alert-danger'>Error al preparar la consulta: " . $mysqli->error . "</p>";
-        }
+
+        $data = $resultado->fetch_assoc();
+        $stmt->close();
+    } else {
+
+        echo "<p class='alert alert-danger'>Error al preparar la consulta: " . $mysqli->error . "</p>";
     }
-    ?>
 
-    <div class="container my-5">
+    $archivos_request = [];
+    $sql_archivos = "SELECT nombre_archivo, url_archivo, tipo_archivo FROM archivos_request WHERE id_requests = ?";
+    if (isset($mysqli) && $stmt_archivos = $mysqli->prepare($sql_archivos)) {
+        $stmt_archivos->bind_param("i", $id_request_seleccionado);
+        $stmt_archivos->execute();
+        $resultado_archivos = $stmt_archivos->get_result();
+
+        while ($archivo = $resultado_archivos->fetch_assoc()) {
+            $archivos_request[] = $archivo;
+        }
+        $stmt_archivos->close();
+    }
+}
+?>
+
+<div class="container my-5">
+    
+    <?php if ($data): ?>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-4 gap-3">
+        <div>
+            <span class="badge bg-primary bg-opacity-10 text-primary mb-2">Request #<?php echo $data['id_requests']; ?></span>
+            <h2 class="fw-bold text-dark mb-0">
+                <?php echo htmlspecialchars($data['titulo']); ?>
+            </h2>
+        </div>
+        </div>
+
+    <div class="row g-4">
         
-        <?php if ($data): // Muestra los detalles si se encontró el registro ?>
+        <div class="col-lg-9">
+            
+            <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">DETALLES Y PRESUPUESTO</h5>
+            
+            <div class="row g-3 mb-4">
+                
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Carrera</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-primary" style="font-size: 18px;">license</span>
+                            <span class="text-truncate" style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['nombre_carrera']); ?></span>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="row align-items-center mb-4">
-            <div class="col-md-8 mb-2 mb-md-0">
-                <h2 class="fw-normal mb-0">
-                    <?php echo htmlspecialchars($data['titulo']); ?>
-                </h2>
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Materia</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-info" style="font-size: 18px;">book_2</span>
+                            <span class="text-truncate" style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['nombre_materia']); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Tipo</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">type_specimen</span>
+                            <span style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['tipo_trabajo_nombre']); ?></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Publicado</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-muted" style="font-size: 18px;">calendar_today</span>
+                            <span style="font-size: 0.9rem;">
+                                <?php echo isset($data['fecha_creacion']) ? date('d/m/Y', strtotime($data['fecha_creacion'])) : 'N/A'; ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card">
+                        <span class="detail-label">Límite Entrega</span>
+                        <div class="detail-value">
+                            <span class="material-symbols-outlined text-danger" style="font-size: 18px;">event_busy</span>
+                            <span style="font-size: 0.9rem;">
+                                <?php echo isset($data['fecha_limite']) ? date('d/m/Y', strtotime($data['fecha_limite'])) : 'Sin fecha'; ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                    <div class="detail-card price-card">
+                        <span class="detail-label text-success">Presupuesto</span>
+                        <div class="detail-value text-success">
+                            <span class="material-symbols-outlined" style="font-size: 18px;">payments</span>
+                            <span style="font-size: 1.1rem; font-weight: 800;">
+                                <?php echo '$' . number_format($data['precio'], 2, '.', ','); ?>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
-            <div class="col-md-4 text-md-end">
-                <div class="gray-box py-2 px-3 d-inline-block w-auto">
+
+            <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">DESCRIPCIÓN DEL PROYECTO</h5>
+            <div class="desc-box shadow-sm mb-4" style="min-height: 2.75rem;">
+                <?php echo nl2br(htmlspecialchars($data['descripcion'])); ?>
+            </div>
+
+            <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">ARCHIVOS ADJUNTOS</h5>
+            <div class="desc-box shadow-sm p-3">
+                <?php if (!empty($archivos_request)): ?>
                     <?php 
-                        if (isset($data['fecha_creacion']) && $data['fecha_creacion']) {
-                            echo date('d/m/Y', strtotime($data['fecha_creacion']));
-                        } else {
-                            echo "FECHA NO DISP.";
-                        }
+                    $base_path = '../../'; 
                     ?>
+                    <div class="row g-3">
+                        <?php foreach ($archivos_request as $archivo): 
+                            $nombre = htmlspecialchars($archivo['nombre_archivo']);
+                            $url_db = htmlspecialchars($archivo['url_archivo']);
+                            $tipo = $archivo['tipo_archivo'];
+                            $ruta_completa = $base_path . $url_db; 
+
+                            $icono_html = '';
+                            if (strpos($tipo, 'image/') !== false) {
+                                $icono_html = '<img src="' . $ruta_completa . '" alt="' . $nombre . '" class="img-fluid rounded" style="max-height: 100px; width: 100%; object-fit: cover;">';
+                            } elseif (strpos($tipo, 'pdf') !== false) {
+                                $icono_html = '<span class="material-symbols-outlined fs-2 text-danger">picture_as_pdf</span>';
+                            } else {
+                                $icono_html = '<span class="material-symbols-outlined fs-2 text-primary">attach_file</span>';
+                            }
+                        ?>
+                            <div class="col-6 col-md-3">
+                                <div class="card h-100 p-2 text-center border-0 shadow-sm">
+                                    <div class="d-flex justify-content-center mb-1">
+                                        <?php echo $icono_html; ?>
+                                    </div>
+                                    <p class="card-text small text-truncate mb-1" title="<?php echo $nombre; ?>"><?php echo $nombre; ?></p>
+                                    <a href="<?php echo $ruta_completa; ?>" target="_blank" class="btn btn-sm btn-outline-secondary btn-block" style="font-size: 0.8rem;">Ver/Descargar</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted mb-0">No se adjuntaron archivos a esta solicitud.</p>
+                <?php endif; ?>
+            </div>
+            </div>
+
+        <div class="col-lg-3">
+            <div class="user-card-modern">
+                <div class="report-btn" title="Reportar solicitud">
+                    <span class="material-symbols-outlined" style="font-size: 20px;">flag</span>
+                </div>
+
+                <?php 
+                $user_photo_url = (isset($data['url_foto_perfil']) && $data['url_foto_perfil'] && $data['url_foto_perfil'] !== 'public/img/default_avatar.jpg')
+                                  ? '../../' . htmlspecialchars($data['url_foto_perfil'])
+                                  : null;
+                ?>
+                <?php if ($user_photo_url): ?>
+                    <img src="<?php echo $user_photo_url; ?>" alt="Foto de perfil de usuario" class="avatar-image shadow-sm">
+                <?php else: ?>
+                    <div class="avatar-placeholder shadow-sm">
+                        <span class="fw-bold"><?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?></span>
+                    </div>
+                <?php endif; ?>
+                <h6 class="fw-bold text-dark mb-1">
+                    <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>
+                </h6>
+                <p class="text-muted small mb-3">Solicitante</p>
+                
+                <div class="d-flex justify-content-center mb-4">
+                    <?php
+                    $rating = isset($data['rating']) ? floatval($data['rating']) : 0;
+                    $estrellas_llenas = floor($rating);
+                    $max_estrellas = 5;
+                    ?>
+                    <div class="star-rating d-flex align-items-center" style="font-size: 1.5rem; color: #adb5bd;"> 
+                        <?php for ($i = 1; $i <= $max_estrellas; $i++): ?>
+                            <?php if ($i <= $estrellas_llenas): ?>
+                                <i class="bi bi-star-fill mx-1" style="color: #ffc107;"></i> 
+                            <?php else: ?>
+                                <i class="bi bi-star mx-1"></i>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                        <span class="ms-3 fw-bold fs-5 text-dark"><?php echo number_format($rating, 1); ?> / 5</span>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-center mb-4">
+                    <h6 style="font-size: 0.8rem;">Gigs Completados: <?php echo htmlspecialchars($data['porcentaje_completacion']); ?>%</h6>
+                </div>
+
+                <button class="btn btn-primary w-100 py-2 fw-bold shadow-sm rounded-pill">
+                    ACEPTAR TRABAJO
+                </button>
+                
+                <div class="mt-3 text-center">
+                    <small class="text-muted" style="font-size: 0.75rem;">
+                        <i class="bi bi-shield-check me-1"></i>Pago protegido
+                    </small>
                 </div>
             </div>
         </div>
 
-        <div class="row g-4">
-            
-            <div class="col-lg-4 col-md-12">
-                <div class="img-placeholder">
-                    <?php if (!empty($data['url_foto'])): ?>
-                        <img src="../../public/img/imgSer/<?php echo htmlspecialchars($data['url_foto']); ?>" alt="Imagen solicitud" style="width: 100%; height: auto; display: block; object-fit: cover;">
-                    <?php else: ?>
-                        <div class="text-center py-5 bg-light">IMAGEN NO DISPONIBLE</div>
-                    <?php endif; ?>
-                </div>
+    </div>
+    
+    <?php elseif ($id_request_seleccionado === null): ?>
+        <div class="text-center py-5">
+            <div class="mb-3">
+                <span class="material-symbols-outlined text-muted" style="font-size: 64px;">search_off</span>
             </div>
-
-            <div class="col-lg-5 col-md-8">
-                <div class="mb-3">
-                    <span class="h6">INFORMACION</span>
-                </div>
-
-                <div class="row g-2 mb-2">
-                    <div class="col-6">
-                        <div class="gray-box py-2">
-                            <?php echo htmlspecialchars($data['nombre_carrera']); ?>
-                        </div>
-                    </div>
-                    <div class="col-6">
-                        <div class="gray-box py-2">
-                            <?php 
-                                if (isset($data['fecha_limite']) && $data['fecha_limite']) {
-                                    echo date('d/m/Y', strtotime($data['fecha_limite']));
-                                } else {
-                                    echo "SIN FECHA LIMITE";
-                                }
-                            ?>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="row g-2 mb-3">
-                    <div class="col-4">
-                        <div class="gray-box py-2">
-                            <?php echo isset($data['materia']) ? htmlspecialchars($data['materia']) : 'General'; ?>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="gray-box py-2 px-1" style="font-size: 0.8rem;">
-                            <?php echo isset($data['tipo_trabajo']) ? htmlspecialchars($data['tipo_trabajo']) : 'Varios'; ?>
-                        </div>
-                    </div>
-                    <div class="col-4">
-                        <div class="gray-box py-2">
-                            <?php echo '$' . number_format($data['precio'], 2, '.', ','); ?>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="border-dark my-4">
-
-                <div class="desc-box">
-                    <?php echo nl2br(htmlspecialchars($data['descripcion'])); ?>
-                </div>
-            </div>
-
-            <div class="col-lg-3 col-md-4">
-                <div class="user-card">
-                    <div class="alert-btn">!</div>
-
-                    <div class="d-flex flex-column align-items-center mt-4">
-                        <div class="avatar-circle mb-2" style="background-color: #ccc; width: 60px; height: 60px; border-radius: 50%;"></div>
-                        
-                        <h6 class="mb-3">
-                            <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>
-                        </h6>
-                        
-                        <div class="bg-white py-1 px-4 mb-3 w-100 text-center border">
-                            <?php echo htmlspecialchars($data['rating']); ?> / 5
-                        </div>
-                    </div>
-
-                    <button class="btn btn-secondary mt-auto w-100">ACEPTAR</button>
-                </div>
-            </div>
-
+            <h4 class="fw-light">No has seleccionado ninguna solicitud.</h4>
+            <a href="index.php" class="btn btn-outline-primary mt-3 px-4 rounded-pill">Volver al inicio</a>
         </div>
         
-        <?php elseif ($id_request_seleccionado === null): ?>
-            <div class="alert alert-info text-center mt-5">
-                <h4>No has seleccionado ningún request.</h4>
-                <a href="index.php" class="btn btn-primary mt-3">Volver a la lista</a>
+    <?php else: ?>
+        <div class="text-center py-5">
+               <div class="mb-3">
+                <span class="material-symbols-outlined text-danger" style="font-size: 64px;">error_outline</span>
             </div>
-            
-        <?php else: ?>
-            <div class="alert alert-danger text-center mt-5">
-                <h4>Error: El request ID (<?php echo $id_request_seleccionado; ?>) solicitado no existe o fue eliminado.</h4>
-                <a href="index.php" class="btn btn-primary mt-3">Volver</a>
-            </div>
-        <?php endif; ?>
-    </div>
+            <h4 class="text-danger">Solicitud no encontrada</h4>
+            <p class="text-muted">El ID solicitado no existe o fue eliminado.</p>
+            <a href="index.php" class="btn btn-secondary mt-3 px-4 rounded-pill">Volver</a>
+        </div>
+    <?php endif; ?>
+</div>
 
 
 <footer>
@@ -390,6 +486,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
     </div>
 </footer>
 
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Seleccionar todos los contenedores de estrellas
+    const ratingContainers = document.querySelectorAll('.star-rating-display');
+
+    ratingContainers.forEach(container => {
+        // Obtener el valor del rating desde el atributo data-rating
+        const rating = parseFloat(container.getAttribute('data-rating'));
+        
+        // Limpiar el contenido actual
+        container.innerHTML = '';
+
+        // Generar las 5 estrellas
+        for (let i = 1; i <= 5; i++) {
+            let iconName = 'star_border'; // Por defecto vacía
+            let colorClass = 'text-secondary'; // Color gris por defecto
+
+            if (rating >= i) {
+                // Estrella completa
+                iconName = 'star';
+                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
+            } else if (rating >= i - 0.5) {
+                // Media estrella
+                iconName = 'star_half';
+                colorClass = 'text-warning';
+            }
+
+            // Crear el elemento span para el icono
+            const star = document.createElement('span');
+            star.className = `material-symbols-outlined ${colorClass}`;
+            star.textContent = iconName;
+            
+            // Ajustar tamaño si es necesario (opcional)
+            star.style.fontSize = '28px'; 
+            star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
+
+            // Agregar al contenedor
+            container.appendChild(star);
+        }
+    });
+});
+</script>
     
 </body>
 </html>
