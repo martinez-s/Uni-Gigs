@@ -1,7 +1,7 @@
 <?php 
 session_start();
 
-// 1. CONEXIÓN Y VALIDACIÓN DE SESIÓN
+
 require_once __DIR__ . '/../../conect.php';
 
 if (!isset($conn) && isset($mysqli) && $mysqli instanceof mysqli) {
@@ -12,15 +12,14 @@ if (!isset($conn) || !($conn instanceof mysqli)) {
     die("Error interno de conexión.");
 }
 
-// Verificar sesión
+
 if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../../login.php");
     exit();
 }
 
-$id_usuario = $_SESSION['id_usuario']; // ID REAL DEL USUARIO
+$id_usuario = $_SESSION['id_usuario'];
 
-// Obtener nombre del usuario (Opcional, para validación visual)
 $stml_usuario = $conn->prepare("SELECT nombre FROM usuarios WHERE id_usuario = ?");
 $stml_usuario->bind_param("i", $id_usuario);
 $stml_usuario->execute();
@@ -62,7 +61,6 @@ $sql_gigs_requests = "
 
 $sql_query_completa = "($sql_gigs_servicios) UNION ALL ($sql_gigs_requests) ORDER BY gig_estado DESC, id_item DESC";
 
-// Arreglos para separar los datos
 $gigs_en_curso = [];
 $gigs_terminados = [];
 
@@ -72,9 +70,7 @@ if ($stmt = $conn->prepare($sql_query_completa)) {
     $resultado = $stmt->get_result();
     
     while ($row = $resultado->fetch_assoc()) {
-        // LÓGICA DE SEPARACIÓN:
-        // Si gig_estado es 1 -> En Curso
-        // Si es 0, 2, o cualquier otro -> Terminados
+
         if ($row['gig_estado'] == 1) {
             $gigs_en_curso[] = $row;
         } else {

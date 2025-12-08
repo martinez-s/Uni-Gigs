@@ -339,15 +339,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
 
         <div class="col-lg-3">
             <div class="user-card-modern">
-                <?php 
-                // Mostrar foto de perfil del usuario
+                <?php
                 if (isset($data['url_foto_perfil']) && !empty($data['url_foto_perfil'])): 
                     $ruta_foto_perfil = "../../" . htmlspecialchars($data['url_foto_perfil']);
                 ?>
 
                 <div class="d-flex justify-content-center mb-4">
     
-                <?php if (!empty($ruta_foto_perfil)): // Verificamos si existe la URL ?>
+                <?php if (!empty($ruta_foto_perfil)):?>
                     
                     <img src="<?php echo htmlspecialchars($ruta_foto_perfil); ?>" 
                         alt="Foto de perfil" 
@@ -396,10 +395,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                 </div>
                 
                 <?php 
-                // Verificar si el usuario actual es diferente al que publicó el request
                 if ($id_usuario_req && $id_usuario_req != $data['id_usuario']):
-                    
-                    // Verificar si ya existe un chat activo
+
                     $sql_chatViejo = "SELECT id_chat FROM chats WHERE ((id_usuario1 = ? AND id_usuario2 = ?) OR (id_usuario1 = ? AND id_usuario2 = ?)) AND (estado = TRUE)";
                     $stmt_chatViejo = $mysqli->prepare($sql_chatViejo);
                     $stmt_chatViejo->bind_param("iiii", $id_usuario_req, $data['id_usuario'], $data['id_usuario'], $id_usuario_req);
@@ -418,7 +415,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                     <?php endif; 
                     $stmt_chatViejo->close();
                 else: 
-                    // Usuario ve su propio request
+
                 ?>
                     <div class="alert alert-info text-center" role="alert">
                         ES TU PROPIA SOLICITUD.

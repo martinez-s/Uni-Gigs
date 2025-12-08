@@ -1,10 +1,7 @@
 <?php
-// obtener_materias.php
 
-// 1. Incluir conexión
 include('../../conect.php');
 
-// Verificar conexión
 if (!isset($mysqli) || $mysqli->connect_errno) {
     header('Content-Type: application/json');
     echo json_encode([]); 
@@ -35,9 +32,6 @@ if ($id_carrera > 0) {
         $stmt->execute();
         $resultado = $stmt->get_result();
 
-        while ($fila = $resultado->fetch_assoc()) {
-            $materias[] = $fila;
-        }
         $stmt->close();
     }
 }
