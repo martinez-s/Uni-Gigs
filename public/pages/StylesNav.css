@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'Montserrat-Light';
-    src: url('./fonts/Montserrat-Light.ttf') format('truetype');
+    src: url('../fonts/Montserrat-Light.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Cascadia-Code-Regular';
-    src: url('./fonts/CascadiaCode-Regular.otf') format('opentype');
+    src: url('../fonts/CascadiaCode-Regular.otf') format('opentype');
 }
 
 *{
@@ -20,9 +20,7 @@ body{
 
 nav{
     width: 100%;
-    padding: 1rem 5%;
     background-color: #2F5597;
-    margin-bottom: 2rem;
     display: flex;
 }
 
@@ -118,12 +116,6 @@ nav{
 }
 
 
-.todo{
-    width: 100%;
-    margin: 4rem;
-}
-
-
 .servicio-card {
     width: 100%;
     display: flex; 
@@ -212,7 +204,15 @@ hr {
     justify-content: center;
     border-radius: 10px;
 }
-
+.btneditar{
+    border: none;
+    justify-content: center;
+    border-radius: 10px;
+}
+.btneditar:hover {
+    background-color: #2F5597;
+    color: white;
+}
 .card-title{
     font-size: 1.25rem; 
     font-weight: 700;
@@ -278,7 +278,6 @@ hr {
     letter-spacing: 3px;
 }
 
-/* 5 Estrellas Llenas Superpuestas */
 .star-rating-display::after {
     content: "★★★★★";
     letter-spacing: 3px;
@@ -316,3 +315,298 @@ hr {
 a {
     text-decoration: none !important; /* Quita el subrayado en todos los estados */
 }
+
+input[type="search"]::-webkit-search-decoration,
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-results-button,
+input[type="search"]::-webkit-search-results-decoration {
+    /* Esto es para navegadores basados en WebKit (Chrome, Safari, Edge moderno) */
+    -webkit-appearance: none;
+    display: none; /* Asegura que no se muestre ningún componente */
+}
+/* Estilos para REQUEST */
+.EsReq {
+    color: #203864;
+    margin: 0;
+    padding: 5px 10px;
+    margin-bottom: 1.25rem;
+    margin-top: 10px;
+    
+    /* PROPIEDADES DE CENTRADO CON FLEXBOX */
+    display: flex; /* 1. Activa Flexbox */
+    align-items: center; /* 2. Centra el contenido VERTICALMENTE */
+    justify-content: center; /* 3. Centra el contenido HORIZONTALMENTE */
+    
+    
+    border: 1px solid #203864;
+    border-radius: 10px;
+}
+
+.EsSer {
+    color: #203864;
+    margin: 0;
+    padding: 5px 10px;
+    margin-bottom: 1.25rem;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #203864;
+    border-radius: 10px;
+}
+
+/*PERFFFFFFIIIIIIIIIIIIIILLLLLLLLLLLL*/
+
+.profile-banner {
+    height: 165px;
+    background: linear-gradient(135deg, #203864 0%, #2F5597 100%);
+    position: relative;
+}
+
+.profile-career {
+    color: #495057;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 1.5rem;
+    gap: 10px;
+}
+
+.profile-career .material-symbols-outlined {
+    font-size: 1.3rem;
+    color: #203864;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden; 
+    position: relative;
+    border: none;
+    width: 100%;
+}
+.profile-avatar-container {
+    position: relative;
+    margin-top: -90px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.profile-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 5px solid white;
+    object-fit: cover;
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-name {
+    color: #203864;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.2rem;
+    font-family: 'Cascadia-Code-Regular', sans-serif;
+}
+.profile-stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 1rem 0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #203864;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.profile-bio {
+    color: #495057;
+    font-style: italic;
+    max-width: 700px;
+    margin: 0 auto 20px auto;
+    line-height: 1.6;
+}
+
+.btn-report-banner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-report-banner:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transform: scale(1.1);
+}
+/* Estilos para que Select2 se parezca al input estándar (Diseño) */
+
+/* 1. Contenedor Principal (Select Cerrado) */
+.select2-container--default .select2-selection--single {
+    height: 45px;
+    /* Borde muy sutil, similar al que se ve en la imagen */
+    border: 1px solid #ced4da; 
+    border-radius: 4px; /* Un poco menos redondeado para ser más estándar */
+    background-color: #ffffff; 
+    /* Eliminar la sombra por defecto que lo hace ver anticuado */
+    box-shadow: none; 
+}
+
+/* 2. Texto Seleccionado */
+.select2-container--default .select2-selection__rendered {
+    color: #ced4da; 
+    line-height: 43px; /* Ajuste a la altura total - 2px de borde */
+    padding-left: 10px; /* Menos padding para que se vea más parecido al input nativo */
+    font-size: 15px; 
+}
+
+/* 3. Efecto FOCUS (Al hacer clic - Solo el borde) */
+.select2-container--default.select2-container--focus .select2-selection--single {
+    /* Mantenemos el borde para indicar el focus, pero sin sombra excesiva */
+    border-color: #80bdff; 
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Sombra estándar de focus */
+}
+
+/* 4. Estilo del menú Desplegable (para que no parezca flotante) */
+.select2-dropdown {
+    border: 1px solid #ced4da; /* Mismo borde que el input */
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra muy ligera */
+    /* **CRÍTICO para visibilidad en móvil** */
+    z-index: 100001; 
+}
+
+.btn.btn-limpiar {
+    color: #495057; /* Texto Gris Oscuro */
+    background-color: #f8f9fa; /* Fondo Gris Claro */
+    border: 1px solid #ced4da; /* Volvemos a poner el borde que quitó el .btn general */
+    font-size: 1rem;
+    border-radius: 4px; /* Un poco menos redondeado que 10px */
+}
+
+/* 2. Estilo al pasar el mouse (Hover) - También debe ser más específico */
+.btn.btn-limpiar:hover {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+.btn.btn-success {
+    background-color: #203864; /* Color principal de tu sitio */
+    border-color: #203864;
+}
+
+.btn.btn-success:hover {
+    background-color: #2F5597; /* Un tono más claro al pasar el mouse */
+    border-color: #2F5597;
+}
+
+.gray-box {
+            background-color: #f0f0f0; /* Gris claro */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+            min-height: 40px; /* Altura mínima para que se vea bien */
+            border-radius: 0; /* Bordes cuadrados como en la imagen */
+        }
+
+        /* Caja de la imagen grande */
+        .img-placeholder {
+            background-color: #f0f0f0;
+            width: 100%;
+            height: 100%;
+            min-height: 300px; /* Altura mínima en móviles */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Caja del usuario (lado derecho) */
+        .user-card {
+            background-color: #f0f0f0;
+            padding: 20px;
+            height: 100%;
+            position: relative; /* Para posicionar el botón de alerta (!) */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Avatar circular */
+        .avatar-circle {
+            width: 120px;
+            height: 120px;
+            background-color: #d9d9d9; /* Gris un poco más oscuro */
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        /* Botón de alerta (!) */
+        .alert-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #d9d9d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Caja de descripción grande */
+        .desc-box {
+            background-color: #f0f0f0;
+            min-height: 150px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }

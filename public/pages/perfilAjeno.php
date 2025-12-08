@@ -6,34 +6,52 @@ if (!isset($_SESSION['id_usuario'])) {
     header("Location: ../../Index.php");
     exit();
 }
-$idUsuario = $_SESSION['id_usuario'];
 
-$sql = "SELECT u.url_foto_perfil, u.nombre, u.apellido, u.rating, u.porcentaje_completacion, u.descripcion, u.estado, c.nombre_carrera
-        FROM usuarios u
-        JOIN carreras c ON u.id_carrera = c.id_carrera
-        WHERE id_usuario = ?";
+if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+    $idUsuarioVisita = $_GET['id'];
+} else {
+    header("Location: principal.php");
+    exit();
+}
+
+if ($idUsuarioVisita == $_SESSION['id_usuario']) {
+    header("Location: perfil.php"); 
+    exit();
+}
+
+$idUsuario = $idUsuarioVisita; 
+
+$sql = "SELECT u.url_foto_perfil, u.nombre, u.apellido, u.rating, u.porcentaje_completacion, u.descripcion, c.nombre_carrera FROM usuarios u
+JOIN carreras c ON u.id_carrera = c.id_carrera
+WHERE id_usuario = ?";
+
 $stmt = $mysqli->prepare($sql);
-$stmt->bind_param("i", $idUsuario);
+$stmt->bind_param("i", $idUsuario); 
 $stmt->execute();
 $resultado = $stmt->get_result();
-$datosUsuario = $resultado->fetch_assoc();
+
+if ($resultado->num_rows > 0) {
+    $datosUsuario = $resultado->fetch_assoc();
+} else {
+    echo "Usuario no encontrado.";
+    exit();
+}
 
 $rutaFoto = !empty($datosUsuario['url_foto_perfil']) ? $datosUsuario['url_foto_perfil'] : "public/img/imgusuarios/default_avatar.jpg";
+
 $nombreUsuario = $datosUsuario['nombre'] ?? 'Sin Nombre';
 $apellidoUsuario = $datosUsuario['apellido'] ?? 'Sin Apellido';
 $ratingUsuario = $datosUsuario['rating'] ?? 0;
 $porcentajeUsuario = $datosUsuario['porcentaje_completacion'] ?? 0;
 $carreraUsuario = $datosUsuario['nombre_carrera'] ?? 'Sin Carrera';
-$descripcionUsuario = $datosUsuario['descripcion'] ?? 'Agrega una descripción sobre ti.';
-$estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1) ? 'Activo' : 'Inactivo';
+$descripcionUsuario = $datosUsuario['descripcion'] ?? 'Sin Descripción';
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Perfil</title>
+    <title>Estructura de Perfil</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
@@ -42,16 +60,14 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
 </head>
 <body>
    <?php include 'NavBar.php'; ?>
-
-<div class="container-fluid p-0 mb-5"> 
-    <div class="row m-0">
+<div class="container-fluid p-0"> <div class="row m-0">
         <div class="col-12 p-0">
             
             <div class="profile-card text-center" style="border-radius: 0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
                 
                 <div class="profile-banner">
-                    <button type="button" class="btn-report-banner" title="Cerrar Sesión" onclick="cerrarSesion()">
-                        <span class="material-symbols-outlined" style="font-size: 1.4rem; padding:0;">logout</span>
+                    <button type="button" class="btn-report-banner" title="Reportar Usuario" onclick="reportarUsuario(<?php echo $idUsuario; ?>)">
+                        <span class="material-symbols-outlined" style="font-size: 1.4rem; padding:0;">flag</span>
                     </button>
                 </div>
 
@@ -59,35 +75,22 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                     <img src="../../<?php echo htmlspecialchars($rutaFoto); ?>" alt="Foto de perfil" class="profile-avatar">
                 </div>
 
-                <div class="card-body px-4 pb-4 d-flex flex-column align-items-center">
-                    
-                    <h1 class="profile-name mb-2 text-center">
+                <div class="card-body px-4 pb-4">
+                    <h1 class="profile-name">
                         <?php echo htmlspecialchars($nombreUsuario . ' ' . $apellidoUsuario); ?>
                     </h1>
                     
-                    <div class="d-flex align-items-center mb-3" style="color: #198754; font-weight: 600; gap: 6px;">
-                        <span>Estado: <?php echo htmlspecialchars($estadoCuenta); ?></span>
-                    </div>
-                    
-                    <div class="profile-bio mb-4">
+                    <div class="profile-bio">
                         <span><?php echo htmlspecialchars($carreraUsuario); ?></span>
                     </div>
 
-                    <div class="profile-career d-flex flex-column align-items-center mb-4" style="max-width: 700px; width: 100%;">
-                        
-                        <p class=" m-0 text-center">
-                            <span id="textoDescripcion">"<?php echo htmlspecialchars($descripcionUsuario); ?>"</span>
-                        </p>
-                        
-                        <button onclick="editarDescripcion()" class="btneditar btn-link p-0 text-decoration-none mt-2" title="Editar descripción">
-                            <span class="material-symbols-outlined" style="font-size: 1.2rem;">edit</span>
-                        </button>
-
+                    <div class="profile-career">
+                        "<?php echo htmlspecialchars($descripcionUsuario); ?>"
                     </div>
 
-                    <div class="profile-stats-row w-100">
+                    <div class="profile-stats-row">
                         <div class="stat-item">
-                            <div class="stat-number justify-content-center">
+                            <div class="stat-number">
                                 <span class="text-warning material-symbols-outlined">star</span> 
                                 <?php echo htmlspecialchars($ratingUsuario); ?>
                             </div>
@@ -95,7 +98,7 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                         </div>
 
                         <div class="stat-item">
-                            <div class="stat-number justify-content-center">
+                            <div class="stat-number">
                                 <span class="text-success material-symbols-outlined">check_circle</span>
                                 <?php echo htmlspecialchars($porcentajeUsuario); ?>%
                             </div>
@@ -114,7 +117,7 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         <div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
                 <div class="d-flex justify-content-between align-items-center">
-                    <h3 class="Titulo mb-0">Mis Servicios Publicados</h3> 
+                    <h3 class="Titulo mb-0">Servicios de <?php echo htmlspecialchars($nombreUsuario); ?></h3> 
                     <a href="VerMasServicio.php" class="mas text-decoration-none">Ver más</a>
                 </div>
                 <hr>
@@ -122,7 +125,6 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         </div>
 
         <?php
-        // Reutilizamos la misma consulta, filtrando por el ID de sesión
         $sql_servicios = "SELECT 
             s.id_servicio, s.titulo, s.descripcion, s.precio,
             c.nombre_carrera,
@@ -146,38 +148,52 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                 <?php while ($row = $resultado_ser->fetch_assoc()) { ?>
                     <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
                         <div class="card"> <div class="card-body d-flex flex-column">
+                            
                             <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
                             <div class="separator-line"></div>
-                                <?php if ($row['url_foto']) { ?>
+                                <?php 
+                                if ($row['url_foto']) { 
+                                ?>
                                     <div class="img-wrapper">
                                     <img class="imagen" src="../../public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>" alt="Foto del servicio">
                                     </div>
-                                <?php } ?>
+                                <?php 
+                                } 
+                                ?>
                             <h6 class="carrera">
                                 <span class="material-symbols-outlined">license</span>
                                 <?php echo htmlspecialchars($row['nombre_carrera']); ?>
                             </h6>
+                        
                             <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                            
                             <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
                                 <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($ratingUsuario); ?>"></div>
                                 <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
                             </div>
-                            <a href="#" class="btn btn-primary mt-auto">Más información</a>
+                            
+                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
                         </div>
                         </div> 
                     </div>
-                <?php } ?>
+                <?php
+                } 
+                ?>
             </div>
-        <?php } else { echo '<div class="alert alert-light" role="alert">Aún no has publicado ningún servicio.</div>'; } ?>
+        <?php 
+        } else {
+           echo '<div class="alert alert-light" role="alert">Este usuario no ha publicado ningún servicio todavía.</div>';
+        }
+        ?>
+        </div>
     </div>
-</div>
-
-<div id="Requests" class="banner- pb-5">
+    <div id="Requests" class="banner- pb-5">
     <div class="container-fluid px-5">
+        
         <div class="row align-items-center mt-5">
             <div class="col-md-12 mb-4 mb-md-0">
                 <div class="d-flex justify-content-between align-items-center">
-                     <h3 class="Titulo mb-0">Mis Requests Publicados</h3> 
+                    <h3 class="Titulo mb-0">Requests de <?php echo htmlspecialchars($nombreUsuario); ?></h3> 
                     <a href="VerMasRequest.php" class="mas text-decoration-none">Ver más</a>
                 </div>
                 <hr>
@@ -185,7 +201,6 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         </div>
 
         <?php
-        // Reutilizamos la misma consulta, filtrando por el ID de sesión
         $sql = "SELECT 
                     r.id_requests, r.titulo, r.descripcion, r.precio,
                     c.nombre_carrera, u.rating, u.porcentaje_completacion
@@ -202,90 +217,99 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         if ($resultado && $resultado->num_rows > 0) {
         ?>
             <div class="row">
-            <?php while ($row = $resultado->fetch_assoc()) { ?>
-                <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
-                    <div class="card"> <div class="card-body d-flex flex-column">
-                        <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
-                        <div class="separator-line"></div>
-                        <h6 class="carrera">
-                            <span class="material-symbols-outlined">license</span>
-                            <?php echo htmlspecialchars($row['nombre_carrera']); ?>
-                        </h6>
-                        <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
-                        <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
-                            <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
-                            <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+            <?php
+                while ($row = $resultado->fetch_assoc()) {
+                ?>
+                    <div class="col-12 col-sm-6 col-md-4 col-lg-3 mb-4">
+                        <div class="card"> <div class="card-body d-flex flex-column">
+                            
+                            <h5 class="card-title"><?php echo htmlspecialchars($row['titulo']); ?></h5>
+                            <div class="separator-line"></div>
+                                <?php 
+                                if ($row['url_foto']) { 
+                                ?>
+                                    <div class="img-wrapper">
+                                    <img class="imagen" src="../../public/img/imgSer/<?php echo htmlspecialchars($row['url_foto']); ?>" alt="Foto del servicio">
+                                    </div>
+                                <?php 
+                                } 
+                                ?>
+                            <h6 class="carrera">
+                                <span class="material-symbols-outlined">license</span>
+                                <?php echo htmlspecialchars($row['nombre_carrera']); ?>
+                            </h6>
+                        
+                            <p class="card-text flex-grow-1"><?php echo htmlspecialchars($row['descripcion']); ?></p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mb-3 mt-3"> 
+                                <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
+                                <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
+                            </div>
+                            
+                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
                         </div>
-                         <a href="#" class="btn btn-primary mt-auto">Más información</a>
+                        </div> 
                     </div>
-                    </div> 
-                </div>
-            <?php } ?>
+                <?php
+                } 
+                ?>
             </div>
-        <?php } else { echo '<div class="alert alert-light" role="alert">Aún no has publicado ningún request.</div>'; } ?>
+        <?php 
+        } else {
+            echo '<div class="alert alert-light" role="alert">Este usuario no ha publicado ningún request todavía.</div>';
+        }
+        ?>
+        </div>
     </div>
-</div>
+
 
 <?php include '../../app/includes/footer.php'; ?>
-
 <script>
-function cerrarSesion() {
+function reportarUsuario(idReportado) {
     Swal.fire({
-        title: '¿Cerrar sesión?',
-        text: "¿Estás seguro de que quieres salir?",
-        icon: 'warning',
+        title: 'Reportar Usuario',
+        text: "¿Por qué deseas reportar a este usuario?",
+        input: 'textarea',
+        inputPlaceholder: 'Escribe la razón aquí...',
+        inputAttributes: {
+            'aria-label': 'Escribe la razón aquí'
+        },
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Sí, cerrar sesión',
-        cancelButtonText: 'Cancelar'
+        confirmButtonText: 'Enviar reporte',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        preConfirm: (razon) => {
+            if (!razon) {
+                Swal.showValidationMessage('Debes escribir una razón');
+            }
+            return razon;
+        }
     }).then((result) => {
         if (result.isConfirmed) {
-            window.location.href = '../../logout.php'; 
-        }
-    });
-}
-
-function editarDescripcion() {
-    let textoActual = document.getElementById('textoDescripcion').innerText;
-    textoActual = textoActual.replace(/^"|"$/g, '');
-
-    Swal.fire({
-        title: 'Editar mi descripción',
-        input: 'textarea',
-        inputLabel: 'Escribe algo sobre ti',
-        inputValue: textoActual,
-        showCancelButton: true,
-        confirmButtonText: 'Guardar cambios',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#203864',
-        showLoaderOnConfirm: true,
-        preConfirm: (nuevaDescripcion) => {
-            return fetch('actualizarDescripcion.php', {
+            // Enviar datos al servidor mediante FETCH
+            fetch('reportarUsuario.php', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ descripcion: nuevaDescripcion })
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    id_reportado: idReportado,
+                    razon: result.value
+                })
             })
-            .then(response => {
-                if (!response.ok) { throw new Error(response.statusText) }
-                return response.json();
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire('¡Enviado!', 'El reporte ha sido enviado a los administradores.', 'success');
+                } else {
+                    Swal.fire('Error', data.message, 'error');
+                }
             })
             .catch(error => {
-                Swal.showValidationMessage(`Error: ${error}`);
+                console.error('Error:', error);
+                Swal.fire('Error', 'Hubo un problema de conexión.', 'error');
             });
-        },
-        allowOutsideClick: () => !Swal.isLoading()
-    }).then((result) => {
-        if (result.isConfirmed && result.value.success) {
-            document.getElementById('textoDescripcion').innerText = `"${result.value.nueva_descripcion}"`;
-            Swal.fire({
-                icon: 'success',
-                title: '¡Actualizado!',
-                text: 'Tu descripción ha sido guardada correctamente.',
-                confirmButtonColor: '#203864'
-            });
-        } else if (result.isConfirmed && !result.value.success) {
-             Swal.fire('Error', result.value.message || 'No se pudo guardar.', 'error');
         }
     });
 }

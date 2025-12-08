@@ -95,6 +95,24 @@
     background: rgba(255, 255, 255, 0.5);
 }
 
+@media (max-width:500px) {
+    .message-image{
+        width: 220px;
+    }
+}
+
+@media (max-width:392px) {
+    .message-image{
+        width: 200px;
+    }
+}
+
+@media (max-width:350px) {
+    .message-image{
+        width: 180px;
+    }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
     .sidebar {

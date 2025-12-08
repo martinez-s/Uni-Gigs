@@ -144,6 +144,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicialización de Materia
     initCustomSelect('materia_id', 'materia_visual_input', 'materia_custom_list');
+    initCustomSelect('carreraS_id', 'carreraS_visual_input', 'carreraS_custom_list');
 
     initCustomSelect('banco2_id', 'banco2_visual_input', 'banco2_custom_list');
 

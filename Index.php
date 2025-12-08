@@ -1,5 +1,6 @@
 <?php
 session_start();
+include  'conect.php';
 $error_message = $_SESSION['error'] ?? null;
 $success_message = $_SESSION['success'] ?? null; 
 
@@ -112,7 +113,7 @@ include __DIR__ . '/app/includes/Navbar.php';
                             <label for="clave" class="lb_modal">CONTRASEÑA</label>
                             <br>
                             <input type="password" id="clave" name="clave" class="inputs">
-                            <a href="#" class="texto_log_cont"><p >¿OLVIDASTE LA CONTRASEÑA?</p></a>
+                            <a href="mailto:unigigs.admi@gmail.com?subject=Solicitud%20de%20Cambio%20de%20Contrase%F1a&body=IMPORTANTE:%20No%20modifique%20el%20formato%20de%20este%20correo.%0A%0APor%20favor,%20procesen%20el%20cambio%20de%20mi%20clave%20con%20los%20siguientes%20datos:%0A%0AC%E9dula%20de%20Identidad:%20[ESCRIBIR_AQUI]%0A%0ANueva%20Contrase%F1a:%20[ESCRIBIR_AQUI]" class="texto_log_cont"><p >¿OLVIDASTE LA CONTRASEÑA?</p></a>
                             <button type="submit" class="btn_inicio">INICIAR</button>
                             <a class="texto_log_regis" data-bs-toggle="modal" data-bs-target="#modal_registro"><p>¿NO TIENES CUENTA? REGISTRATE</p></a>
                         </form>
@@ -226,7 +227,15 @@ include __DIR__ . '/app/includes/Navbar.php';
                                 <input type="text" name="universidad" class="inputs form-control"><br>
 
                                 <label for="carrera" class="lb_modal">CARRERA</label><br>
-                                <input type="text" name="carrera_texto" class="inputs form-control">
+                                <select id="carrera" name="carrera">
+                                    <?php
+                                    $query = "SELECT id_carrera, nombre_carrera FROM carreras ORDER BY nombre_carrera ASC";
+                                    $result = $mysqli->query($query);
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo "<option value='" . $row['id_carrera'] . "'>" . $row['nombre_carrera'] . "</option>";
+                                    }
+                                    ?>
+                                </select>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center mt-4">
