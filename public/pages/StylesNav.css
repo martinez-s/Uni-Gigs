@@ -738,3 +738,54 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 .report-btn:hover { color: #dc3545; }
 
+/* 1. Contenedor Principal: Fija el tamaño y la forma */
+.avatar-container {
+    /* Define un tamaño fijo para el contenedor */
+    width: 130px;  /* Ejemplo: 80 píxeles */
+    height: 130px; /* Ejemplo: 80 píxeles */
+    
+    /* Hace que el contenedor sea circular */
+    border-radius: 50%;
+    
+    /* CRUCIAL: Oculta cualquier parte de la imagen que intente salirse */
+    overflow: hidden;
+    
+    /* Ayuda a centrar el contenido (la imagen o el placeholder) */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Estilo opcional: si quieres un borde o margen */
+    border: 2px solid #ddd;
+}
+
+/* 2. Estilo de la Imagen: Asegura que la imagen se ajuste al contenedor */
+.avatar-container .avatar-image {
+    /* Asegura que la imagen llene el contenedor completamente */
+    width: 100%;
+    height: 100%;
+    
+    /* CRUCIAL: Esto recorta la imagen sin distorsionarla para llenar el espacio */
+    object-fit: cover; 
+    
+    /* Opcional: Esto ya no es tan necesario si el contenedor es circular */
+    border-radius: 50%; 
+}
+
+/* 3. Estilo del Placeholder: Asegura que el marcador de posición llene el contenedor */
+.avatar-container .avatar-placeholder {
+    /* Asegura que el placeholder llene el contenedor (debe tener el mismo tamaño del .avatar-container) */
+    width: 100%;
+    height: 100%;
+    
+    /* Centra la letra dentro del placeholder */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Estilo visual */
+    background-color: #f0f0f0;
+    font-size: 36px;
+    color: #333;
+}
+
