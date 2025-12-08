@@ -342,12 +342,141 @@ input[type="search"]::-webkit-search-results-decoration {
     padding: 5px 10px;
     margin-bottom: 1.25rem;
     margin-top: 10px;
-    
-    /* PROPIEDADES DE CENTRADO CON FLEXBOX */
     display: flex;
     align-items: center;
     justify-content: center;
-    
     border: 1px solid #203864;
     border-radius: 10px;
 }
+
+/* Estilos para que Select2 se parezca al input estándar (Diseño) */
+
+/* 1. Contenedor Principal (Select Cerrado) */
+.select2-container--default .select2-selection--single {
+    height: 45px;
+    /* Borde muy sutil, similar al que se ve en la imagen */
+    border: 1px solid #ced4da; 
+    border-radius: 4px; /* Un poco menos redondeado para ser más estándar */
+    background-color: #ffffff; 
+    /* Eliminar la sombra por defecto que lo hace ver anticuado */
+    box-shadow: none; 
+}
+
+/* 2. Texto Seleccionado */
+.select2-container--default .select2-selection__rendered {
+    color: #ced4da; 
+    line-height: 43px; /* Ajuste a la altura total - 2px de borde */
+    padding-left: 10px; /* Menos padding para que se vea más parecido al input nativo */
+    font-size: 15px; 
+}
+
+/* 3. Efecto FOCUS (Al hacer clic - Solo el borde) */
+.select2-container--default.select2-container--focus .select2-selection--single {
+    /* Mantenemos el borde para indicar el focus, pero sin sombra excesiva */
+    border-color: #80bdff; 
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25); /* Sombra estándar de focus */
+}
+
+/* 4. Estilo del menú Desplegable (para que no parezca flotante) */
+.select2-dropdown {
+    border: 1px solid #ced4da; /* Mismo borde que el input */
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra muy ligera */
+    /* **CRÍTICO para visibilidad en móvil** */
+    z-index: 100001; 
+}
+
+.btn.btn-limpiar {
+    color: #495057; /* Texto Gris Oscuro */
+    background-color: #f8f9fa; /* Fondo Gris Claro */
+    border: 1px solid #ced4da; /* Volvemos a poner el borde que quitó el .btn general */
+    font-size: 1rem;
+    border-radius: 4px; /* Un poco menos redondeado que 10px */
+}
+
+/* 2. Estilo al pasar el mouse (Hover) - También debe ser más específico */
+.btn.btn-limpiar:hover {
+    color: #212529;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+.btn.btn-success {
+    background-color: #203864; /* Color principal de tu sitio */
+    border-color: #203864;
+}
+
+.btn.btn-success:hover {
+    background-color: #2F5597; /* Un tono más claro al pasar el mouse */
+    border-color: #2F5597;
+}
+
+.gray-box {
+            background-color: #f0f0f0; /* Gris claro */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: 500;
+            color: #333;
+            min-height: 40px; /* Altura mínima para que se vea bien */
+            border-radius: 0; /* Bordes cuadrados como en la imagen */
+        }
+
+        /* Caja de la imagen grande */
+        .img-placeholder {
+            background-color: #f0f0f0;
+            width: 100%;
+            height: 100%;
+            min-height: 300px; /* Altura mínima en móviles */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* Caja del usuario (lado derecho) */
+        .user-card {
+            background-color: #f0f0f0;
+            padding: 20px;
+            height: 100%;
+            position: relative; /* Para posicionar el botón de alerta (!) */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* Avatar circular */
+        .avatar-circle {
+            width: 120px;
+            height: 120px;
+            background-color: #d9d9d9; /* Gris un poco más oscuro */
+            border-radius: 50%;
+            margin-bottom: 15px;
+        }
+
+        /* Botón de alerta (!) */
+        .alert-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background-color: #d9d9d9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* Caja de descripción grande */
+        .desc-box {
+            background-color: #f0f0f0;
+            min-height: 150px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }

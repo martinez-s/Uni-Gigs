@@ -24,13 +24,31 @@ function seleccionarCarrera(element) {
         // inputBusqueda.value = ''; 
     });
 
-    function goToPage(pageNumber) {
-        // Verifica que el número de página sea válido
-        if (pageNumber < 1) return; 
+  function aplicarLimiteDeTexto() {
+        // 1. Recortar títulos
+        document.querySelectorAll('h5.card-title').forEach(element => {
+            // Obtenemos el límite del atributo data-limite
+            const limite = parseInt(element.dataset.limite);
+            const textoCompleto = element.textContent.trim();
 
-        // Actualiza el campo oculto 'page' con el número de página deseado
-        document.getElementById('page-input').value = pageNumber;
-        
-        // Envía el formulario de paginación
-        document.getElementById('pagination-form').submit();
+            if (limite && textoCompleto.length > limite) {
+                // JS substring y length manejan UTF-8 correctamente
+                element.textContent = textoCompleto.substring(0, limite) + '...';
+            }
+        });
+
+        // 2. Recortar descripciones
+        document.querySelectorAll('p.card-text').forEach(element => {
+            // Obtenemos el límite del atributo data-limite
+            const limite = parseInt(element.dataset.limite);
+            const textoCompleto = element.textContent.trim();
+
+            if (limite && textoCompleto.length > limite) {
+                // JS substring y length manejan UTF-8 correctamente
+                element.textContent = textoCompleto.substring(0, limite) + '...';
+            }
+        });
     }
+
+    // Ejecutamos la función una vez que el DOM esté completamente cargado
+    document.addEventListener('DOMContentLoaded', aplicarLimiteDeTexto);
