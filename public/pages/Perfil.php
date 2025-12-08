@@ -62,8 +62,8 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
                     </button>
                 </div>
                 <div class="profile-banner">
-                    <button type="button" class="btn-report-banner" title="Cerrar Sesión" data-bs-toggle="modal" data-bs-target="#modalConTabs">
-                        <span class="material-symbols-outlined" style="font-size: 1.4rem; padding:0;">logout</span>
+                    <button type="button" class="btn-report-banner" title="Registrar Métodos de Pago" data-bs-toggle="modal" data-bs-target="#modalConTabs">
+                        <span class="material-symbols-outlined" style="font-size: 1.4rem; padding:0;">payments</span>
                     </button>
                 </div>
 
@@ -238,7 +238,7 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
 </div>
 
 
-<form action="../modal_pagos.php" method="POST" enctype="multipart/form-data">
+<form id="formMetodosPago" action="modal.pagos2.php" method="POST" enctype="multipart/form-data">
 <div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
@@ -392,173 +392,15 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
         
         
       </div>
-      <div class="modal-footer justify-content-center btn-regis">
-        <button type="submit" class="btn btn-secondary"">REGISTRAR</button>
-      </div>
-    </div>
-  </div>
-</div>
-</form>
-
-<form id="formMetodosPago" action="modal_pagos.php" method="POST" enctype="multipart/form-data">
-<div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true" data-bs-backdrop="static">
-  <div class="modal-dialog modal-xl">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <ul class="nav nav-tabs" id="miTab" role="tablist">
-          <li class="nav-item" role="presentation">
-            <button class="nav-link active" id="tab-uno-tab" data-bs-toggle="tab" data-bs-target="#tab-uno" type="button" role="tab" aria-controls="tab-uno" aria-selected="true">OBLIGATORIO</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-dos-tab" data-bs-toggle="tab" data-bs-target="#tab-dos" type="button" role="tab" aria-controls="tab-dos" aria-selected="false">OPCIONAL</button>
-          </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-tres-tab" data-bs-toggle="tab" data-bs-target="#tab-tres" type="button" role="tab" aria-controls="tab-tres" aria-selected="false">OPCIONAL</button>
-          </li>
-            <li class="nav-item" role="presentation">
-            <button class="nav-link" id="tab-cuatro-tab" data-bs-toggle="tab" data-bs-target="#tab-cuatro" type="button" role="tab" aria-controls="tab-cuatro" aria-selected="false">OPCIONAL</button>
-          </li>
-        </ul>
-        <div class="tab-content" id="miTabContent">
-          <div class="tab-pane fade show active" id="tab-uno" role="tabpanel" aria-labelledby="tab-uno-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAGO MÓVIL</h2>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="documento_ident" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
-                        <input type="text" name="documento_ident" class="form-control inputs">
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="telefono" class="lb_modal">TELÉFONO</label><br>
-                        <input type="text" name="telefono" class="form-control inputs">
-                    </div>
-                  <div class="col-lg-12">
-                      <label for="banco_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco_id" name="banco_id" style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
-
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
-                    </div>
-                </div>
-              </div>
-          </div>
-          <div class="tab-pane fade" id="tab-dos" role="tabpanel" aria-labelledby="tab-dos-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">TRANSFERENCIA BANCARIA</h2>
-                <div class="row">
-                    <div class="col-lg-6 col-md-12">
-                        <label for="documento_identidad" class="lb_modal">DOCUMENTO DE IDENTIFICACIÓN</label><br>
-                        <input type="text" name="documento_identidad" class="form-control inputs">
-                    </div>
-                    <div class="col-lg-6 col-md-12">
-                        <label for="nro_cuenta" class="lb_modal">NUMERO DE CUENTA</label><br>
-                        <input type="text" name="nro_cuenta" class="form-control inputs">
-                    </div>
-                  <div class="col-lg-12">
-                      <label for="banco2_visual_input" class="lb_modal">BANCO</label>
-                      <br>
-                  
-                      <div class="custom-select-container">
-                          <input 
-                              type="text" 
-                              id="banco2_visual_input"  class="form-control dropdown_front" 
-                              placeholder="Seleccione o busque el banco..."
-                              autocomplete="off"
-                          >
-                          <ul id="banco2_custom_list" class="list-group" style="display: none;">
-                          </ul>
-                      </div>
-                  
-                      <select id="banco2_id" name="banco2_id"  style="display: none;"> 
-                          <option value="" selected disabled>Seleccione EL BANCO</option> 
-                          <?php
-                          // Definición de la consulta SQL
-                          $sql = "SELECT id, Concat(codigo, ' ', nombre) as Banco FROM bancos ORDER BY nombre";
-
-                              $result = $mysqli->query($sql);
-                          
-                              if ($result && $result->num_rows > 0) {
-                                  // Si hay resultados, genera las opciones
-                                  while($row = $result->fetch_assoc()) {
-                                      echo '<option value="' . $row["id"] . '" data-nombre="' . htmlspecialchars($row["Banco"]) . '">' . htmlspecialchars($row["Banco"]) . '</option>';
-                                  }
-                              } else {
-                                  // Mensaje si no hay datos o la consulta falló
-                                  echo '<option value="" class="text-dropdown">(No hay bancos disponibles)</option>';
-                              }
-                          ?>
-                      </select>
-                    </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-tres" role="tabpanel" aria-labelledby="tab-tres-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">BINANCE</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_binance" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_binance" class="form-control inputs">
-                    </div>
-                </div>
-              </div>            
-          </div>
-          <div class="tab-pane fade" id="tab-cuatro" role="tabpanel" aria-labelledby="tab-cuatro-tab">
-              <div class="container conte_pago">
-                <h1 class="Titulo titu_modal">REGISTRA TU MÉTODO DE PAGO</h1>
-                <h2 class="lb_subtitulo text-center">PAYPAL</h2>
-                <div class="row">
-                    <div class="col-lg-12">
-                        <label for="correo_paypal" class="lb_modal">CORREO ASOCIADO</label><br>
-                        <input type="text" name="correo_paypal" class="form-control inputs">
-                    </div>
-                </div>
-              </div>            
-          </div>
-          
-        </div>     
-      </div>
         <div class="modal-footer justify-content-center btn-regis">
-            <button type="button" id="btnSubmitMetodosPago" class="btn_siguiente btn-secondary">REGISTRAR</button>
+            <button type="button" class="btn btn-secondary" id="btnSubmitMetodosPago">REGISTRAR</button> 
         </div>
     </div>
   </div>
 </div>
 </form>
+
+
 <?php include '../../app/includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -625,7 +467,299 @@ function editarDescripcion() {
     });
 }
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
 
+    // 1. Obtener parámetros de la URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const pmStatus = urlParams.get('pm_status');
+    const msg = urlParams.get('msg');
+    
+    if (pmStatus) {
+        let icon = '';
+        let title = '';
+        
+        // 2. Determinar el ícono y título del mensaje
+        switch (pmStatus) {
+            case 'success':
+                icon = 'success';
+                title = '¡Registro Exitoso!';
+                break;
+            case 'warning':
+                icon = 'warning';
+                title = 'Advertencia de Registro';
+                break;
+            case 'error':
+                icon = 'error';
+                title = 'Error en el Registro';
+                break;
+            default:
+                icon = 'info';
+                title = 'Proceso Finalizado';
+        }
+
+        // 3. Mostrar el SweetAlert
+        Swal.fire({
+            title: title,
+            text: msg ? decodeURIComponent(msg) : 'La operación de registro de métodos de pago ha sido completada.',
+            icon: icon,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#203864'
+        });
+
+
+        history.replaceState({}, document.title, window.location.pathname);
+    }
+});
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const pmStatus = urlParams.get('pm_status');
+        const msg = urlParams.get('msg');
+
+        if (pmStatus) {
+            let title = '';
+            let icon = '';
+            let text = '';
+            
+
+            const decodedMsg = msg ? decodeURIComponent(msg) : '';
+
+            if (pmStatus === 'success') {
+                title = '¡Métodos de Pago Registrados!';
+                icon = 'success';
+                text = decodedMsg || 'Sus métodos de pago obligatorios han sido guardados correctamente.';
+
+            } else if (pmStatus === 'warning') {
+                title = 'Advertencia de Registro';
+                icon = 'warning';
+                text = decodedMsg || 'Se registraron algunos métodos, pero hay advertencias.';
+
+            } else if (pmStatus === 'error') {
+                title = 'Error de Registro de Pago Obligatorio';
+                icon = 'error';
+                text = decodedMsg || 'No se pudo completar el registro de métodos de pago. El Pago Móvil es obligatorio.';
+                
+
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    confirmButtonText: 'Volver al Registro',
+                    confirmButtonColor: '#d33'
+                }).then(() => {
+
+                    const modalElement = document.getElementById('modalConTabs');
+                    if (typeof bootstrap !== 'undefined' && bootstrap.Modal && modalElement) {
+                        const modal = new bootstrap.Modal(modalElement, {
+                            backdrop: 'static', 
+                            keyboard: false 
+                        });
+                        modal.show();
+                    }
+                });
+                
+
+                history.replaceState({}, document.title, window.location.pathname);
+                return; 
+            }
+            
+
+            if (title) {
+                Swal.fire({
+                    title: title,
+                    text: text,
+                    icon: icon,
+                    confirmButtonText: 'Entendido',
+                    confirmButtonColor: '#203864'
+                }).then(() => {
+
+                    history.replaceState({}, document.title, window.location.pathname);
+                });
+            }
+        }
+
+
+        function isValidEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+        const formMetodosPago = document.getElementById('formMetodosPago');
+        const minDocLength = 8;
+        
+        if (!formMetodosPago) {
+            console.warn("El formulario 'formMetodosPago' no fue encontrado. Verifique que el ID esté en su HTML.");
+            return;
+        }
+
+        const pm_documento = formMetodosPago.querySelector('[name="documento_ident"]');
+        const pm_telefono = formMetodosPago.querySelector('[name="telefono"]');
+        const pm_banco_id = formMetodosPago.querySelector('[name="banco_id"]');
+        const pm_banco_visual_input = document.getElementById('banco_visual_input');
+
+        const tr_documento = formMetodosPago.querySelector('[name="documento_identidad"]');
+        const tr_nro_cuenta = formMetodosPago.querySelector('[name="nro_cuenta"]');
+        const tr_banco_id = formMetodosPago.querySelector('[name="banco2_id"]');
+        const tr_banco_visual_input = document.getElementById('banco2_visual_input');
+
+        const correo_binance = formMetodosPago.querySelector('[name="correo_binance"]');
+        const correo_paypal = formMetodosPago.querySelector('[name="correo_paypal"]');
+        
+        const btnSubmitMetodos = document.getElementById('btnSubmitMetodosPago');
+        const modalElement = document.getElementById('modalConTabs'); 
+
+        
+        if (btnSubmitMetodos) {
+            btnSubmitMetodos.addEventListener('click', function(e) {
+                
+                e.preventDefault(); 
+
+                const errors = [];
+                
+
+                const isPmComplete = pm_documento.value.trim() && pm_telefono.value.trim() && pm_banco_id.value !== "";
+
+                if (!isPmComplete) {
+                    errors.push('El método **Pago Móvil (OBLIGATORIO)** debe estar completo (Documento, Teléfono y Banco).');
+                    if (!pm_documento.value.trim()) pm_documento.classList.add('is-invalid'); else pm_documento.classList.remove('is-invalid');
+                    if (!pm_telefono.value.trim()) pm_telefono.classList.add('is-invalid'); else pm_telefono.classList.remove('is-invalid');
+                    if (pm_banco_id.value === "") pm_banco_visual_input.classList.add('is-invalid'); else pm_banco_visual_input.classList.remove('is-invalid');
+                } else {
+                    if (pm_documento.value.trim().length < minDocLength) {
+                        errors.push(`El Documento de Pago Móvil debe tener mínimo ${minDocLength} caracteres.`);
+                        pm_documento.classList.add('is-invalid');
+                    } else {
+                        pm_documento.classList.remove('is-invalid');
+                        pm_telefono.classList.remove('is-invalid');
+                        pm_banco_visual_input.classList.remove('is-invalid');
+                    }
+                }
+
+
+
+                const isTrPartiallyFilled = tr_documento.value.trim() || tr_nro_cuenta.value.trim() || tr_banco_id.value;
+                const isTrComplete = tr_documento.value.trim() && tr_nro_cuenta.value.trim() && tr_banco_id.value;
+
+                if (isTrPartiallyFilled) {
+                    if (!isTrComplete) {
+                        errors.push('Si registra Transferencia Bancaria, debe llenar **todos** los campos (Documento, Cuenta y Banco).');
+                        if (!tr_documento.value.trim()) tr_documento.classList.add('is-invalid'); else tr_documento.classList.remove('is-invalid');
+                        if (!tr_nro_cuenta.value.trim()) tr_nro_cuenta.classList.add('is-invalid'); else tr_nro_cuenta.classList.remove('is-invalid');
+                        if (!tr_banco_id.value) tr_banco_visual_input.classList.add('is-invalid'); else tr_banco_visual_input.classList.remove('is-invalid');
+                    } else {
+                        if (tr_documento.value.trim().length < minDocLength) {
+                            errors.push(`El Documento de Transferencia debe tener mínimo ${minDocLength} caracteres.`);
+                            tr_documento.classList.add('is-invalid');
+                        } else {
+                            tr_documento.classList.remove('is-invalid');
+                            tr_nro_cuenta.classList.remove('is-invalid');
+                            tr_banco_visual_input.classList.remove('is-invalid');
+                        }
+                    }
+                } else {
+                    tr_documento.classList.remove('is-invalid');
+                    tr_nro_cuenta.classList.remove('is-invalid');
+                    tr_banco_visual_input.classList.remove('is-invalid');
+                }
+
+
+                if (correo_binance && correo_binance.value.trim()) {
+                    if (!isValidEmail(correo_binance.value.trim())) {
+                        errors.push('El correo de Binance no tiene un formato válido.');
+                        correo_binance.classList.add('is-invalid');
+                    } else {
+                        correo_binance.classList.remove('is-invalid');
+                    }
+                } else if (correo_binance) {
+                    correo_binance.classList.remove('is-invalid');
+                }
+
+
+
+                if (correo_paypal && correo_paypal.value.trim()) {
+                    if (!isValidEmail(correo_paypal.value.trim())) {
+                        errors.push('El correo de Paypal no tiene un formato válido.');
+                        correo_paypal.classList.add('is-invalid');
+                    } else {
+                        correo_paypal.classList.remove('is-invalid');
+                    }
+                } else if (correo_paypal) {
+                    correo_paypal.classList.remove('is-invalid');
+                }
+
+
+                if (errors.length > 0) {
+                    
+                    const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+                    
+
+                    Swal.fire({
+                        title: 'Campos Incompletos o Inválidos',
+                        html: errorHtml,
+                        icon: 'error',
+                        confirmButtonText: 'Corregir'
+                    });
+                    
+                    return;
+                }
+
+
+                if (modalElement && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                    const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                    if (modalInstance) {
+                        modalInstance.hide(); 
+                    }
+                }
+
+ 
+                Swal.fire({
+                    title: 'Registrando Métodos de Pago...',
+                    text: 'Continuando con el proceso.',
+                    allowOutsideClick: false,
+                    didOpen: () => {
+                        Swal.showLoading();
+                    }
+                });
+                
+
+                formMetodosPago.submit(); 
+            });
+        }
+
+
+        const fieldsToClean = [
+            pm_documento, pm_telefono, pm_banco_visual_input,
+            tr_documento, tr_nro_cuenta, tr_banco_visual_input,
+            correo_binance, correo_paypal
+        ].filter(el => el);
+
+        fieldsToClean.forEach(input => {
+            input.addEventListener('input', function() {
+                this.classList.remove('is-invalid');
+            });
+            
+            // Lógica especial para limpiar los inputs visuales al seleccionar del select oculto
+            if (input === pm_banco_visual_input && pm_banco_id) {
+                pm_banco_id.addEventListener('change', function() {
+                    pm_banco_visual_input.classList.remove('is-invalid');
+                });
+            }
+            if (input === tr_banco_visual_input && tr_banco_id) {
+                tr_banco_id.addEventListener('change', function() {
+                    tr_banco_visual_input.classList.remove('is-invalid');
+                });
+            }
+        });
+        
+        
+    });
+    
+
+
+</script>
 
 </body>
 </html>
