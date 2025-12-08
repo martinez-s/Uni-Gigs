@@ -112,7 +112,7 @@ include __DIR__ . '/app/includes/Navbar.php';
                             <label for="clave" class="lb_modal">CONTRASEÑA</label>
                             <br>
                             <input type="password" id="clave" name="clave" class="inputs">
-                            <a href="#" class="texto_log_cont"><p >¿OLVIDASTE LA CONTRASEÑA?</p></a>
+                            <a href="mailto:unigigs.admi@gmail.com?subject=Solicitud%20de%20Cambio%20de%20Contrase%F1a&body=IMPORTANTE:%20No%20modifique%20el%20formato%20de%20este%20correo.%0A%0APor%20favor,%20procesen%20el%20cambio%20de%20mi%20clave%20con%20los%20siguientes%20datos:%0A%0AC%E9dula%20de%20Identidad:%20[ESCRIBIR_AQUI]%0A%0ANueva%20Contrase%F1a:%20[ESCRIBIR_AQUI]" class="texto_log_cont"><p >¿OLVIDASTE LA CONTRASEÑA?</p></a>
                             <button type="submit" class="btn_inicio">INICIAR</button>
                             <a class="texto_log_regis" data-bs-toggle="modal" data-bs-target="#modal_registro"><p>¿NO TIENES CUENTA? REGISTRATE</p></a>
                         </form>

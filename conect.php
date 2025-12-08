@@ -1,7 +1,7 @@
 <?php
 $Usuario='root';
 $clave='';
-$db='uni-gigs';
+$db='uni_gigs';
 $host='localhost';
 
 $mysqli =  new mysqli($host, $Usuario, $clave, $db);
