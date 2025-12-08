@@ -293,17 +293,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
 
         <div class="col-lg-3">
             <div class="user-card-modern">
-                <?php 
-                // Mostrar foto de perfil del usuario
-                if (isset($data['url_foto_perfil']) && !empty($data['url_foto_perfil'])): 
-                    $ruta_foto_perfil = "../../" . htmlspecialchars($data['url_foto_perfil']);
-                ?>
-                    <img src="<?php echo $ruta_foto_perfil; ?>" alt="Foto de perfil de usuario" class="avatar-image shadow-sm" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+
+                <div class="d-flex justify-content-center mb-4">
+    
+                <?php if (!empty($url_foto_perfil)): // Verificamos si existe la URL ?>
+                    
+                    <img src="<?php echo htmlspecialchars($url_foto_perfil); ?>" 
+                        alt="Foto de perfil" 
+                        class="shadow-sm"
+                        style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+                
                 <?php else: ?>
-                    <div class="avatar-placeholder shadow-sm mb-4" style="width: 120px; height: 120px;">
-                        <span class="fw-bold"><?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?></span>
+                    
+                    <div class="shadow-sm" 
+                        style="width: 120px; height: 120px; border-radius: 50%; background-color: #e9ecef; color: #adb5bd; font-size: 3.5rem; display: flex; align-items: center; justify-content: center;">
+                        
+                        <span class="fw-bold">
+                            <?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?>
+                        </span>
+                        
                     </div>
+                    
                 <?php endif; ?>
+            </div>
                 
                 <h6 class="fw-bold text-dark mb-1">
                     <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>

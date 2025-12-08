@@ -7,6 +7,7 @@
     }
 
     $id_usuario_req = $_SESSION['id_usuario'];
+   
 
     if ($_SERVER['REQUEST_METHOD'] === 'GET' ) {
     try {
@@ -18,6 +19,7 @@
         }
         
         $id_usuario_ser = $_GET['id_usuario'];
+        $id_servicio = $_GET['id_servicio'];
         $activo = true;
         
         // **CORRECCIÓN: Definición de id_reserva_ser**
@@ -56,6 +58,11 @@
         // 2. Usamos "iiii" si 'estado' es un entero (lo más común para booleanos).
         $stmt->bind_param("iiii", $id_usuario_req, $id_usuario_ser, $id_usuario_req, $activo); 
         $stmt->execute();
+
+        $sql_gig = "INSERT INTO gigs (id_prestador, id_solicitante, id_servicio_request,estado, fecha_creacion) VALUES (?, ?, ?,?, NOW())";
+        $stmt_gig = $mysqli->prepare($sql_gig);
+        $stmt_gig->bind_param("iiii", $id_usuario_req, $id_usuario_ser, $id_servicio, $activo);
+        $stmt_gig->execute();
 
         header("Location: ../../mensajeria.php");
         exit();

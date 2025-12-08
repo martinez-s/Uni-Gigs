@@ -16,12 +16,12 @@
         if (!isset($_GET['id_usuario']) || empty($_GET['id_usuario'])) {
             die("Error: Se requiere el parámetro id_usuario."); // Cambiado a id_usuario
         }
-        
+        $id_request = $_GET['id_request'];
         $id_usuario_req = $_GET['id_usuario'];
         $activo = true;
 
 
-        
+
         // -------------------------------------------------------------
         // Bloque para verificar y reactivar chat viejo
         // -------------------------------------------------------------
@@ -53,6 +53,14 @@
         // 2. Usamos "iiii" si 'estado' es un entero (lo más común para booleanos).
         $stmt->bind_param("iiii", $id_usuario_req, $id_usuario_ser, $id_usuario_req, $activo); 
         $stmt->execute();
+
+        
+
+        $sql_gig = "INSERT INTO gigs (id_prestador, id_solicitante, id_request,estado, fecha_creacion) VALUES (?, ?, ?,?, NOW())";
+        $stmt_gig = $mysqli->prepare($sql_gig);
+        $stmt_gig->bind_param("iiii", $id_usuario_req, $id_usuario_ser, $id_request, $activo);
+        $stmt_gig->execute();
+        
 
         header("Location: ../../mensajeria.php");
         exit();

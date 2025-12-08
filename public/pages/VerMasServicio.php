@@ -203,11 +203,15 @@
                                 </select>
                             </div>
 
-                            <div class="col-12 mt-3 d-flex gap-2"> 
-                                <a href="<?php echo htmlspecialchars($_SERVER['PHP_SELF']); ?>">Limpiar Filtros
-                                    
-                                </a>
-                                <button type="submit" class="btn btn-success">Aplicar Filtros</button>
+                            <div class="d-flex gap-3 mt-4">
+
+                            <button type="button" class="btn btn-outline-primary  custom-btn-secondary">
+                                Limpiar Filtros
+                            </button>
+
+                            <button type="submit" class="btn btn-primary custom-btn-primary">
+                                Aplicar Filtros
+                            </button>
                             </div>
                         </form>
                         <hr>
@@ -242,7 +246,7 @@
                                             <div class="star-rating-display" data-rating="<?php echo htmlspecialchars($row['rating']); ?>"></div>
                                             <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
                                         </div>
-                                        <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
+                                        <a href="" class="btn btn-primary mt-auto">Mas informacion</a>
                                     </div>
                                 </div> 
                             </div>
