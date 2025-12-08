@@ -58,37 +58,37 @@ include __DIR__ . '/app/includes/Navbar.php';
         <h2 class="Titulo text-center mt-5">Funciones</h2>
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mt-3">
             <div class="col">
-                <div class="card h-100 shadow-sm border-0"> <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
+                <div class="card h-100 shadow-sm border-0"> <img src="Card-1.png" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                        <h5 class="card-title"><strong>Definición y Cierre de Términos</strong></h5>
+                        <p class="card-text">La plataforma actúa como un marco flexible que permite a los estudiantes definir el "qué, cómo y cuánto". Ustedes no imponen tarifas ni horarios fijos; su función es validar que las partes lleguen a un consenso sobre el alcance de la ayuda académica (precio, fecha de entrega, formato).</p>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
+                    <img src="Card-2.avif" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                        <h5 class="card-title"><strong>Tablón de Necesidades Académicas</h5></strong>
+                        <p class="card-text">Tienen una función que permite a los "solicitantes" publicar requerimientos específicos. Esto actúa como una bolsa de trabajo o marketplace donde se exponen las tareas académicas (ej. "Necesito ayuda para una guía de estadística" o "Busco ayuda con realización de tesis").</p>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
+                    <img src="Card-3.svg" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                        <h5 class="card-title"><strong>Escaparate de Servicios Estudiantiles</strong></h5>
+                        <p class="card-text">De manera inversa al punto anterior, la plataforma habilita a los "proveedores" para ofrecer sus servicios en diversas áreas de estudio. Esto funciona como un catálogo de talentos donde los estudiantes muestran en qué son buenos.</p>
                     </div>
                 </div>
             </div>
             <div class="col">
                 <div class="card h-100 shadow-sm border-0">
-                    <img src="public/img/Relleno.jpg" class="card-img-top" alt="...">
+                    <img src="Card-4.svg" class="card-img-top" alt="...">
                     <div class="card-body">
-                        <h5 class="card-title">Card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card’s content.</p>
+                        <h5 class="card-title"><strong>Canal de Comunicación y Negociación</strong></h5>
+                        <p class="card-text">La plataforma no es un muro estático; funciona como un puente de comunicación. El texto menciona explícitamente que "permite la comunicación directa" para facilitar dos cosas:</p>
                     </div>
                 </div>
             </div>

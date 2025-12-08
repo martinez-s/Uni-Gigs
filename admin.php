@@ -240,7 +240,7 @@ $servicios = $mysqli->query("SELECT s.id_servicio, s.titulo, s.precio, s.fecha_c
             </div>
             <form method="POST">
                 <div class="modal-body text-center py-4">
-                    <input type="number" step="0.01" name="tasa_cambio" class="form-control form-control-lg text-center fw-bold text-primary" value="<?php echo $tasa_actual; ?>" required>
+                    <input type="number" step="0.01" name="tasa_cambio" min="0.01" class="form-control form-control-lg text-center fw-bold text-primary" value="<?php echo $tasa_actual; ?>" required>
                 </div>
                 <div class="modal-footer justify-content-center border-0 pt-0">
                     <button type="submit" name="btn_actualizar_tasa" class="btn btn-primary w-100 rounded-pill">Guardar</button>

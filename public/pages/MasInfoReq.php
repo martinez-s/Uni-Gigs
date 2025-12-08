@@ -347,9 +347,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
 
                 <div class="d-flex justify-content-center mb-4">
     
-                <?php if (!empty($user_photo_url)): // Verificamos si existe la URL ?>
+                <?php if (!empty($ruta_foto_perfil)): // Verificamos si existe la URL ?>
                     
-                    <img src="<?php echo htmlspecialchars($user_photo_url); ?>" 
+                    <img src="<?php echo htmlspecialchars($ruta_foto_perfil); ?>" 
                         alt="Foto de perfil" 
                         class="shadow-sm"
                         style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">

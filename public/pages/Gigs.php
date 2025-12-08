@@ -224,12 +224,6 @@ if ($stmt = $conn->prepare($sql_query_completa)) {
                         </h5> 
                     </div>
                     
-                    <form action="DetalleGig.php" method="POST" class="mt-auto">
-                        <input type="hidden" name="id_gig" value="<?php echo htmlspecialchars($row['id_gig']); ?>">
-                        <button type="submit" class="btn <?php echo $es_en_curso ? 'btn-primary' : 'btn-outline-secondary'; ?> w-100">
-                            <?php echo $es_en_curso ? 'Gestionar Gig' : 'Ver Historial'; ?>
-                        </button>
-                    </form>
                 </div> 
             </div> 
         </div>

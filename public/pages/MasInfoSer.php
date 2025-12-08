@@ -295,10 +295,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             <div class="user-card-modern">
 
                 <div class="d-flex justify-content-center mb-4">
+                <?php 
+                // Mostrar foto de perfil del usuario
+                if (isset($data['url_foto_perfil']) && !empty($data['url_foto_perfil'])): 
+                    $ruta_foto_perfil = "../../" . htmlspecialchars($data['url_foto_perfil']);
+                ?>
+
     
-                <?php if (!empty($url_foto_perfil)): // Verificamos si existe la URL ?>
+                <?php if (!empty($ruta_foto_perfil)): // Verificamos si existe la URL ?>
                     
-                    <img src="<?php echo htmlspecialchars($url_foto_perfil); ?>" 
+                    <img src="<?php echo htmlspecialchars($ruta_foto_perfil); ?>" 
                         alt="Foto de perfil" 
                         class="shadow-sm"
                         style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
@@ -388,6 +394,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             <p class="text-muted">El ID solicitado no existe o fue eliminado.</p>
             <a href="index.php" class="btn btn-secondary mt-3 px-4 rounded-pill">Volver</a>
         </div>
+    <?php endif; ?>
     <?php endif; ?>
     </div>
 

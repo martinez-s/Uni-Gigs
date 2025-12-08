@@ -250,8 +250,7 @@ $nombre_usuario = $_SESSION['nombre'];
             </ul>
 
             <div class="icon-group d-flex align-items-center mx-auto">
-                <a class="Icon fa-lg" href="Principal.html"><span class="material-symbols-outlined">notifications</span></a>
-                <a class="Icon" href="../../mensajeria.php"><span class="material-symbols-outlined">mail</span></a>
+                <a class="Icon" href="#"><span class="material-symbols-outlined">mail</span></a>
                 <a class="Icon"><span class="material-symbols-outlined">school</span></a>
                 <a class="Icon" href="public/pages/perfil.php"><span class="material-symbols-outlined">account_circle</span></a>
             </div>
@@ -310,8 +309,8 @@ $nombre_usuario = $_SESSION['nombre'];
                         </div>
                          <!-- Botón condicional (solo visible para solicitante) -->
                         <div id="chat-actions" class="d-none">
-                            <button type="button" class="btn btn-warning" id="action-button" data-bs-toggle="modal" data-bs-target="#actionModal">
-                                <i class="bi "></i> Culminar Gigs
+                            <button type="button" class="btn btn-warning text-white" id="action-button" data-bs-toggle="modal" data-bs-target="#actionModal">
+                                <i class="bi "></i> <strong>Culminar Gigs</strong>
                             </button>
                         </div>
                     </div>
