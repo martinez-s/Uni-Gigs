@@ -1,11 +1,11 @@
 @font-face {
     font-family: 'Montserrat-Light';
-    src: url('../../public/fonts/Montserrat-Light.ttf') format('truetype');
+    src: url('../fonts/Montserrat-Light.ttf') format('truetype');
 }
 
 @font-face {
     font-family: 'Cascadia-Code-Regular';
-    src: url('../../public/fonts/CascadiaCode-Regular.otf') format('opentype');
+    src: url('../fonts/CascadiaCode-Regular.otf') format('opentype');
 }
 
 *{
@@ -21,7 +21,6 @@ body{
 nav{
     width: 100%;
     background-color: #2F5597;
-    margin-bottom: 2rem;
     display: flex;
 }
 
@@ -205,7 +204,15 @@ hr {
     justify-content: center;
     border-radius: 10px;
 }
-
+.btneditar{
+    border: none;
+    justify-content: center;
+    border-radius: 10px;
+}
+.btneditar:hover {
+    background-color: #2F5597;
+    color: white;
+}
 .card-title{
     font-size: 1.25rem; 
     font-weight: 700;
@@ -348,6 +355,130 @@ input[type="search"]::-webkit-search-results-decoration {
     border-radius: 10px;
 }
 
+/*PERFFFFFFIIIIIIIIIIIIIILLLLLLLLLLLL*/
+
+.profile-banner {
+    height: 165px;
+    background: linear-gradient(135deg, #203864 0%, #2F5597 100%);
+    position: relative;
+}
+
+.profile-career {
+    color: #495057;
+    font-size: 1.1rem;
+    font-weight: 600;
+    display: inline-flex; 
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fa;
+    padding: 8px 20px;
+    border-radius: 50px;
+    border: 1px solid #e9ecef;
+    margin-bottom: 1.5rem;
+    gap: 10px;
+}
+
+.profile-career .material-symbols-outlined {
+    font-size: 1.3rem;
+    color: #203864;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+    overflow: hidden; 
+    position: relative;
+    border: none;
+    width: 100%;
+}
+.profile-avatar-container {
+    position: relative;
+    margin-top: -90px;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.profile-avatar {
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    border: 5px solid white;
+    object-fit: cover;
+    background-color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.profile-name {
+    color: #203864;
+    font-weight: 700;
+    font-size: 2rem;
+    margin-bottom: 0.2rem;
+    font-family: 'Cascadia-Code-Regular', sans-serif;
+}
+.profile-stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid #f0f0f0;
+    border-bottom: 1px solid #f0f0f0;
+    margin: 1rem 0;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-number {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #203864;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+.stat-label {
+    font-size: 0.85rem;
+    color: #adb5bd;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+.profile-bio {
+    color: #495057;
+    font-style: italic;
+    max-width: 700px;
+    margin: 0 auto 20px auto;
+    line-height: 1.6;
+}
+
+.btn-report-banner {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-report-banner:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    transform: scale(1.1);
+}
 /* Estilos para que Select2 se parezca al input estándar (Diseño) */
 
 /* 1. Contenedor Principal (Select Cerrado) */

@@ -82,7 +82,7 @@
                 <a class="Icon fa-lg" href="Principal.html"><span class="material-symbols-outlined">notifications</span></a>
                 <a class="Icon" href="../../mensajeria.php"><span class="material-symbols-outlined">mail</span></a>
                 <a class="Icon"><span class="material-symbols-outlined">school</span></a>
-                <a class="Icon"><span class="material-symbols-outlined">account_circle</span></a>
+                <a class="Icon" href="perfil.php"><span class="material-symbols-outlined">account_circle</span></a>
             </div>
             
         </div>
