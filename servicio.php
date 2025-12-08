@@ -465,9 +465,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               </div>            
           </div>
           
-        </div>
-        
-        
+        </div>     
       </div>
         <div class="modal-footer justify-content-center btn-regis">
             <button type="button" id="btnSubmitMetodosPago" class="btn_siguiente btn-secondary">REGISTRAR</button>
