@@ -337,8 +337,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <br>
                     <input 
                         type="number" 
-                        step="0.01" 
-                        min="0.00" 
+                        step="0.5" 
+                        min="1.00" 
+                        max="1000.00"
                         id="precio" 
                         name="precio" 
                         class="inputs" 
@@ -358,23 +359,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         required
                     ><?php echo htmlspecialchars($request_data['descripcion'] ?? ''); ?></textarea> 
                     
-                    <input type="file" id="input-archivos-request" name="archivos-request[]" multiple hidden> 
-                    <label for="input-archivos-request" class="btn btn-secondary" style="margin-bottom: 15px;">
-                        Subir Archivos (Max 3)
-                    </label>
-                    
-                    <div id="preview-archivos" style="
-                        border: 1px solid #ccc;
-                        padding: 15px;
-                        min-height: 100px; /* Para que sea visible aunque no haya archivos */
-                        border-radius: 5px;
-                        background-color: #f9f9f9;
-                        display: flex; 
-                        gap: 15px; 
-                        flex-wrap: wrap; 
-                    ">
-                        <p id="mensaje-vacio" style="color: #888;">No hay archivos seleccionados.</p>
-                        </div> 
                 </div>
                 
                 <div class="d-flex justify-content-center">
