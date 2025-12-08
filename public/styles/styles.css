@@ -159,13 +159,8 @@ a{
     width: 100%;
 }
 .imagen_carnet {
-<<<<<<< HEAD
-    width: 80%; 
-    height: 205px; 
-=======
     width: 80%; /* Ocupa el 100% del contenedor (.contenedor_carnet) */
     height: 275px; /* **Importante:** Define una altura fija y razonable para que se vea como un campo. Ajusta este valor si es necesario. */
->>>>>>> 60deac1b88e8e8b6ba3b80fa028bc410918b1da8
     background-color: #e0e0e0; 
     border-radius: 0%;
     border: 1px solid #ccc; 
@@ -316,7 +311,6 @@ a{
     box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); 
 }
 
-<<<<<<< HEAD
 .conte_pago{
     width: 80%; 
     height: 90%; 
@@ -327,7 +321,7 @@ a{
 
 .btn-regis{
     align-items: center;
-=======
+}
 .lb_modal_carnet{
     font-size: 0.75rem;
     margin-bottom: 0px; 
@@ -347,5 +341,4 @@ a{
     background-color: #ffffff; 
     border: 1px solid #ccc; 
     border-radius: 5px;
->>>>>>> 60deac1b88e8e8b6ba3b80fa028bc410918b1da8
 }
