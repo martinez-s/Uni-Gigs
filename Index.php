@@ -234,8 +234,10 @@ include __DIR__ . '/app/includes/Navbar.php';
                             <input type="text" name="carrera" id="reg_carrera" class="inputs_carnet form-control_carnet" required readonly style="background-color: #e9ecef;"><br>
                         </div>
                     </div>
-                    <div class="d-flex justify-content-center mt-4">
-                        <button type="submit" name="btn_finalizar" class="btn_fin">FINALIZAR REGISTRO</button>
+                    <div class="d-flex justify-content-end mt-4">
+                        <button type="submit" id="btn_finalizar" name="btn_finalizar" class="ocr-btn-submit" disabled style="opacity: 0.6; cursor: not-allowed;">
+                            FINALIZAR REGISTRO
+                        </button>
                     </div>
                 </div>
             </div>
@@ -348,69 +350,81 @@ include __DIR__ . '/app/includes/Navbar.php';
         modal2.show();
     }
 
-    async function procesarCarnet(input) {
-        if (input.files && input.files[0]) {
-            
-            document.getElementById('ocr_loading').style.display = 'block';
-            document.body.style.cursor = 'wait';
+async function procesarCarnet(input) {
+    if (input.files && input.files[0]) {
 
-            const formData = new FormData();
-            formData.append('imagen_carnet', input.files[0]);
+        const btnFinalizar = document.getElementById('btn_finalizar');
 
-            try {
-                const respuesta = await fetch('scanner_ajax.php', { method: 'POST', body: formData });
-                const resultado = await respuesta.json();
+        document.getElementById('ocr_loading').style.display = 'block';
+        document.body.style.cursor = 'wait';
+        btnFinalizar.disabled = true;
+        btnFinalizar.style.opacity = '0.6';
 
-                document.getElementById('ocr_loading').style.display = 'none';
-                document.body.style.cursor = 'default';
+        const formData = new FormData();
+        formData.append('imagen_carnet', input.files[0]);
 
-                if (resultado.success) {
-                    const datos = resultado.data;
+        try {
+            const respuesta = await fetch('scanner_ajax.php', { method: 'POST', body: formData });
+            const resultado = await respuesta.json();
 
-                    document.getElementById('reg_nombre').value = datos.nombre || '';
-                    document.getElementById('reg_apellido').value = datos.apellido || '';
-                    document.getElementById('reg_cedula').value = datos.cedula || '';
-                    document.getElementById('reg_universidad').value = datos.universidad || '';
-                    document.getElementById('reg_carrera').value = datos.carrera || 'NO DETECTADA';
+            document.getElementById('ocr_loading').style.display = 'none';
+            document.body.style.cursor = 'default';
 
-                    const correoInput = document.querySelector('#form_registro input[name="correo"]'); 
+            if (resultado.success) {
+                const datos = resultado.data;
+
+                document.getElementById('reg_nombre').value = datos.nombre || '';
+                document.getElementById('reg_apellido').value = datos.apellido || '';
+                document.getElementById('reg_cedula').value = datos.cedula || '';
+                document.getElementById('reg_universidad').value = datos.universidad || '';
+                document.getElementById('reg_carrera').value = datos.carrera || 'NO DETECTADA';
+
+                btnFinalizar.disabled = false;
+                btnFinalizar.style.opacity = '1';
+                btnFinalizar.style.cursor = 'pointer';
+
+                const correoInput = document.querySelector('#form_registro input[name="correo"]');
+                const correoUsuario = correoInput.value.trim().toLowerCase();
+
+                if (datos.nombre && datos.apellido && datos.cedula) {
+                    const correoTeorico = construirCorreoUnimar(datos.nombre, datos.apellido, datos.cedula);
                     
-                    const correoUsuario = correoInput.value.trim().toLowerCase();
-
-                    if (datos.nombre && datos.apellido && datos.cedula) {
-                        const correoTeorico = construirCorreoUnimar(datos.nombre, datos.apellido, datos.cedula);
-
-                        if (correoUsuario !== correoTeorico) {
-                            Swal.fire({
-                                icon: 'warning',
-                                title: 'Posible error en el correo',
-                                html: `El correo ingresado (<b>${correoUsuario}</b>) no coincide con el formato de tu carnet (<b>${correoTeorico}</b>).<br><br>¿Deseas corregirlo?`,
-                                showCancelButton: true,
-                                confirmButtonText: 'Sí, corregir',
-                                cancelButtonText: 'No, dejarlo así'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    correoInput.value = correoTeorico;
-                                    Swal.fire('Corregido', 'El correo ha sido actualizado.', 'success');
-                                }
-                            });
-                        } else {
-                            Swal.fire({ icon: 'success', title: '¡Verificación Exitosa!', text: 'Los datos coinciden correctamente.' });
-                        }
+                    if (correoUsuario !== correoTeorico) {
+                        Swal.fire({
+                            icon: 'warning',
+                            title: 'Verifica tu correo',
+                            html: `Tu correo (<b>${correoUsuario}</b>) difiere del formato del carnet (<b>${correoTeorico}</b>).<br>¿Corregir?`,
+                            showCancelButton: true,
+                            confirmButtonText: 'Sí, corregir',
+                            cancelButtonText: 'No'
+                        }).then((r) => { if (r.isConfirmed) correoInput.value = correoTeorico; });
+                    } else {
+                        Swal.fire({ icon: 'success', title: '¡Carnet Verificado!', text: 'Datos cargados correctamente. Ya puedes finalizar.' });
                     }
-
-                } else {
-                    Swal.fire({ icon: 'warning', title: 'No se pudo leer', text: resultado.message || 'Intenta con una foto más clara.' });
                 }
 
-            } catch (error) {
-                console.error(error);
-                document.getElementById('ocr_loading').style.display = 'none';
-                document.body.style.cursor = 'default';
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Error de conexión con el servidor.' });
+                if (!datos.carrera || datos.carrera === 'NO DETECTADA') {
+                     document.getElementById('reg_carrera').removeAttribute('readonly');
+                     document.getElementById('reg_carrera').style.backgroundColor = '#fff'; 
+                     Swal.fire('Atención', 'Por favor escribe tu carrera manualmente.', 'info');
+                }
+
+            } else {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'No se pudo leer',
+                    text: resultado.message || 'Intenta con una foto más clara.'
+                });
             }
+
+        } catch (error) {
+            console.error(error);
+            document.getElementById('ocr_loading').style.display = 'none';
+            document.body.style.cursor = 'default';
+            Swal.fire({ icon: 'error', title: 'Error', text: 'Error de conexión.' });
         }
     }
+}
 
     function construirCorreoUnimar(nombre, apellido, cedula) {
         const limpiar = (texto) => {
