@@ -20,7 +20,6 @@ $message = isset($_POST['message']) ? trim($_POST['message']) : '';
 $file_data = isset($_POST['file_data']) ? json_decode($_POST['file_data'], true) : null;
 
 try {
-    // Verificar que el usuario tiene acceso al chat
     $check_query = "SELECT * FROM chats WHERE id_chat = ? AND (id_usuario1 = ? OR id_usuario2 = ?)";
     $check_stmt = $mysqli->prepare($check_query);
     $check_stmt->bind_param('iii', $chat_id, $id_usuario, $id_usuario);
@@ -32,7 +31,6 @@ try {
         exit();
     }
     
-    // Determinar tipo de mensaje y contenido
     $tipo_mensaje = 'texto';
     $url_archivo = null;
     $nombre_archivo = null;
@@ -41,18 +39,17 @@ try {
         $tipo_mensaje = $file_data['file_type'];
         $url_archivo = $file_data['file_url'];
         $nombre_archivo = $file_data['file_name'];
-        $contenido = $file_data['file_name']; // Para búsquedas en la BD
+        $contenido = $file_data['file_name'];
     } else {
         $contenido = $message;
     }
     
-    // Si no hay contenido ni archivo, no enviar
     if (empty($contenido) && empty($file_data)) {
         echo json_encode(['success' => false, 'message' => 'El mensaje no puede estar vacío']);
         exit();
     }
     
-    // Insertar mensaje
+
     if ($tipo_mensaje === 'texto') {
         $query = "INSERT INTO mensajes (contenido, tipo_mensaje, id_emisor, id_chat, fecha) 
                   VALUES (?, ?, ?, ?, NOW())";
@@ -68,7 +65,7 @@ try {
     if ($stmt->execute()) {
         $message_id = $stmt->insert_id;
         
-        // Actualizar estado del chat a activo
+
         $update_query = "UPDATE chats SET estado = 1 WHERE id_chat = ?";
         $update_stmt = $mysqli->prepare($update_query);
         $update_stmt->bind_param('i', $chat_id);

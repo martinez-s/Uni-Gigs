@@ -355,7 +355,6 @@ input[type="search"]::-webkit-search-results-decoration {
     border-radius: 10px;
 }
 
-/*PERFFFFFFIIIIIIIIIIIIIILLLLLLLLLLLL*/
 
 .profile-banner {
     height: 165px;
@@ -512,7 +511,7 @@ input[type="search"]::-webkit-search-results-decoration {
     border: 1px solid #ced4da; /* Mismo borde que el input */
     border-radius: 4px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra muy ligera */
-    /* **CRÍTICO para visibilidad en móvil** */
+    /* *CRÍTICO para visibilidad en móvil* */
     z-index: 100001; 
 }
 
@@ -738,7 +737,10 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 .report-btn:hover { color: #dc3545; }
 
+<<<<<<< HEAD
+=======
 /* 1. Contenedor Principal: Fija el tamaño y la forma */
+>>>>>>> 7829217024883b2c8803f9f1498158a9097b0028
 .avatar-container {
     /* Define un tamaño fijo para el contenedor */
     width: 130px;  /* Ejemplo: 80 píxeles */
@@ -787,5 +789,9 @@ input[type="search"]::-webkit-search-results-decoration {
     background-color: #f0f0f0;
     font-size: 36px;
     color: #333;
+<<<<<<< HEAD
+}
+=======
 }
 
+>>>>>>> 7829217024883b2c8803f9f1498158a9097b0028

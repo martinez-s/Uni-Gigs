@@ -31,7 +31,7 @@ try {
     }
     $check_stmt->close();
     
-    // Obtener mensajes con información de archivos
+   
     $query = "
         SELECT m.*, u.nombre, u.apellido, u.url_foto_perfil
         FROM mensajes m

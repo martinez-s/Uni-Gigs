@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once __DIR__ . '/../../conect.php';  // ✅ Sube dos niveles desde app/ajax/ hasta raíz
+require_once __DIR__ . '/../../conect.php'; // Asegúrate que la ruta a conect.php sea correcta
 
 header('Content-Type: application/json');
 
@@ -12,11 +12,13 @@ if (!isset($_SESSION['id_usuario'])) {
 $id_usuario = $_SESSION['id_usuario'];
 
 try {
+    // Consulta optimizada para traer todos los datos necesarios
     $query = "
         SELECT 
             c.id_chat,
             c.id_usuario1,
             c.id_usuario2,
+            c.id_solicitante,
             c.estado,
             CASE 
                 WHEN c.id_usuario1 = ? THEN c.id_usuario2 
@@ -54,7 +56,7 @@ try {
     
     $chats = [];
     while ($row = $result->fetch_assoc()) {
-        // Formatear fecha
+ 
         $ultima_fecha_formateada = '';
         if ($row['ultima_fecha']) {
             $fecha = new DateTime($row['ultima_fecha']);
@@ -73,7 +75,6 @@ try {
             }
         }
         
-        // Acortar mensaje
         $ultimo_mensaje = $row['ultimo_mensaje'] ?? 'Sin mensajes aún';
         if (strlen($ultimo_mensaje) > 35) {
             $ultimo_mensaje = substr($ultimo_mensaje, 0, 35) . '...';
@@ -87,7 +88,8 @@ try {
             'foto_otro_usuario' => $row['foto_otro_usuario'],
             'ultimo_mensaje' => $ultimo_mensaje,
             'ultima_fecha' => $ultima_fecha_formateada,
-            'estado' => $row['estado']
+            'estado' => $row['estado'],
+            'id_solicitante' => $row['id_solicitante'] 
         ];
     }
     

@@ -2,25 +2,38 @@
 // 1. INICIO DE SESIÓN
 session_start();
 
+// Incluir conexión a la base de datos
+include('../../conect.php');
+
 // Variable para controlar qué ID vamos a consultar
 $id_servicio_seleccionado = null;
+$id_usuario_req = null;
+$id_usuario_ser = null;
 
 // 2. LÓGICA DE OBTENCIÓN DE DATOS (POST vs SESSION)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
-    // CASO A: Venimos del formulario POST
-    $id_servicio = intval($_POST['id_servicio']);
-    $id_usuario = intval($_POST['id_usuario']);
+    // CASO A: Venimos del formulario POST desde principal.php
+    $id_servicio_seleccionado = intval($_POST['id_servicio']);
+    $id_usuario_ser = intval($_POST['id_usuario']);
     $id_carrera = intval($_POST['id_carrera']);
     
-    $_SESSION['current_service_id'] = $id_servicio;
-    $_SESSION['service_user_id'] = $id_usuario;
+    // Guardar en sesión para futuras recargas
+    $_SESSION['current_service_id'] = $id_servicio_seleccionado;
+    $_SESSION['service_user_id'] = $id_usuario_ser;
     $_SESSION['service_carrera_id'] = $id_carrera;
     
-    $id_servicio_seleccionado = $id_servicio;
-
+    // Obtener ID del usuario logueado
+    $id_usuario_req = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : null;
+    
 } elseif (isset($_SESSION['current_service_id'])) {
     // CASO B: Recarga de página
     $id_servicio_seleccionado = $_SESSION['current_service_id'];
+    $id_usuario_ser = isset($_SESSION['service_user_id']) ? $_SESSION['service_user_id'] : null;
+    $id_usuario_req = isset($_SESSION['id_usuario']) ? $_SESSION['id_usuario'] : null;
+} else {
+    // CASO C: No hay datos, redirigir
+    header("Location: index.php");
+    exit();
 }
 ?>
 
@@ -42,7 +55,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             border-radius: 12px;
             overflow: hidden;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            min-height: 300px; /* Altura para la foto */
+            min-height: 300px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,7 +142,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
 <body>
     
     <?php
-    include('../../conect.php');
     include 'NavBar.php'; 
     
     $data = null; 
@@ -143,7 +155,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             s.descripcion, 
             s.precio, 
             s.fecha_creacion, 
-            -- s.fecha_limite,  <-- Los servicios suelen no tener fecha limite, lo dejo comentado o puedes usarlo como tiempo de entrega
             m.nombre AS nombre_materia, 
             tt.nombre AS tipo_trabajo_nombre,
             c.nombre_carrera, 
@@ -151,6 +162,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
             u.porcentaje_completacion, 
             u.nombre AS nombre_usuario, 
             u.apellido AS apellido_usuario,
+            u.id_usuario AS id_usuario,
+            u.url_foto_perfil,  /* Agregado para mostrar foto de perfil */
             MIN(fs.url_foto) AS url_foto
         FROM 
             servicios s
@@ -169,7 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
         GROUP BY 
             s.id_servicio, s.titulo, s.descripcion, s.precio, s.fecha_creacion,
             m.nombre, tt.nombre, c.nombre_carrera, 
-            u.rating, u.porcentaje_completacion, u.nombre, u.apellido";
+            u.rating, u.porcentaje_completacion, u.nombre, u.apellido, u.url_foto_perfil, u.id_usuario";
             
         if ($stmt = $mysqli->prepare($sql)) {
             $stmt->bind_param("i", $id_servicio_seleccionado);
@@ -312,13 +325,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
                 <div class="d-flex justify-content-center mb-4">
                     <div class="star-rating-display" data-rating="<?php echo isset($data['rating']) ? htmlspecialchars($data['rating']) : 0; ?>"></div>
                 </div>
-                 <div class="d-flex justify-content-center mb-4">
+                
+                <div class="d-flex justify-content-center mb-4">
                     <h6 style="font-size: 0.8rem;">Gigs Completados: <?php echo htmlspecialchars($data['porcentaje_completacion']); ?>%</h6>
                 </div>
 
-                <button class="btn btn-success w-100 py-2 fw-bold shadow-sm rounded-pill">
-                    CONTACTAR
-                </button>
+                <?php 
+                // Verificar si el usuario actual es el mismo que publicó el servicio
+                if ($id_usuario_req && $id_usuario_req != $data['id_usuario']):
+                    
+                    // Verificar si ya existe un chat activo
+                    $sql_chatViejo = "SELECT id_chat FROM chats WHERE ((id_usuario1 = ? AND id_usuario2 = ?) OR (id_usuario1 = ? AND id_usuario2 = ?)) AND (estado = TRUE)";
+                    $stmt_chatViejo = $mysqli->prepare($sql_chatViejo);
+                    $stmt_chatViejo->bind_param("iiii", $id_usuario_req, $data['id_usuario'], $data['id_usuario'], $id_usuario_req);
+                    $stmt_chatViejo->execute();
+                    $result_chatViejo = $stmt_chatViejo->get_result();
+
+                    if($result_chatViejo->num_rows > 0):
+                ?>
+                        <div class="alert alert-info text-center" role="alert">
+                            Ya tienes un chat activo con este usuario.
+                        </div>
+                    <?php else: ?>
+                        <a href="asociarChatSer.php?id_usuario=<?php echo urlencode($data['id_usuario']); ?>&id_servicio=<?php echo urlencode($data['id_servicio']); ?>">
+                            <button class="btn btn-primary w-100 py-2 fw-bold shadow-sm rounded-pill">ACEPTAR TRABAJO</button>
+                        </a>
+                    <?php endif; 
+                    $stmt_chatViejo->close();
+                else: 
+                    // Usuario ve su propio servicio
+                ?>
+                    <div class="alert alert-info text-center" role="alert">
+                        ES TU PROPIA SOLICITUD.
+                    </div>
+                <?php endif; ?>
                 
                 <div class="mt-3 text-center">
                     <small class="text-muted" style="font-size: 0.75rem;">
@@ -382,213 +422,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_servicio'])) {
     });
     </script>
 
-</body>
-</html>
-
-
-
-
-<footer>
-    <div id="Footer_Responsive" class="container-fluid bg-dark">
-        <div class="row text-align-center p-5 d-md-none d-lg-none">
-            <div class="accordion" id="accordionPanelsStayOpenExample" data-bs-theme="dark">
-            <div class="accordion-item mb-2 border-0 border-bottom">
-                <h2 class="accordion-header">
-                <button class="accordion-button collapsed shadow-none bg-transparent text-white" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseOne" aria-expanded="true" aria-controls="panelsStayOpen-collapseOne">
-                    TEST
-                </button>
-                </h2>
-                <div id="panelsStayOpen-collapseOne" class="accordion-collapse collapse">
-                <div class="accordion-body">
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="accordion-item mb-2 border-0 border-bottom">
-                <h2 class="accordion-header">
-                <button class="accordion-button collapsed shadow-none bg-transparent text-white" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseTwo" aria-expanded="false" aria-controls="panelsStayOpen-collapseTwo">
-                    TEST
-                </button>
-                </h2>
-                <div id="panelsStayOpen-collapseTwo" class="accordion-collapse collapse">
-                <div class="accordion-body">
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                </div>
-                </div>
-            </div>
-            <div class="accordion-item mb-2 border-0 border-bottom">
-                <h2 class="accordion-header">
-                <button class="accordion-button collapsed shadow-none bg-transparent text-white" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapseThree" aria-expanded="false" aria-controls="panelsStayOpen-collapseThree">
-                    TEST
-                </button>
-                </h2>
-                <div id="panelsStayOpen-collapseThree" class="accordion-collapse collapse">
-                    <div class="accordion-body">
-                        <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    </div>
-                </div>
-            </div>
-            <div class="mt-5">
-                <p class="text-white text-center">&copy; 2025 Uni-Gigs. Todos los derechos reservados.</p>
-                <div class="text-center">
-                    <i class="bi bi-facebook fs-3 text-white p-3"></i>
-                    <i class="bi bi-instagram fs-3 text-white p-3"></i>
-                    <i class="bi bi-twitter-x fs-3 text-white p-3"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div>
-        <div id="Footer_Large" class="container-fluid">
-            <div class="row bg-dark text-white text-center p-5 d-none d-md-flex d-lg-flex">
-                <div class="col-lg-3 col-md-3">
-                    <div class="Titulo d-flex justify-content-center align-items-center mb-3">
-                        <img src="../../public/img/Isotipo_Blanco.png" alt="Logo" width="60" height="48" class="d-inline-block align-text-center me-2">
-                        <span class="h3 mb-0">Uni-Gigs</span>                        
-                    </div>
-                    <div>
-                        <i class="bi bi-facebook fs-2 text-white p-3"></i>
-                        <i class="bi bi-instagram fs-2 text-white p-3"></i>
-                        <i class="bi bi-twitter-x fs-2 text-white p-3"></i>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                    <p class="h5">TEST</p>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div>
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                    <p class="h5">TEST</p>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div>
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                </div>
-                <div class="col-lg-3 col-md-3">
-                    <p class="h5">TEST</p>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                    <div class="mb-2">
-                        <a class="text-secondary text-decoration-none" href="#">TEST</a>
-                    </div>
-                </div>
-                <div class="mt-3 border-top pt-3">
-                    <p>&copy; 2025 Uni-Gigs. Todos los derechos reservados.</p>
-                    <p>Av. Concepción Mariño, Sector El Toporo, El Valle del Espíritu Santo, Edo. Nueva Esparta, Venezuela.</p>
-                </div>
-                <div class="d-flex-center">
-                    <a class="text-decoration-none text-white" href="#">Términos y condiciones</a>
-                    <div class="vr mx-3 opacity-100"></div>
-                    <a class="text-decoration-none text-white" href="#">Política de privacidad</a>
-                    <div class="vr mx-3 opacity-100"></div>
-                    <a class="text-decoration-none text-white" href="#">Cookies</a>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    // Seleccionar todos los contenedores de estrellas
-    const ratingContainers = document.querySelectorAll('.star-rating-display');
-
-    ratingContainers.forEach(container => {
-        // Obtener el valor del rating desde el atributo data-rating
-        const rating = parseFloat(container.getAttribute('data-rating'));
-        
-        // Limpiar el contenido actual
-        container.innerHTML = '';
-
-        // Generar las 5 estrellas
-        for (let i = 1; i <= 5; i++) {
-            let iconName = 'star_border'; // Por defecto vacía
-            let colorClass = 'text-secondary'; // Color gris por defecto
-
-            if (rating >= i) {
-                // Estrella completa
-                iconName = 'star';
-                colorClass = 'text-warning'; // Amarillo/Dorado (Bootstrap)
-            } else if (rating >= i - 0.5) {
-                // Media estrella
-                iconName = 'star_half';
-                colorClass = 'text-warning';
-            }
-
-            // Crear el elemento span para el icono
-            const star = document.createElement('span');
-            star.className = `material-symbols-outlined ${colorClass}`;
-            star.textContent = iconName;
-            
-            // Ajustar tamaño si es necesario (opcional)
-            star.style.fontSize = '20px'; 
-            star.style.fontVariationSettings = "'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24";
-
-            // Agregar al contenedor
-            container.appendChild(star);
-        }
-    });
-});
-</script>
-
-    
 </body>
 </html>
