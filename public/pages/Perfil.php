@@ -562,7 +562,7 @@ $estadoCuenta = (isset($datosUsuario['estado']) && $datosUsuario['estado'] == 1)
 <?php include '../../app/includes/footer.php'; ?>
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="dropdown.js"></script>
+    <script src="../../dropdown.js"></script>
 <script>
 function cerrarSesion() {
     Swal.fire({
