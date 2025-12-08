@@ -54,7 +54,10 @@ if ($nombre_result->num_rows > 0) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <script src="main.js"></script>
     
-    <?php include 'NavBar.php'; ?>
+    <?php
+    include('../../conect.php');
+    include 'NavBar.php';
+    ?>
 
 
     <div id="Inicio" class="banner-container">
@@ -107,7 +110,7 @@ if ($nombre_result->num_rows > 0) {
         </div>
 
         <?php
-        include('../../conect.php');
+        // Ya no se incluye "../../conect.php" aquí
 
         if (isset($_POST['id_carrera_filtro']) && !empty($_POST['id_carrera_filtro'])) {
             $id_carrera_seleccionada = (int)$_POST['id_carrera_filtro'];
@@ -115,25 +118,54 @@ if ($nombre_result->num_rows > 0) {
             $id_carrera_seleccionada = 0; 
         }
 
+        // CORRECCIÓN: Agregar s.id_usuario y s.id_carrera al SELECT y GROUP BY para el formulario.
         $sql = "SELECT 
-            s.id_servicio, s.titulo, s.descripcion, s.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion,
+            s.id_servicio, 
+            s.titulo, 
+            s.descripcion, 
+            s.precio,
+            s.fecha_creacion, 
+            s.id_usuario,        /* <--- AÑADIDO */
+            s.id_carrera,        /* <--- AÑADIDO */
+            -- Nombres de tablas relacionadas
+            c.nombre_carrera, 
+            m.nombre AS nombre_materia,
+            tt.nombre AS tipo_trabajo_nombre,
+            -- Datos del usuario
+            u.nombre AS nombre_usuario,
+            u.apellido AS apellido_usuario,
+            u.rating, 
+            u.porcentaje_completacion,
+            -- Foto (solo la primera)
             MIN(f.url_foto) AS url_foto
-            FROM servicios s
-            JOIN carreras c ON s.id_carrera = c.id_carrera
-            JOIN usuarios u ON s.id_usuario = u.id_usuario
-            LEFT JOIN fotos_servicios f ON s.id_servicio = f.id_servicio";
+        FROM 
+            servicios s
+        JOIN 
+            carreras c ON s.id_carrera = c.id_carrera
+        JOIN 
+            usuarios u ON s.id_usuario = u.id_usuario
+        JOIN 
+            materias m ON s.id_materia = m.id_materia 
+        JOIN 
+            tipos_trabajos tt ON s.id_tipo_trabajo = tt.id_tipo_trabajo
+        LEFT JOIN 
+            fotos_servicios f ON s.id_servicio = f.id_servicio
+        ";
 
         if ($id_carrera_seleccionada > 0) {
             $sql .= " WHERE s.id_carrera = " . $id_carrera_seleccionada;
         }
 
+        // CORRECCIÓN: Agregar s.id_usuario y s.id_carrera al GROUP BY
         $sql .= " GROUP BY 
-            s.id_servicio, s.titulo, s.descripcion, s.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion";
+            s.id_servicio, s.titulo, s.descripcion, s.precio, s.fecha_creacion,
+            s.id_usuario, s.id_carrera, /* <--- AÑADIDO */
+            c.nombre_carrera, m.nombre, tt.nombre,
+            u.nombre, u.apellido, u.rating, u.porcentaje_completacion
+        LIMIT 8";
 
-
-        $resultado = $mysqli->query($sql);
+        // Usamos $conn o $mysqli, lo que esté definido. Usaré $conn por consistencia.
+        $resultado = $conn->query($sql);
 
         if ($resultado && $resultado->num_rows > 0) {
         ?>
@@ -167,7 +199,13 @@ if ($nombre_result->num_rows > 0) {
                                 <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
                             </div>
                             
-                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
+                            <form action="MasInfoSer.php" method="POST" class="mt-auto">
+                                <input type="hidden" name="id_servicio" value="<?php echo htmlspecialchars($row['id_servicio']); ?>">
+                                <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($row['id_usuario']); ?>">
+                                <input type="hidden" name="id_carrera" value="<?php echo htmlspecialchars($row['id_carrera']); ?>">
+                                
+                                <button type="submit" class="btn btn-primary w-100">Más información</button>
+                            </form>
                         </div>
                         </div> 
                     </div>
@@ -182,7 +220,6 @@ if ($nombre_result->num_rows > 0) {
         ?>
         </div>
     </div>
-
 
 
         
@@ -209,8 +246,11 @@ if ($nombre_result->num_rows > 0) {
             $id_carrera_seleccionada = 0; 
         }
 
+        // --- CORRECCIÓN AQUÍ ---
+        // Agregamos r.id_usuario y r.id_carrera al SELECT
         $sql = "SELECT 
             r.id_requests, r.titulo, r.descripcion, r.precio,
+            r.id_usuario, r.id_carrera,  /* <--- ESTO FALTABA */
             c.nombre_carrera, u.rating, u.porcentaje_completacion,
             MIN(f.url_foto) AS url_foto
             FROM requests r
@@ -222,9 +262,13 @@ if ($nombre_result->num_rows > 0) {
             $sql .= " WHERE r.id_carrera = " . $id_carrera_seleccionada;
         }
 
+        // --- CORRECCIÓN AQUÍ ---
+        // Agregamos r.id_usuario y r.id_carrera al GROUP BY
         $sql .= " GROUP BY 
             r.id_requests, r.titulo, r.descripcion, r.precio,
-            c.nombre_carrera, u.rating, u.porcentaje_completacion";
+            r.id_usuario, r.id_carrera, /* <--- ESTO FALTABA */
+            c.nombre_carrera, u.rating, u.porcentaje_completacion
+            LIMIT 8";
 
 
         $resultado = $mysqli->query($sql);
@@ -261,7 +305,13 @@ if ($nombre_result->num_rows > 0) {
                                 <h5 class="Precio mb-0">$<?php echo htmlspecialchars($row['precio']); ?></h5> 
                             </div>
                             
-                            <a href="#" class="btn btn-primary mt-auto">Mas informacion</a>
+                            <form action="MasInfoReq.php" method="POST" class="mt-auto">
+                                <input type="hidden" name="id_request" value="<?php echo htmlspecialchars($row['id_requests']); ?>">
+                                <input type="hidden" name="id_usuario" value="<?php echo htmlspecialchars($row['id_usuario']); ?>">
+                                <input type="hidden" name="id_carrera" value="<?php echo htmlspecialchars($row['id_carrera']); ?>">
+                                
+                                <button type="submit" class="btn btn-primary w-100">Más información</button>
+                            </form>
                         </div>
                         </div> 
                     </div>
@@ -274,9 +324,7 @@ if ($nombre_result->num_rows > 0) {
             echo '<div class="col-12"><p class="alert alert-info">No se encontraron servicios para la carrera seleccionada.</p></div>';
         }
         ?>
-        </div>
-    </div>
-
+    </div>  
 
 
 

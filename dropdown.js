@@ -125,6 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Inicialización de Materia (solo para configurar eventos de input)
     initCustomSelect('materia_id', 'materia_visual_input', 'materia_custom_list');
+    initCustomSelect('carreraS_id', 'carreraS_visual_input', 'carreraS_custom_list');
 
 
     const carreraSelectOculto = document.getElementById('carrera_id');
