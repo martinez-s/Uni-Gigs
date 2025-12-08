@@ -390,5 +390,263 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+    // Función auxiliar para obtener la fecha de hoy en formato YYYY-MM-DD
+    const getTodayString = () => {
+        const today = new Date();
+        const year = today.getFullYear();
+        // getMonth() es 0-indexado, así que sumamos 1
+        const month = String(today.getMonth() + 1).padStart(2, '0');
+        const day = String(today.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    // Función auxiliar para limpiar números de un string (para los inputs de texto de dropdown)
+    const cleanNumbers = (value) => value.replace(/[0-9]/g, '');
+    
+    // Obtener el formulario principal
+    const formEditRequest = document.querySelector('form[action="edit_request.php"]'); 
+
+    // --- MANEJADOR PRINCIPAL DEL FORMULARIO ---
+    if (formEditRequest) {
+        formEditRequest.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = this;
+            const errors = [];
+            
+            // --- 1. Obtener Valores e Inputs ---
+            
+            const tituloInput = form.querySelector('[name="titulo"]');
+            const titulo = tituloInput ? tituloInput.value.trim() : '';
+
+            const precioInput = form.querySelector('[name="precio"]');
+            const precio = precioInput ? parseFloat(precioInput.value) : NaN; 
+            
+            const descripcionInput = document.getElementById('descripcion_input');
+            const descripcion = descripcionInput ? descripcionInput.value.trim() : '';
+            
+            const fechaLimiteInput = document.getElementById('fecha-limit-req');
+            const fechaLimite = fechaLimiteInput ? fechaLimiteInput.value : ''; // Formato YYYY-MM-DD
+            const todayString = getTodayString(); // Formato YYYY-MM-DD
+            
+            // Campos de Dropdown Visuales y Select Ocultos
+            const carreraVisualInput = document.getElementById('carrera_visual_input');
+            const tipoTrabajoVisualInput = document.getElementById('tipo_trabajo_visual_input');
+            const materiaVisualInput = document.getElementById('materia_visual_input');
+            
+            const carrera_id = form.querySelector('#carrera_id') ? form.querySelector('#carrera_id').value : '';
+            const tipo_trabajo_id = form.querySelector('#tipo_trabajo_id') ? form.querySelector('#tipo_trabajo_id').value : '';
+            const materia_id = form.querySelector('#materia_id') ? form.querySelector('#materia_id').value : '';
+            
+            // Limpiamos las clases de error antes de volver a validar
+            document.querySelectorAll('.is-invalid').forEach(input => input.classList.remove('is-invalid'));
+            
+            // --- 2. VALIDACIÓN DE CAMPOS ---
+            
+            // a. Título
+            if (!titulo) {
+                errors.push('El campo **TÍTULO** es obligatorio.');
+                tituloInput && tituloInput.classList.add('is-invalid');
+            } else if (titulo.length < 5) {
+                 errors.push('El **TÍTULO** debe tener al menos 5 caracteres.');
+                 tituloInput && tituloInput.classList.add('is-invalid');
+            }
+
+            // b. Descripción
+            if (!descripcion) {
+                errors.push('El campo **DESCRIPCIÓN** es obligatorio.');
+                descripcionInput && descripcionInput.classList.add('is-invalid');
+            } else if (descripcion.length < 20) {
+                 errors.push('La **DESCRIPCIÓN** debe ser más detallada (mínimo 20 caracteres).');
+                 descripcionInput && descripcionInput.classList.add('is-invalid');
+            }
+
+            // c. Precio
+            if (isNaN(precio) || precio <= 0) {
+                errors.push('El **PRECIO** debe ser un número válido y mayor que cero.');
+                precioInput && precioInput.classList.add('is-invalid');
+            }
+            
+            // d. Fecha Límite
+            if (!fechaLimite) {
+                errors.push('La **FECHA LÍMITE** es obligatoria.');
+                fechaLimiteInput && fechaLimiteInput.classList.add('is-invalid');
+            } else if (fechaLimite < todayString) {
+                // Validación estricta: la fecha límite no puede ser anterior a hoy
+                errors.push('La **FECHA LÍMITE** no puede ser una fecha pasada.');
+                fechaLimiteInput && fechaLimiteInput.classList.add('is-invalid');
+            }
+
+
+            // e. Dropdown Fields (Validación de selección basada en ID oculto)
+            
+            // Carrera
+            if (!carrera_id || carrera_id == 0) {
+                errors.push('Debe seleccionar una **CARRERA** válida de la lista.');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(carreraVisualInput.value)) { 
+                 errors.push('El campo **CARRERA** no debe contener números, seleccione de la lista.');
+                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            }
+
+            // Tipo de Trabajo
+            if (!tipo_trabajo_id || tipo_trabajo_id == 0) {
+                errors.push('Debe seleccionar un **TIPO DE TRABAJO** válido de la lista.');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(tipoTrabajoVisualInput.value)) { 
+                 errors.push('El campo **TIPO DE TRABAJO** no debe contener números, seleccione de la lista.');
+                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            }
+
+            // Materia
+            if (!materia_id || materia_id == 0) {
+                errors.push('Debe seleccionar una **MATERIA** válida de la lista.');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(materiaVisualInput.value)) { 
+                 errors.push('El campo **MATERIA** no debe contener números, seleccione de la lista.');
+                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            }
+            
+            // --- 3. MOSTRAR ERRORES Y DETENER ENVÍO ---
+            if (errors.length > 0) {
+                const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '🚨 Faltan Datos o son Inválidos',
+                        html: errorHtml,
+                        icon: 'error',
+                        confirmButtonText: 'Corregir'
+                    });
+                } else {
+                     alert('Errores de Validación:\n\n' + errors.join('\n'));
+                }
+                return; 
+            }
+
+            // --- 4. SI LA VALIDACIÓN PASA, CONTINUAR CON EL ENVÍO ---
+            console.log("Validación de Edición exitosa. Procediendo con el envío al servidor.");
+            form.submit(); // Envía el formulario PHP para la actualización
+        });
+    }
+
+    // --- MEJORA UX: RESTRICCIÓN DE ENTRADA EN TIEMPO REAL (Inputs de solo texto para dropdowns) ---
+    
+    const textOnlyInputs = ['carrera_visual_input', 'tipo_trabajo_visual_input', 'materia_visual_input'];
+
+    textOnlyInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            // Evitar que el usuario escriba números al presionar tecla
+            input.addEventListener('keypress', function(e) {
+                const charCode = (e.which) ? e.which : e.keyCode;
+                if (charCode >= 48 && charCode <= 57) { // Bloquea números (0-9)
+                    e.preventDefault();
+                }
+            });
+            
+            // Limpiar números si se pegan o se arrastran
+            input.addEventListener('input', function() {
+                this.value = cleanNumbers(this.value);
+            });
+        }
+    });
+
+    // --- LIMPIEZA DE ERRORES VISUALES AL INTERACTUAR ---
+    
+    // Limpia la clase 'is-invalid' cuando el usuario empieza a escribir o seleccionar
+    document.querySelectorAll('.inputs, .form-control, textarea').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+        // Para los selects visuales, el click en la lista también debería limpiar el error.
+        // Asumo que la lógica en 'dropdown.js' ya maneja esto al seleccionar un ítem de la lista.
+    });
+
+    // --- VALIDACIÓN Y PREVIEW DE ARCHIVOS ---
+    const inputFile = document.getElementById('input-archivos-request');
+    const previewContainer = document.getElementById('preview-archivos');
+    const maxFiles = 3;
+
+    if (inputFile && previewContainer) {
+        inputFile.addEventListener('change', function() {
+            let files = Array.from(this.files);
+            
+            // 1. Límite de archivos
+            if (files.length > maxFiles) {
+                Swal.fire('Advertencia', `Solo se permiten subir hasta ${maxFiles} archivos. Los archivos excedentes serán ignorados.`, 'warning');
+                // Ajusta el FileList del input a solo los primeros 3
+                const dt = new DataTransfer();
+                files.slice(0, maxFiles).forEach(file => dt.items.add(file));
+                this.files = dt.files;
+                files = Array.from(this.files);
+            }
+            
+            previewContainer.innerHTML = ''; // Limpiar el contenido anterior
+            
+            if (files.length === 0) {
+                 previewContainer.innerHTML = '<p id="mensaje-vacio" style="color: #888;">No hay archivos seleccionados.</p>';
+                 return;
+            }
+
+            // 2. Generar vista previa
+            files.forEach((file, index) => {
+                const item = document.createElement('div');
+                item.className = 'preview-item d-flex align-items-center me-3 mb-2';
+                item.style.border = '1px solid #ddd';
+                item.style.padding = '5px';
+                item.style.borderRadius = '3px';
+                item.style.backgroundColor = '#fff';
+
+                // Determinar ícono (usando Bootstrap Icons)
+                const icon = document.createElement('i');
+                if (file.type.startsWith('image/')) {
+                    icon.className = 'bi bi-image-fill text-success me-2';
+                } else if (file.type === 'application/pdf') {
+                    icon.className = 'bi bi-file-pdf-fill text-danger me-2';
+                } else if (file.type.includes('word')) {
+                     icon.className = 'bi bi-file-earmark-word-fill text-primary me-2';
+                } else {
+                    icon.className = 'bi bi-file-earmark text-secondary me-2';
+                }
+                
+                const nameSpan = document.createElement('span');
+                nameSpan.textContent = file.name;
+                nameSpan.style.fontSize = '0.9em';
+                
+                const removeButton = document.createElement('button');
+                removeButton.innerHTML = '&times;'; 
+                removeButton.className = 'btn-close ms-2';
+                removeButton.type = 'button';
+                removeButton.style.fontSize = '0.8em';
+                
+                removeButton.addEventListener('click', function() {
+                    // Lógica para eliminar el archivo del FileList
+                    const dt = new DataTransfer();
+                    let currentFiles = Array.from(inputFile.files);
+                    // Removemos el archivo por su índice actual
+                    currentFiles.splice(index, 1);
+                    currentFiles.forEach(f => dt.items.add(f));
+                    inputFile.files = dt.files;
+                    
+                    // Actualizar la vista previa
+                    inputFile.dispatchEvent(new Event('change')); 
+                });
+
+                item.appendChild(icon);
+                item.appendChild(nameSpan);
+                item.appendChild(removeButton);
+                previewContainer.appendChild(item);
+            });
+        });
+    }
+
+});
+    </script>
     </body>
 </html>

@@ -198,7 +198,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="carrera_visual_input" class="lb_modal">CARRERA</label>
                     <br>
                     <div class="custom-select-container">
-                        <input type="text" id="carrera_visual_input" class="form-control dropdown_front" placeholder="Seleccione o busque la carrera..." autocomplete="off">
+                        <input type="text" id="carrera_visual_input" required class="form-control dropdown_front" placeholder="Seleccione o busque la carrera..." autocomplete="off">
                         <ul id="carrera_custom_list" class="list-group" style="display: none;"></ul>
                     </div>
                     <select id="carrera_id" name="carrera_id" required style="display: none;">
@@ -215,7 +215,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     
                     <label for="tipo_trabajo_visual_input" class="lb_modal">TIPO DE TRABAJO</label>
                     <div class="custom-select-container">
-                        <input type="text" id="tipo_trabajo_visual_input" class="form-control dropdown_front" placeholder="Seleccione o busque el tipo de trabajo..." autocomplete="off">
+                        <input type="text" id="tipo_trabajo_visual_input" required class="form-control dropdown_front" placeholder="Seleccione o busque el tipo de trabajo..." autocomplete="off">
                         <ul id="tipo_trabajo_custom_list" class="list-group" style="display: none;"></ul>
                     </div>
                     <select id="tipo_trabajo_id" name="tipo_trabajo_id" required style="display: none;">
@@ -233,13 +233,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <div class="col-lg-6 col-md-12 espacio">
                     <label for="fecha-limit-req" class="lb_modal">FECHA LÍMITE</label>
                     <br>
-                    <input type="date" id="fecha-limit-req" name="fecha-limit-req" class="inputs" required>   
+                    <input type="date" id="fecha-limit-req" required name="fecha-limit-req" class="inputs" required>   
                     <br>
                     
                     <label for="materia_visual_input" class="lb_modal">MATERIA</label>
                     <br>
                     <div class="custom-select-container">
-                        <input type="text" id="materia_visual_input" class="form-control dropdown_front" placeholder="Seleccione o busque una materia..." autocomplete="off">
+                        <input type="text" id="materia_visual_input" required class="form-control dropdown_front" placeholder="Seleccione o busque una materia..." autocomplete="off">
                         <ul id="materia_custom_list" class="list-group" style="display: none; position: absolute; width: 100%; z-index: 1000; max-height: 200px; overflow-y: auto; border-top: none;"></ul>
                     </div>
                     <select id="materia_id" name="materia_id" required style="display: none;">
@@ -250,7 +250,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label for="precio" class="lb_modal">PRECIO</label>
                     <div class="input-group mb-3">
                         <span class="input-group-text" style="height: 16px">$</span>
-                        <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="form-control inputs" style="height: 16px"required>
+                        <input type="number" step="0.50" min="1.00" max="1000.00" id="precio" name="precio" class="form-control inputs" style="height: 16px"required>
                     </div>
                 </div>
 
@@ -273,7 +273,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
 
                 <div class="d-flex justify-content-center mt-4">
-                    <button type="submit" style="width: 100%;" class=" btn_siguiente">CREAR REQUEST</button>
+                    <button type="submit" class=" btn_siguiente">CREAR REQUEST</button>
                 </div>
             </div>
         </form>
@@ -284,5 +284,198 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <script src="dropdown.js"></script>
 
     <script src="crearRequest.js"> </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const formRequest = document.getElementById('formRequest');
+    const fechaInput = document.getElementById('fecha-limit-req');
+
+
+    function getTodayString() {
+        const hoy = new Date();
+        
+
+        const dia = String(hoy.getDate()).padStart(2, '0');
+        const mes = String(hoy.getMonth() + 1).padStart(2, '0'); 
+        const anio = hoy.getFullYear();
+
+        return anio + '-' + mes + '-' + dia;
+    }
+    
+
+    const cleanNumbers = (value) => value.replace(/[0-9]/g, '');
+
+
+    if (fechaInput) {
+        const fechaMinima = getTodayString();
+
+        fechaInput.setAttribute('min', fechaMinima);
+    }
+
+    if (formRequest) {
+        formRequest.addEventListener('submit', function(e) {
+            e.preventDefault(); 
+
+            const form = this;
+            const errors = [];
+            
+
+            
+            const tituloInput = form.querySelector('[name="titulo"]');
+            const titulo = tituloInput ? tituloInput.value.trim() : '';
+
+            const precioInput = form.querySelector('[name="precio"]');
+            const precio = precioInput ? parseFloat(precioInput.value) : NaN;
+
+            const descripcionInput = form.querySelector('[name="descripcion"]');
+            const descripcion = descripcionInput ? descripcionInput.value.trim() : '';
+            
+ 
+            const fechaLimite = fechaInput ? fechaInput.value : ''; 
+
+
+            const carreraVisualInput = document.getElementById('carrera_visual_input');
+            const tipoTrabajoVisualInput = document.getElementById('tipo_trabajo_visual_input');
+            const materiaVisualInput = document.getElementById('materia_visual_input');
+            
+            const carrera_id = form.querySelector('#carrera_id') ? form.querySelector('#carrera_id').value : '';
+            const tipo_trabajo_id = form.querySelector('#tipo_trabajo_id') ? form.querySelector('#tipo_trabajo_id').value : '';
+            const materia_id = form.querySelector('#materia_id') ? form.querySelector('#materia_id').value : '';
+            
+
+            document.querySelectorAll('.is-invalid').forEach(input => input.classList.remove('is-invalid'));
+            
+
+            if (!titulo) {
+                errors.push('El campo **TÍTULO** es obligatorio.');
+                tituloInput && tituloInput.classList.add('is-invalid');
+            } else if (titulo.length < 5) {
+                 errors.push('El **TÍTULO** debe tener al menos 5 caracteres.');
+                 tituloInput && tituloInput.classList.add('is-invalid');
+            }
+
+  
+            if (!descripcion) {
+                errors.push('El campo **DESCRIPCIÓN** es obligatorio.');
+                descripcionInput && descripcionInput.classList.add('is-invalid');
+            } else if (descripcion.length < 20) {
+                 errors.push('La **DESCRIPCIÓN** debe ser más detallada (mínimo 20 caracteres).');
+                 descripcionInput && descripcionInput.classList.add('is-invalid');
+            }
+
+
+            if (isNaN(precio) || precio <= 1) {
+                errors.push('El **PRECIO** debe ser un número válido y mayor que cero.');
+                precioInput && precioInput.classList.add('is-invalid');
+            }
+
+
+            if (!fechaLimite) {
+                errors.push('El campo **FECHA LÍMITE** es obligatorio.');
+                fechaInput && fechaInput.classList.add('is-invalid');
+            } else {
+                const todayString = getTodayString();
+                
+                if (fechaLimite < todayString) {
+                    errors.push('La **FECHA LÍMITE** no puede ser un día anterior al día actual.');
+                    fechaInput && fechaInput.classList.add('is-invalid');
+                }
+            }
+
+
+            if (!carrera_id) {
+                errors.push('Debe seleccionar una **CARRERA** válida de la lista.');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(carreraVisualInput.value)) { 
+                 errors.push('El campo **CARRERA** no puede contener números.');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            }
+
+
+            if (!tipo_trabajo_id) {
+                errors.push('Debe seleccionar un **TIPO DE TRABAJO** válido de la lista.');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(tipoTrabajoVisualInput.value)) { 
+                 errors.push('El campo **TIPO DE TRABAJO** no puede contener números.');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            }
+
+
+            if (!materia_id) {
+                errors.push('Debe seleccionar una **MATERIA** válida de la lista.');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(materiaVisualInput.value)) { 
+                 errors.push('El campo **MATERIA** no puede contener números.');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            }
+            
+
+            if (errors.length > 0) {
+                const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+                
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: '🚨 Faltan Datos o son Inválidos',
+                        html: errorHtml,
+                        icon: 'error',
+                        confirmButtonText: 'Corregir'
+                    });
+                } else {
+                    alert('Errores de Validación:\n\n' + errors.join('\n'));
+                }
+                return; 
+            }
+            
+            console.log("Validación de Solicitud exitosa. Procediendo con el envío.");
+
+        });
+    }
+
+
+    const textOnlyInputs = ['carrera_visual_input', 'tipo_trabajo_visual_input', 'materia_visual_input'];
+
+    textOnlyInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+
+            input.addEventListener('keypress', function(e) {
+                const charCode = (e.which) ? e.which : e.keyCode;
+                if (charCode >= 48 && charCode <= 57) {
+                    e.preventDefault();
+                }
+            });
+            
+
+            input.addEventListener('input', function() {
+                this.value = cleanNumbers(this.value);
+            });
+        }
+    });
+
+
+    
+    document.querySelectorAll('.inputs, .form-control, textarea').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+
+
+    const dropdownSelects = ['carrera_id', 'tipo_trabajo_id', 'materia_id'];
+    dropdownSelects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.addEventListener('change', function() {
+                const visualId = this.id.replace('_id', '_visual_input');
+                const visualInput = document.getElementById(visualId);
+                if (visualInput) {
+                    visualInput.classList.remove('is-invalid');
+                }
+            });
+        }
+    });
+});
+    </script>
 </body>
 </html>

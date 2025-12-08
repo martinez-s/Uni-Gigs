@@ -152,7 +152,7 @@ include __DIR__ . '/app/includes/Navbar.php';
                             </div>
                         </div>
                         <div class="d-flex justify-content-center mt-3">
-                            <button type="button" class="btn_siguiente" onclick="validarPaso1()">SIGUIENTE</button>
+                            <button type="button" class="btn_siguiente_r" onclick="validarPaso1()">SIGUIENTE</button>
                         </div>
                         <a class="texto_log_regis text-center d-block mt-2" data-bs-toggle="modal" data-bs-target="#modal_login" style="cursor: pointer;"><p>¿YA TIENES CUENTA? INICIA SESION</p></a>
                     </div>
@@ -179,13 +179,10 @@ include __DIR__ . '/app/includes/Navbar.php';
                                     </label>
                                     <input type="file" id="input-imagen-perfil" name="imagen_perfil" accept="image/*" style="display: none;">
                                 </div>
-                                <div class="text-center">
-                                    <a style="cursor: pointer;" data-bs-target="#modal_registro3" data-bs-toggle="modal"><p class="texto_log_regis">PREFIERO SALTARME ESTE PASO</p></a>
-                                </div>
                             </div>
                         </div>
                         <div class="d-flex justify-content-center">
-                            <button type="button" class="btn_siguiente" data-bs-target="#modal_registro3" data-bs-toggle="modal">SIGUIENTE</button>
+                            <button type="button" class="btn_siguiente_r" data-bs-target="#modal_registro3" data-bs-toggle="modal">SIGUIENTE</button>
                         </div>
                     </div>
                 </div>

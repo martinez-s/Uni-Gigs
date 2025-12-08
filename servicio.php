@@ -236,7 +236,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="carrera_visual_input" class="lb_modal">CARRERA</label>
                 <br>
                 <div class="custom-select-container">
-                    <input type="text" id="carrera_visual_input" class="form-control dropdown_front" placeholder="Seleccione o busque la carrera..." autocomplete="off">
+                    <input type="text" id="carrera_visual_input" required class="form-control dropdown_front" placeholder="Seleccione o busque la carrera..." autocomplete="off">
                     <ul id="carrera_custom_list" class="list-group" style="display: none;"></ul>
                 </div>
                 <select id="carrera_id" name="carrera_id" required style="display: none;">
@@ -253,7 +253,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 
                 <label for="tipo_trabajo_visual_input" class="lb_modal">TIPO DE TRABAJO</label>
                 <div class="custom-select-container">
-                    <input type="text" id="tipo_trabajo_visual_input" class="form-control dropdown_front" placeholder="Seleccione o busque el tipo de trabajo..." autocomplete="off">
+                    <input type="text" id="tipo_trabajo_visual_input" required class="form-control dropdown_front" placeholder="Seleccione o busque el tipo de trabajo..." autocomplete="off">
                     <ul id="tipo_trabajo_custom_list" class="list-group" style="display: none;"></ul>
                 </div>
                 <select id="tipo_trabajo_id" name="tipo_trabajo_id" required style="display: none;">
@@ -272,7 +272,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="materia_visual_input" class="lb_modal">MATERIA</label>
                 <br>
                 <div class="custom-select-container">
-                    <input type="text" id="materia_visual_input" class="form-control dropdown_front" placeholder="Seleccione o busque una materia..." autocomplete="off">
+                    <input type="text" id="materia_visual_input" class="form-control dropdown_front" required placeholder="Seleccione o busque una materia..." autocomplete="off">
                     <ul id="materia_custom_list" class="list-group" style="display: none; position: absolute; width: 100%; z-index: 1000; max-height: 200px; overflow-y: auto; border-top: none;"></ul>
                 </div>
                 <select id="materia_id" name="materia_id" required style="display: none;">
@@ -283,7 +283,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <label for="precio" class="lb_modal">PRECIO</label>
                 <div class="input-group mb-3">
                     <span class="input-group-text">$</span>
-                    <input type="number" step="0.01" min="0.00" id="precio" name="precio" class="form-control inputs" required>
+                    <input type="number" step="0.5" min="1.00" max="1000.00" id="precio" name="precio" class="form-control inputs" required>
                 </div>
             </div>
 
@@ -316,7 +316,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 
 <form id="formMetodosPago" action="modal_pagos.php" method="POST" enctype="multipart/form-data">
-<div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true">
+<div class="modal fade" id="modalConTabs" tabindex="-1" aria-labelledby="modalConTabsLabel" aria-hidden="true" data-bs-backdrop="static">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
       <div class="modal-header">
@@ -469,9 +469,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         
       </div>
-      <div class="modal-footer justify-content-center btn-regis">
-        <button type="submit" class="btn btn-secondary"">REGISTRAR</button>
-      </div>
+        <div class="modal-footer justify-content-center btn-regis">
+            <button type="button" id="btnSubmitMetodosPago" class="btn_siguiente btn-secondary">REGISTRAR</button>
+        </div>
     </div>
   </div>
 </div>
@@ -644,6 +644,639 @@ if (pmStatus) {
             });
         }
     });
+</script>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    // --- Función Auxiliar para Validar Email ---
+    function isValidEmail(email) {
+        const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9 сне1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        return re.test(String(email).toLowerCase());
+    }
+
+    const formMetodosPago = document.getElementById('formMetodosPago');
+    const minDocLength = 8; // Mínimo de caracteres para documentos
+    
+    if (!formMetodosPago) {
+        console.warn("El formulario 'formMetodosPago' no fue encontrado.");
+        return;
+    }
+
+    // Referencias a campos y elementos
+    const pm_documento = formMetodosPago.querySelector('[name="documento_ident"]');
+    const pm_telefono = formMetodosPago.querySelector('[name="telefono"]');
+    const pm_banco_id = formMetodosPago.querySelector('[name="banco_id"]');
+    const pm_banco_visual_input = document.getElementById('banco_visual_input');
+
+    const tr_documento = formMetodosPago.querySelector('[name="documento_identidad"]');
+    const tr_nro_cuenta = formMetodosPago.querySelector('[name="nro_cuenta"]');
+    const tr_banco_id = formMetodosPago.querySelector('[name="banco2_id"]');
+    const tr_banco_visual_input = document.getElementById('banco2_visual_input');
+
+    const correo_binance = formMetodosPago.querySelector('[name="correo_binance"]');
+    const correo_paypal = formMetodosPago.querySelector('[name="correo_paypal"]');
+    
+    // Referencia al botón de registro (DEBE tener type="button" en el HTML)
+    const btnSubmitMetodos = document.getElementById('btnSubmitMetodosPago') || formMetodosPago.querySelector('button[type="submit"]');
+    const modalElement = document.getElementById('modalConTabs'); 
+
+    
+    // --- LÓGICA DE VALIDACIÓN PRINCIPAL (Al hacer click en el botón) ---
+    // NOTA: Se escucha el 'click' del botón en lugar del 'submit' del formulario para mayor control.
+    if (btnSubmitMetodos) {
+        btnSubmitMetodos.addEventListener('click', function(e) {
+            
+            // Si el botón es type="submit", se previene el envío automático
+            if (this.type === 'submit') {
+                e.preventDefault(); 
+            }
+
+            const errors = [];
+            
+            // --- 1. PAGO MÓVIL (OBLIGATORIO) ---
+            
+            const isPmComplete = pm_documento.value.trim() && pm_telefono.value.trim() && pm_banco_id.value !== "";
+
+            if (!isPmComplete) {
+                errors.push('El método **Pago Móvil (OBLIGATORIO)** debe estar completo (Documento, Teléfono y Banco).');
+                if (!pm_documento.value.trim()) pm_documento.classList.add('is-invalid');
+                if (!pm_telefono.value.trim()) pm_telefono.classList.add('is-invalid');
+                if (pm_banco_id.value === "") pm_banco_visual_input.classList.add('is-invalid');
+            } else {
+                if (pm_documento.value.trim().length < minDocLength) {
+                    errors.push(`El Documento de Pago Móvil debe tener mínimo ${minDocLength} caracteres.`);
+                    pm_documento.classList.add('is-invalid');
+                } else {
+                    pm_documento.classList.remove('is-invalid');
+                }
+                pm_telefono.classList.remove('is-invalid');
+                pm_banco_visual_input.classList.remove('is-invalid');
+            }
+
+
+            // --- 2. TRANSFERENCIA BANCARIA (OPCIONAL PERO COMPLETO) ---
+            const isTrPartiallyFilled = tr_documento.value.trim() || tr_nro_cuenta.value.trim() || tr_banco_id.value;
+            const isTrComplete = tr_documento.value.trim() && tr_nro_cuenta.value.trim() && tr_banco_id.value;
+
+            if (isTrPartiallyFilled) {
+                if (!isTrComplete) {
+                    errors.push('Si registra Transferencia Bancaria, debe llenar **todos** los campos (Documento, Cuenta y Banco).');
+                    if (!tr_documento.value.trim()) tr_documento.classList.add('is-invalid');
+                    if (!tr_nro_cuenta.value.trim()) tr_nro_cuenta.classList.add('is-invalid');
+                    if (!tr_banco_id.value) tr_banco_visual_input.classList.add('is-invalid');
+                } else {
+                    if (tr_documento.value.trim().length < minDocLength) {
+                        errors.push(`El Documento de Transferencia debe tener mínimo ${minDocLength} caracteres.`);
+                        tr_documento.classList.add('is-invalid');
+                    } else {
+                        tr_documento.classList.remove('is-invalid');
+                        tr_nro_cuenta.classList.remove('is-invalid');
+                        tr_banco_visual_input.classList.remove('is-invalid');
+                    }
+                }
+            } else {
+                tr_documento.classList.remove('is-invalid');
+                tr_nro_cuenta.classList.remove('is-invalid');
+                tr_banco_visual_input.classList.remove('is-invalid');
+            }
+
+
+            // --- 3. BINANCE (OPCIONAL CON FORMATO DE EMAIL) ---
+            if (correo_binance && correo_binance.value.trim()) {
+                if (!isValidEmail(correo_binance.value.trim())) {
+                    errors.push('El correo de Binance no tiene un formato válido.');
+                    correo_binance.classList.add('is-invalid');
+                } else {
+                    correo_binance.classList.remove('is-invalid');
+                }
+            } else if (correo_binance) {
+                correo_binance.classList.remove('is-invalid');
+            }
+
+
+            // --- 4. PAYPAL (OPCIONAL CON FORMATO DE EMAIL) ---
+            if (correo_paypal && correo_paypal.value.trim()) {
+                if (!isValidEmail(correo_paypal.value.trim())) {
+                    errors.push('El correo de Paypal no tiene un formato válido.');
+                    correo_paypal.classList.add('is-invalid');
+                } else {
+                    correo_paypal.classList.remove('is-invalid');
+                }
+            } else if (correo_paypal) {
+                correo_paypal.classList.remove('is-invalid');
+            }
+
+
+            // --- MANEJO DE ERRORES Y ENVÍO ---
+            if (errors.length > 0) {
+                
+                const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+                
+                // *** ESTO MUESTRA EL ERROR Y DEJA EL MODAL ABIERTO ***
+                Swal.fire({
+                    title: 'Campos Incompletos o Inválidos',
+                    html: errorHtml,
+                    icon: 'error',
+                    confirmButtonText: 'Corregir'
+                });
+                
+                return; // Detiene el envío
+            }
+
+            // Si la validación pasa: 
+            
+            // 1. Ocultar el modal manualmente (SOLO ÉXITO)
+            if (modalElement && typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+                const modalInstance = bootstrap.Modal.getInstance(modalElement);
+                if (modalInstance) {
+                    modalInstance.hide(); 
+                }
+            }
+
+            // 2. Mostrar SweetAlert de carga antes de enviar
+            Swal.fire({
+                title: 'Registrando Métodos de Pago...',
+                text: 'Será redirigido para continuar con la publicación.',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+            
+            // 3. Envía el formulario
+            formMetodosPago.submit(); 
+        });
+    }
+
+
+    // --- Función para limpiar la clase 'is-invalid' al escribir/seleccionar ---
+    const fieldsToClean = [
+        pm_documento, pm_telefono, pm_banco_visual_input,
+        tr_documento, tr_nro_cuenta, tr_banco_visual_input,
+        correo_binance, correo_paypal
+    ].filter(el => el);
+
+    fieldsToClean.forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+        
+        if (input === pm_banco_visual_input) {
+            pm_banco_id && pm_banco_id.addEventListener('change', function() {
+                pm_banco_visual_input.classList.remove('is-invalid');
+            });
+        }
+        if (input === tr_banco_visual_input) {
+            tr_banco_id && tr_banco_id.addEventListener('change', function() {
+                tr_banco_visual_input.classList.remove('is-invalid');
+            });
+        }
+    });
+
+});
+
+
+// ====================================================================
+// ============ SEGUNDO BLOQUE: Validación de formServicio ============
+// ====================================================================
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const formServicio = document.getElementById('formServicio');
+
+    if (formServicio) {
+        formServicio.addEventListener('submit', function(e) {
+            e.preventDefault(); // Detener el envío por defecto para realizar la validación
+
+            const form = this;
+            const errors = [];
+            
+            // --- 1. Obtener y Limpiar Valores ---
+            
+            const tituloInput = form.querySelector('[name="titulo"]');
+            const titulo = tituloInput ? tituloInput.value.trim() : '';
+
+            const precioInput = form.querySelector('[name="precio"]');
+            const precio = precioInput ? parseFloat(precioInput.value) : NaN;
+
+            const descripcionInput = form.querySelector('[name="descripcion"]');
+            const descripcion = descripcionInput ? descripcionInput.value.trim() : '';
+            
+            const carreraVisualInput = document.getElementById('carrera_visual_input');
+            const tipoTrabajoVisualInput = document.getElementById('tipo_trabajo_visual_input');
+            const materiaVisualInput = document.getElementById('materia_visual_input');
+            
+            const carreraIdSelect = form.querySelector('#carrera_id');
+            const carrera_id = carreraIdSelect ? carreraIdSelect.value : '';
+
+            const tipoTrabajoIdSelect = form.querySelector('#tipo_trabajo_id');
+            const tipo_trabajo_id = tipoTrabajoIdSelect ? tipoTrabajoIdSelect.value : '';
+
+            const materiaIdSelect = form.querySelector('#materia_id');
+            const materia_id = materiaIdSelect ? materiaIdSelect.value : '';
+            
+            // Limpiamos las clases de error de todos los inputs antes de volver a validar
+            document.querySelectorAll('.inputs-publi, .form-control, textarea').forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+            
+            // --- 2. VALIDACIÓN DE CAMPOS DEL SERVICIO ---
+            
+            // a. Título
+            if (!titulo) {
+                errors.push('El campo **TÍTULO** es obligatorio.');
+                tituloInput && tituloInput.classList.add('is-invalid');
+            } else if (titulo.length < 5) {
+                 errors.push('El **TÍTULO** debe tener al menos 5 caracteres.');
+                 tituloInput && tituloInput.classList.add('is-invalid');
+            }
+            
+            // b. Descripción
+            if (!descripcion) {
+                errors.push('El campo **DESCRIPCIÓN** es obligatorio.');
+                descripcionInput && descripcionInput.classList.add('is-invalid');
+            } else if (descripcion.length < 20) {
+                 errors.push('La **DESCRIPCIÓN** debe ser más detallada (mínimo 20 caracteres).');
+                 descripcionInput && descripcionInput.classList.add('is-invalid');
+            }
+
+            // c. Precio
+            if (isNaN(precio) || precio <= 0) {
+                errors.push('El **PRECIO** debe ser un número válido y mayor que cero.');
+                precioInput && precioInput.classList.add('is-invalid');
+            }
+
+            // d. Validación de campos Select
+            
+            if (!carrera_id) {
+                errors.push('Debe seleccionar una **CARRERA** válida de la lista.');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            } else if (carreraVisualInput && /\d/.test(carreraVisualInput.value)) { 
+                 errors.push('El campo **CARRERA** no puede contener números.');
+                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            }
+
+            if (!tipo_trabajo_id) {
+                errors.push('Debe seleccionar un **TIPO DE TRABAJO** válido de la lista.');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            } else if (tipoTrabajoVisualInput && /\d/.test(tipoTrabajoVisualInput.value)) { 
+                 errors.push('El campo **TIPO DE TRABAJO** no puede contener números.');
+                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            }
+
+            if (!materia_id) {
+                errors.push('Debe seleccionar una **MATERIA** válida de la lista.');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            } else if (materiaVisualInput && /\d/.test(materiaVisualInput.value)) { 
+                 errors.push('El campo **MATERIA** no puede contener números.');
+                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            }
+            
+            // --- 3. MOSTRAR ERRORES Y DETENER ENVÍO ---
+            if (errors.length > 0) {
+                const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+                
+                Swal.fire({
+                    title: '🚨 Faltan Datos o son Inválidos',
+                    html: errorHtml,
+                    icon: 'error',
+                    confirmButtonText: 'Corregir'
+                });
+                return; 
+            }
+
+            // --- 4. SI LA VALIDACIÓN PASA, CONTINUAR CON ENVÍO AJAX ---
+            
+            const formData = new FormData(form);
+            const fileInput = document.getElementById('input-archivos-servicio');
+            
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('imagen-servicio', fileInput.files[0]);
+            }
+            
+            if (typeof Swal !== 'undefined') { 
+                if (!document.querySelector('.swal2-loading')) {
+                    Swal.fire({
+                        title: 'Publicando Servicio...',
+                        text: 'Verificando datos y métodos de pago.',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                }
+
+                fetch(form.action, { 
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) { throw new Error('Network response was not ok'); }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.close(); 
+
+                    if (data.success) {
+                        Swal.fire('¡Éxito!', data.message, 'success').then(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+                        });
+                    } else if (data.show_modal) {
+                        Swal.fire({
+                            title: 'Método de Pago Requerido',
+                            text: data.message,
+                            icon: 'warning',
+                            confirmButtonText: 'Registrar Método',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        }).then(() => {
+                            // Se asume que este es el modal de métodos de pago
+                            window.location.href = window.location.pathname + '?show_modal=true'; 
+                        });
+
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error en la petición:', error);
+                    Swal.fire('Error', 'Ocurrió un error al intentar crear el servicio.', 'error');
+                });
+            } else {
+                form.submit();
+            }
+
+        });
+    }
+
+    // --- MEJORA UX: RESTRIJO ESCRITURA EN TIEMPO REAL ---
+    const textOnlyInputs = ['carrera_visual_input', 'tipo_trabajo_visual_input', 'materia_visual_input'];
+
+    textOnlyInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                const charCode = (e.which) ? e.which : e.keyCode;
+                if (charCode >= 48 && charCode <= 57) { // ASCII para 0-9
+                    e.preventDefault();
+                }
+            });
+            
+            input.addEventListener('input', function() {
+                this.value = this.value.replace(/[0-9]/g, ''); 
+            });
+        }
+    });
+
+    // --- LIMPIEZA DE ERRORES VISUALES AL INTERACTUAR ---
+    
+    document.querySelectorAll('.inputs-publi, .inputs, textarea, .form-control').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+
+    const dropdownSelects = ['carrera_id', 'tipo_trabajo_id', 'materia_id'];
+    dropdownSelects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.addEventListener('change', function() {
+                const visualId = this.id.replace('_id', '_visual_input');
+                const visualInput = document.getElementById(visualId);
+                if (visualInput) {
+                    visualInput.classList.remove('is-invalid');
+                }
+            });
+        }
+    });
+});
+
+
+// ... (Segundo bloque de código JS para formServicio - SIN CAMBIOS ya que no afecta) ...
+document.addEventListener('DOMContentLoaded', function() {
+    
+    const formServicio = document.getElementById('formServicio');
+
+    if (formServicio) {
+        formServicio.addEventListener('submit', function(e) {
+            e.preventDefault(); // Detener el envío por defecto para realizar la validación
+
+            const form = this;
+            const errors = [];
+            
+            // --- 1. Obtener y Limpiar Valores ---
+            
+            const tituloInput = form.querySelector('[name="titulo"]');
+            const titulo = tituloInput ? tituloInput.value.trim() : '';
+
+            const precioInput = form.querySelector('[name="precio"]');
+            const precio = precioInput ? parseFloat(precioInput.value) : NaN;
+
+            const descripcionInput = form.querySelector('[name="descripcion"]');
+            const descripcion = descripcionInput ? descripcionInput.value.trim() : '';
+            
+            // Campos de Dropdown Visuales (Para validar contenido y marcar error visual)
+            const carreraVisualInput = document.getElementById('carrera_visual_input');
+            const tipoTrabajoVisualInput = document.getElementById('tipo_trabajo_visual_input');
+            const materiaVisualInput = document.getElementById('materia_visual_input');
+            
+            // Campos de Dropdown Ocultos (los que contienen el ID real)
+            const carreraIdSelect = form.querySelector('#carrera_id');
+            const carrera_id = carreraIdSelect ? carreraIdSelect.value : '';
+
+            const tipoTrabajoIdSelect = form.querySelector('#tipo_trabajo_id');
+            const tipo_trabajo_id = tipoTrabajoIdSelect ? tipoTrabajoIdSelect.value : '';
+
+            const materiaIdSelect = form.querySelector('#materia_id');
+            const materia_id = materiaIdSelect ? materiaIdSelect.value : '';
+            
+            // Limpiamos las clases de error de todos los inputs antes de volver a validar
+            document.querySelectorAll('.inputs-publi, .form-control, textarea').forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+            
+            // --- 2. VALIDACIÓN DE CAMPOS DEL SERVICIO ---
+            
+            // a. Título (Obligatorio, longitud, y no debe contener solo números)
+            if (!titulo) {
+                errors.push('El campo **TÍTULO** es obligatorio.');
+                tituloInput && tituloInput.classList.add('is-invalid');
+            } else if (titulo.length < 5) {
+                 errors.push('El **TÍTULO** debe tener al menos 5 caracteres.');
+                 tituloInput && tituloInput.classList.add('is-invalid');
+            }
+            
+            // b. Descripción
+            if (!descripcion) {
+                errors.push('El campo **DESCRIPCIÓN** es obligatorio.');
+                descripcionInput && descripcionInput.classList.add('is-invalid');
+            } else if (descripcion.length < 20) {
+                 errors.push('La **DESCRIPCIÓN** debe ser más detallada (mínimo 20 caracteres).');
+                 descripcionInput && descripcionInput.classList.add('is-invalid');
+            }
+
+            // c. Precio
+            if (isNaN(precio) || precio <= 0) {
+                errors.push('El **PRECIO** debe ser un número válido y mayor que cero.');
+                precioInput && precioInput.classList.add('is-invalid');
+            }
+
+            // d. Validación de campos Select (Asegurando que el ID real no sea vacío)
+            
+            // Carrera (Validación de selección)
+            if (!carrera_id) {
+                errors.push('Debe seleccionar una **CARRERA** válida de la lista.');
+                carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(carreraVisualInput.value)) { // Validación: No debe tener números en el texto visual
+                 errors.push('El campo **CARRERA** no puede contener números.');
+                 carreraVisualInput && carreraVisualInput.classList.add('is-invalid');
+            }
+
+            // Tipo de Trabajo (Validación de selección y sin números)
+            if (!tipo_trabajo_id) {
+                errors.push('Debe seleccionar un **TIPO DE TRABAJO** válido de la lista.');
+                tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(tipoTrabajoVisualInput.value)) { // Validación: No debe tener números en el texto visual
+                 errors.push('El campo **TIPO DE TRABAJO** no puede contener números.');
+                 tipoTrabajoVisualInput && tipoTrabajoVisualInput.classList.add('is-invalid');
+            }
+
+
+            // Materia (Validación de selección y sin números)
+            if (!materia_id) {
+                errors.push('Debe seleccionar una **MATERIA** válida de la lista.');
+                materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            } else if (/\d/.test(materiaVisualInput.value)) { // Validación: No debe tener números en el texto visual
+                 errors.push('El campo **MATERIA** no puede contener números.');
+                 materiaVisualInput && materiaVisualInput.classList.add('is-invalid');
+            }
+            
+            // --- 3. MOSTRAR ERRORES Y DETENER ENVÍO ---
+            if (errors.length > 0) {
+                const errorHtml = '<ul>' + errors.map(err => `<li>${err}</li>`).join('') + '</ul>';
+                
+                Swal.fire({
+                    title: '🚨 Faltan Datos o son Inválidos',
+                    html: errorHtml,
+                    icon: 'error',
+                    confirmButtonText: 'Corregir'
+                });
+                return; 
+            }
+
+            // --- 4. SI LA VALIDACIÓN PASA, CONTINUAR CON ENVÍO AJAX (Tu código original) ---
+            
+            const formData = new FormData(form);
+            const fileInput = document.getElementById('input-archivos-servicio');
+            
+            if (fileInput && fileInput.files.length > 0) {
+                formData.append('imagen-servicio', fileInput.files[0]);
+            }
+            
+            if (typeof Swal !== 'undefined') { 
+                if (!document.querySelector('.swal2-loading')) {
+                    Swal.fire({
+                        title: 'Publicando Servicio...',
+                        text: 'Verificando datos y métodos de pago.',
+                        allowOutsideClick: false,
+                        didOpen: () => { Swal.showLoading(); }
+                    });
+                }
+
+                fetch(form.action, { 
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (!response.ok) { throw new Error('Network response was not ok'); }
+                    return response.json();
+                })
+                .then(data => {
+                    Swal.close(); 
+
+                    if (data.success) {
+                        Swal.fire('¡Éxito!', data.message, 'success').then(() => {
+                            if (data.redirect) {
+                                window.location.href = data.redirect;
+                            }
+                        });
+                    } else if (data.show_modal) {
+                        Swal.fire({
+                            title: 'Método de Pago Requerido',
+                            text: data.message,
+                            icon: 'warning',
+                            confirmButtonText: 'Registrar Método',
+                            allowOutsideClick: false,
+                            allowEscapeKey: false
+                        }).then(() => {
+                            window.location.href = window.location.pathname + '?show_modal=true'; 
+                        });
+
+                    } else {
+                        Swal.fire('Error', data.message, 'error');
+                    }
+                })
+                .catch(error => {
+                    Swal.close();
+                    console.error('Error en la petición:', error);
+                    Swal.fire('Error', 'Ocurrió un error al intentar crear el servicio.', 'error');
+                });
+            } else {
+                form.submit();
+            }
+
+        });
+    }
+
+    // --- MEJORA UX: RESTRIJO ESCRITURA EN TIEMPO REAL (on keypress) ---
+    const textOnlyInputs = ['carrera_visual_input', 'tipo_trabajo_visual_input', 'materia_visual_input'];
+
+    textOnlyInputs.forEach(id => {
+        const input = document.getElementById(id);
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                // Permitir letras, espacios y algunos caracteres comunes
+                // Si el carácter presionado es un dígito (0-9), prevenir la entrada.
+                const charCode = (e.which) ? e.which : e.keyCode;
+                if (charCode >= 48 && charCode <= 57) { // ASCII para 0-9
+                    e.preventDefault();
+                }
+            });
+            
+            // También limpio números si se pegan (on paste) o se arrastran
+            input.addEventListener('input', function() {
+                // Elimina cualquier dígito que se haya colado
+                this.value = this.value.replace(/[0-9]/g, ''); 
+            });
+        }
+    });
+
+    // --- LIMPIEZA DE ERRORES VISUALES AL INTERACTUAR ---
+    
+    document.querySelectorAll('.inputs-publi, .inputs, textarea, .form-control').forEach(input => {
+        input.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+        });
+    });
+
+    const dropdownSelects = ['carrera_id', 'tipo_trabajo_id', 'materia_id'];
+    dropdownSelects.forEach(id => {
+        const select = document.getElementById(id);
+        if (select) {
+            select.addEventListener('change', function() {
+                const visualId = this.id.replace('_id', '_visual_input');
+                const visualInput = document.getElementById(visualId);
+                if (visualInput) {
+                    visualInput.classList.remove('is-invalid');
+                }
+            });
+        }
+    });
+});
 </script>
 </body>
 </html>

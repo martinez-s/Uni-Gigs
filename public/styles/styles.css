@@ -62,12 +62,41 @@ a{
 .btn_inicio{
     width: 100%;
     margin-bottom:15px;
+    font-size: 1rem;
+    background-color: #203864; 
+    border: none;
+    justify-content: center;
+    border-radius: 10px;
+    color: white;
+    padding: 1%;
 }
 .btn_siguiente{
     width: 50%;
     margin-bottom:15px;
     margin-top: 15px;
     justify-content: center;
+    background-color: #203864; 
+    border: none;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1rem;
+
+    color: white;
+    padding: 1%;
+}
+.btn_siguiente_r{
+    width: 100%;
+    margin-bottom:15px;
+    margin-top: 15px;
+    justify-content: center;
+    background-color: #203864; 
+    border: none;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1rem;
+
+    color: white;
+    padding: 1%;
 }
 .btn_fin{
     width: 50%;
@@ -75,6 +104,13 @@ a{
     margin-top: 15px;
     justify-content: center;
     font-size: 1rem;
+    background-color: #203864; 
+    border: none;
+    justify-content: center;
+    border-radius: 10px;
+    font-size: 1rem;
+    color: white;
+    padding: 1%;
 }
 .lb_modal{
     font-size: 0.75rem;
@@ -191,8 +227,6 @@ a{
 .columna_regis3 {
     padding-top: 0px;
 }
-
-
 
 
 .titu_crear{
