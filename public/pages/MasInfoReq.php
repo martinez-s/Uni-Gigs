@@ -69,6 +69,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
             -- Información del usuario
             u.rating, 
             u.porcentaje_completacion, 
+            u.id_usuario,
             u.nombre AS nombre_usuario, 
             u.apellido AS apellido_usuario,
             -- Foto del request (solo la primera)
@@ -210,8 +211,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                             <?php echo htmlspecialchars($data['rating']); ?> / 5
                         </div>
                     </div>
+                    <?php 
+                        if($data['id_usuario'] != $_SESSION['id_usuario']) {
+                            $id_usuario_ser = $_SESSION['id_usuario'];
+                            $id_usuario_req = $data['id_usuario'];
+                            $sql_chatViejo= "SELECT id_chat FROM chats WHERE ((id_usuario1 = ? AND id_usuario2 = ?) OR (id_usuario1 = ? AND id_usuario2 = ?)) AND (estado = TRUE)";
+                            $stmt_chatViejo = $mysqli->prepare($sql_chatViejo);
+                            $stmt_chatViejo->bind_param("iiii", $id_usuario_req, $id_usuario_ser, $id_usuario_ser, $id_usuario_req);
+                            $stmt_chatViejo->execute();
+                            $result_chatViejo = $stmt_chatViejo->get_result();
 
-                    <button class="btn btn-secondary mt-auto w-100">ACEPTAR</button>
+                            if($result_chatViejo->num_rows > 0){
+                                $chatViejo = $result_chatViejo->fetch_assoc();
+                                $id_chatViejo = $chatViejo['id_chat'];
+                                echo '<div class="alert alert-info text-center mt-3">Ya tienes un chat activo con este usuario.</div>';
+                                exit();
+                            }else{
+                                echo '<a href="../../public/pages/asociarChatReq.php?id_usuario=' . urlencode($data['id_usuario']) . '"><button class="btn btn-secondary mt-auto w-100">ACEPTAR</button></a>';
+                            }
+                        }else {
+                            echo '<div class="alert alert-info text-center mt-3">Este es tu request.</div>';
+                        }
+
+                    ?>
                 </div>
             </div>
 
