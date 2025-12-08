@@ -1,7 +1,7 @@
+// Extraño cuando el codigo era un solo archivo gigante 
+
 $(document).ready(function() {
-    // ============================================
-    // VARIABLES GLOBALES
-    // ============================================
+
     let currentChatId = null;
     let otherUserName = '';
     let lastMessageId = 0;
@@ -11,32 +11,20 @@ $(document).ready(function() {
     let fileUploadQueue = [];
     let isUploading = false;
     
-    // ============================================
-    // 1. INICIALIZACIÓN
-    // ============================================
-    console.log("🚀 Sistema de Mensajería con Archivos inicializado");
+
     loadChats();
     
-    // ============================================
-    // 2. MANEJO DE ARCHIVOS
-    // ============================================
-    
-    // Click en botón adjuntar
+
     $('#attach-btn').click(function() {
         $('#file-input').click();
     });
-    
-    // Selección de archivos
-    // ...existing code...
-// Selección de archivos
+
     $('#file-input').on('change', function(e) {
         const files = Array.from(e.target.files || []);
         if (files.length === 0) return;
 
-        // Solo permitimos 1 archivo: tomamos el primero y reemplazamos cualquier anterior
         const file = files[0];
 
-        // Validar tamaño máximo (10MB)
         const MAX_SIZE = 50 * 1024 * 1024;
         if (file.size > MAX_SIZE) {
             alert(`El archivo "${file.name}" es demasiado grande (máximo 50MB)`);
@@ -44,7 +32,6 @@ $(document).ready(function() {
             return;
         }
 
-        // Validar tipo de archivo (misma lista que antes)
         const allowedTypes = [
             'image/jpeg', 'image/png', 'image/gif', 'image/webp',
             'application/pdf', 'application/msword',
@@ -61,82 +48,65 @@ $(document).ready(function() {
             return;
         }
 
-        // Reemplazar cualquier archivo seleccionado previamente (solo 1 permitido)
         selectedFiles = [file];
 
-        // Mostrar previsualización (el método que ya tienes se encargará de vaciar/mostrar)
         showFilePreview(file);
-
-        // Limpiar input nativo y mostrar contenedor
         $(this).val('');
         $('#file-preview-container').show();
 
-        // Actualizar estado del botón de enviar
         if (typeof updateSendButtonState === 'function') updateSendButtonState();
     });
-// ...existing code...
-    
-    // Mostrar previsualización de archivo
-    // ...existing code...
-function showFilePreview(file) {
-    const container = $('#file-preview-container');
-    // Vaciar para asegurar que solo haya 1 preview a la vez
-    container.empty();
 
-    const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-    const isImage = file.type.startsWith('image/');
+    function showFilePreview(file) {
+        const container = $('#file-preview-container');
+        container.empty();
 
-    if (isImage) {
-        const wrapper = $(`
-            <div class="file-preview d-flex align-items-center" id="${fileId}">
-                <div class="d-flex align-items-center">
-                    <img alt="${file.name}" style="max-width:60px;max-height:60px;margin-right:10px;border-radius:4px;">
-                    <div>
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-size">${formatFileSize(file.size)}</div>
+        const fileId = 'file-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+        const isImage = file.type.startsWith('image/');
+
+        if (isImage) {
+            const wrapper = $(`
+                <div class="file-preview d-flex align-items-center" id="${fileId}">
+                    <div class="d-flex align-items-center">
+                        <img alt="${file.name}" style="max-width:60px;max-height:60px;margin-right:10px;border-radius:4px;">
+                        <div>
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <div class="remove-file" style="cursor:pointer;">
+                        <i class="bi bi-x-circle"></i>
                     </div>
                 </div>
-                <div class="remove-file" style="cursor:pointer;">
-                    <i class="bi bi-x-circle"></i>
-                </div>
-            </div>
-        `);
+            `);
 
-        const img = wrapper.find('img');
-        const reader = new FileReader();
-        reader.onload = function(e) { img.attr('src', e.target.result); };
-        reader.readAsDataURL(file);
+            const img = wrapper.find('img');
+            const reader = new FileReader();
+            reader.onload = function(e) { img.attr('src', e.target.result); };
+            reader.readAsDataURL(file);
 
-        wrapper.find('.remove-file').on('click', function() { window.removeSelectedFile(file.name); });
-        container.append(wrapper).show();
-    } else {
-        const previewHtml = $(`
-            <div class="file-preview d-flex align-items-center justify-content-between" id="${fileId}">
-                <div class="d-flex align-items-center">
-                    <div class="file-icon me-2"><i class="bi bi-file-earmark"></i></div>
-                    <div class="file-info">
-                        <div class="file-name">${file.name}</div>
-                        <div class="file-size text-muted">${formatFileSize(file.size)}</div>
+            wrapper.find('.remove-file').on('click', function() { window.removeSelectedFile(file.name); });
+            container.append(wrapper).show();
+        } else {
+            const previewHtml = $(`
+                <div class="file-preview d-flex align-items-center justify-content-between" id="${fileId}">
+                    <div class="d-flex align-items-center">
+                        <div class="file-icon me-2"><i class="bi bi-file-earmark"></i></div>
+                        <div class="file-info">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size text-muted">${formatFileSize(file.size)}</div>
+                        </div>
                     </div>
+                    <div class="remove-file" style="cursor:pointer;"><i class="bi bi-x-circle"></i></div>
                 </div>
-                <div class="remove-file" style="cursor:pointer;"><i class="bi bi-x-circle"></i></div>
-            </div>
-        `);
-        previewHtml.find('.remove-file').on('click', function() { window.removeSelectedFile(file.name); });
-        container.append(previewHtml).show();
+            `);
+            previewHtml.find('.remove-file').on('click', function() { window.removeSelectedFile(file.name); });
+            container.append(previewHtml).show();
+        }
     }
-}
-// ...existing code...
-        
-        // Función global para remover archivos
-        window.removeSelectedFile = function(fileNameOrId) {
-        // selectedFiles contiene objetos File (por nombre usamos file.name)
+    window.removeSelectedFile = function(fileNameOrId) {
         selectedFiles = selectedFiles.filter(f => f.name !== fileNameOrId);
-
-        // remover cualquier preview (vacía el contenedor)
         $('#file-preview-container').empty().hide();
-
-        // actualizar estado del botón
         if (typeof updateSendButtonState === 'function') updateSendButtonState();
     };
 
@@ -153,7 +123,6 @@ function showFilePreview(file) {
     // enlazar input para actualizar estado en tiempo real
     $('#message-input').on('input', updateSendButtonState);
 
-    // Modifica selectChat para llamar updateSendButtonState() (reemplaza la función selectChat existente)
     function selectChat(chatId, otherId) {
         currentChatId = chatId;
         lastMessageId = 0;
@@ -167,11 +136,9 @@ function showFilePreview(file) {
         loadMessages(chatId);
         startMessageRefresh();
 
-        // actualizar el estado del botón al seleccionar chat
         updateSendButtonState();
     }
     
-    // Formatear tamaño de archivo
     function formatFileSize(bytes) {
         if (bytes >= 1073741824) {
             return (bytes / 1073741824).toFixed(2) + ' GB';
@@ -183,10 +150,6 @@ function showFilePreview(file) {
             return bytes + ' bytes';
         }
     }
-    
-    // ============================================
-    // 3. CARGAR Y MOSTRAR CHATS
-    // ============================================
     
     function loadChats() {
         $.ajax({
@@ -226,7 +189,6 @@ function showFilePreview(file) {
             chatsList.append(chatElement);
         });
         
-        // ...existing code...
     $('.chat-item').click(function() {
         $('.chat-item').removeClass('active-chat');
         $(this).addClass('active-chat');
@@ -235,8 +197,7 @@ function showFilePreview(file) {
         const otherId = $(this).data('other-id');
         otherUserName = $(this).data('other-name');
         otherUserPhoto = $(this).data('other-photo');
-        const estado = $(this).data('estado'); // puede ser 1/0 o true/false
-        
+        const estado = $(this).data('estado'); 
         selectChat(chatId, otherId, estado);
     });
 // ...existing code...
@@ -410,7 +371,6 @@ function showFilePreview(file) {
             case 'imagen':
                 messageContent = `
                     <div class="mb-2">
-                        <p class="mb-1" style="white-space: pre-wrap;">${message.contenido || ''}</p>
                         <img src="${message.url_archivo}" 
                              class="message-image"
                              alt="${message.nombre_archivo}"
@@ -424,7 +384,6 @@ function showFilePreview(file) {
                 const fileIcon = getFileIcon(message.nombre_archivo);
                 messageContent = `
                     <div class="mb-2">
-                        <p class="mb-1" style="white-space: pre-wrap;">${message.contenido || ''}</p>
                         <div class="message-file">
                             <div class="d-flex align-items-center">
                                 <div class="file-icon">
