@@ -10,13 +10,17 @@ $(document).ready(function() {
     let selectedFiles = [];
     let fileUploadQueue = [];
     let isUploading = false;
-    let currentChatActive = true; // Nueva variable para rastrear estado del chat
+    let currentChatActive = true; 
     
+    // Inicializar
     loadChats();
     updateChatButtonsState();
 
+    // ============================================
+    // 1. MANEJO DE ARCHIVOS
+    // ============================================
+
     $('#attach-btn').click(function() {
-        // Solo permitir clic si el botón no está deshabilitado
         if (!$(this).prop('disabled')) {
             $('#file-input').click();
         }
@@ -27,8 +31,8 @@ $(document).ready(function() {
         if (files.length === 0) return;
 
         const file = files[0];
+        const MAX_SIZE = 50 * 1024 * 1024; // 50MB
 
-        const MAX_SIZE = 50 * 1024 * 1024;
         if (file.size > MAX_SIZE) {
             alert(`El archivo "${file.name}" es demasiado grande (máximo 50MB)`);
             $(this).val('');
@@ -45,6 +49,8 @@ $(document).ready(function() {
             'application/zip', 'application/x-rar-compressed',
             'audio/mpeg', 'video/mp4', 'video/avi', 'video/quicktime'
         ];
+        
+        // Validación básica de extensión si el MIME type falla
         if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|txt|zip|rar|mp3|mp4|avi|mov)$/i)) {
             alert(`Tipo de archivo no permitido: "${file.name}"`);
             $(this).val('');
@@ -52,12 +58,10 @@ $(document).ready(function() {
         }
 
         selectedFiles = [file];
-
         showFilePreview(file);
         $(this).val('');
         $('#file-preview-container').show();
-
-        if (typeof updateSendButtonState === 'function') updateSendButtonState();
+        updateSendButtonState();
     });
 
     function showFilePreview(file) {
@@ -111,10 +115,9 @@ $(document).ready(function() {
     window.removeSelectedFile = function(fileNameOrId) {
         selectedFiles = selectedFiles.filter(f => f.name !== fileNameOrId);
         $('#file-preview-container').empty().hide();
-        if (typeof updateSendButtonState === 'function') updateSendButtonState();
+        updateSendButtonState();
     };
 
-    // función que habilita/deshabilita el botón de enviar
     function updateSendButtonState() {
         const hasChat = !!currentChatId;
         const text = ($('#message-input').val() || '').trim();
@@ -124,21 +127,19 @@ $(document).ready(function() {
         $('#send-btn').prop('disabled', !enable);
     }
 
-    // enlazar input para actualizar estado en tiempo real
     $('#message-input').on('input', updateSendButtonState);
 
     function formatFileSize(bytes) {
-        if (bytes >= 1073741824) {
-            return (bytes / 1073741824).toFixed(2) + ' GB';
-        } else if (bytes >= 1048576) {
-            return (bytes / 1048576).toFixed(2) + ' MB';
-        } else if (bytes >= 1024) {
-            return (bytes / 1024).toFixed(2) + ' KB';
-        } else {
-            return bytes + ' bytes';
-        }
+        if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(2) + ' GB';
+        else if (bytes >= 1048576) return (bytes / 1048576).toFixed(2) + ' MB';
+        else if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+        else return bytes + ' bytes';
     }
     
+    // ============================================
+    // 2. CARGAR Y MOSTRAR CHATS
+    // ============================================
+
     function loadChats() {
         $.ajax({
             url: 'app/ajax/get_chats.php',
@@ -152,7 +153,8 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                showError('Error de conexión al cargar chats');
+                console.error('❌ Error de AJAX:', { xhr, status, error });
+                // No mostrar alerta intrusiva en cada polling
             }
         });
     }
@@ -177,6 +179,7 @@ $(document).ready(function() {
             chatsList.append(chatElement);
         });
         
+        // EVENTO DE SELECCIÓN DE CHAT
         $('.chat-item').click(function() {
             $('.chat-item').removeClass('active-chat');
             $(this).addClass('active-chat');
@@ -185,14 +188,20 @@ $(document).ready(function() {
             const otherId = $(this).data('other-id');
             otherUserName = $(this).data('other-name');
             otherUserPhoto = $(this).data('other-photo');
-            const estado = $(this).data('estado'); 
-            selectChat(chatId, otherId, estado);
+            const estado = $(this).data('estado');
+            
+            // CAPTURAMOS EL ID SOLICITANTE AQUÍ
+            const idSolicitante = $(this).data('id-solicitante');
+            
+            // Pasamos todos los datos a la función principal
+            selectChat(chatId, otherId, estado, idSolicitante);
         });
     }
     
     function createChatElement(chat) {
         const nombreCompleto = chat.nombre_otro_usuario + ' ' + chat.apellido_otro_usuario;
         
+        // IMPORTANTE: data-id-solicitante se inserta aquí
         return `
             <div class="chat-item p-3" 
                 data-chat-id="${chat.id_chat}"
@@ -200,16 +209,13 @@ $(document).ready(function() {
                 data-other-name="${nombreCompleto}"
                 data-other-photo="${chat.foto_otro_usuario}"
                 data-estado="${chat.estado}"
+                data-id-solicitante="${chat.id_solicitante}"
                 style="color: white; border-bottom: 1px solid rgba(255,255,255,0.1);">
                 <div class="d-flex align-items-center">
                     <div class="position-relative me-3">
                         ${chat.foto_otro_usuario ? 
-                            `<img src="${chat.foto_otro_usuario}" 
-                                class="rounded-circle" 
-                                style="width: 50px; height: 50px; object-fit: cover;"
-                                alt="${chat.nombre_otro_usuario}">` :
-                            `<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" 
-                                style="width: 50px; height: 50px;">
+                            `<img src="${chat.foto_otro_usuario}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" alt="${chat.nombre_otro_usuario}">` :
+                            `<div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
                                 <i class="bi bi-person fs-5 text-white"></i>
                             </div>`
                         }
@@ -220,28 +226,24 @@ $(document).ready(function() {
                     
                     <div class="flex-grow-1" style="min-width: 0;">
                         <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="mb-0 fw-bold text-truncate" style="font-size: 0.95rem;">
-                                ${nombreCompleto}
-                            </h6>
-                            <small class="text-light" style="font-size: 0.75rem; opacity: 0.7;">
-                                ${chat.ultima_fecha || ''}
-                            </small>
+                            <h6 class="mb-0 fw-bold text-truncate" style="font-size: 0.95rem;">${nombreCompleto}</h6>
+                            <small class="text-light" style="font-size: 0.75rem; opacity: 0.7;">${chat.ultima_fecha || ''}</small>
                         </div>
-                        <p class="mb-0 text-light text-truncate" style="font-size: 0.85rem; opacity: 0.8;">
-                            ${chat.ultimo_mensaje}
-                        </p>
+                        <p class="mb-0 text-light text-truncate" style="font-size: 0.85rem; opacity: 0.8;">${chat.ultimo_mensaje}</p>
                     </div>
                 </div>
             </div>
         `;
     }
 
-    // Función para actualizar estado de botones
+    // ============================================
+    // 3. SELECCIÓN DE CHAT Y LÓGICA DE BOTÓN
+    // ============================================
+
     function updateChatButtonsState() {
         const hasChat = !!currentChatId;
         
         if (!hasChat) {
-            // No hay chat seleccionado
             $('#attach-btn').prop('disabled', true);
             $('#message-input').prop('disabled', true);
             $('#message-input').attr('placeholder', 'Selecciona un chat...');
@@ -250,43 +252,43 @@ $(document).ready(function() {
         }
         
         const isActive = currentChatActive;
-        
-        // Habilitar/deshabilitar botón de adjuntar
         $('#attach-btn').prop('disabled', !isActive);
-        
-        // Habilitar/deshabilitar input de mensaje
         $('#message-input').prop('disabled', !isActive);
         
-        // Actualizar placeholder del input
         if (!isActive) {
             $('#message-input').attr('placeholder', 'Chat inactivo');
         } else {
             $('#message-input').attr('placeholder', 'Escribe un mensaje o adjunta un archivo...').focus();
         }
         
-        // Actualizar estado del botón de enviar
         updateSendButtonState();
     }
 
-    // Modificar la función selectChat para usar el estado del chat
-    function selectChat(chatId, otherId, estado) {
+    // Función modificada para aceptar idSolicitante
+    function selectChat(chatId, otherId, estado, idSolicitante) {
         currentChatId = chatId;
         lastMessageId = 0;
         
-        // Determinar si el chat está activo
         currentChatActive = (estado === 1 || estado === '1' || estado === true || estado === 'true');
         
         $('#chat-title').text(otherUserName);
         $('#current-chat-id').val(chatId);
         
-        // Actualizar estados de todos los botones
         updateChatButtonsState();
         
-        if (currentChatActive) {
-            $('#chat-actions').removeClass('d-none');
+        // ==== LÓGICA DEL BOTÓN ESPECIAL ====
+        const currentUserId = parseInt(userId); // Viene de mensajeria.php
+        const chatSolicitanteId = parseInt(idSolicitante); // Viene del chat seleccionado
+        
+        // Debug temporal (puedes borrarlo luego)
+        console.log(`Chat ID: ${chatId} | Yo: ${currentUserId} | Solicitante: ${chatSolicitanteId}`);
+        
+        if (currentUserId === chatSolicitanteId) {
+            $('#chat-actions').removeClass('d-none'); // MOSTRAR
         } else {
-            $('#chat-actions').addClass('d-none');
+            $('#chat-actions').addClass('d-none');    // OCULTAR
         }
+        // ====================================
         
         updateChatHeader();
         loadMessages(chatId);
@@ -296,10 +298,7 @@ $(document).ready(function() {
     function updateChatHeader() {
         if (otherUserPhoto) {
             $('#chat-avatar').html(`
-                <img src="${otherUserPhoto}" 
-                     class="rounded-circle" 
-                     style="width: 50px; height: 50px; object-fit: cover;"
-                     alt="${otherUserName}">
+                <img src="${otherUserPhoto}" class="rounded-circle" style="width: 50px; height: 50px; object-fit: cover;" alt="${otherUserName}">
             `);
         } else {
             $('#chat-avatar').html('<i class="bi bi-person fs-4 text-white"></i>');
@@ -327,7 +326,7 @@ $(document).ready(function() {
                 }
             },
             error: function() {
-                showError('Error de conexión al cargar mensajes');
+                // Silencio en errores de conexión para no molestar al usuario
             }
         });
     }
@@ -355,15 +354,11 @@ $(document).ready(function() {
                 currentDate = messageDate;
                 container.append(`
                     <div class="text-center my-3">
-                        <span class="badge bg-secondary" style="font-size: 0.7rem; font-weight: normal;">
-                            ${messageDate}
-                        </span>
+                        <span class="badge bg-secondary" style="font-size: 0.7rem; font-weight: normal;">${messageDate}</span>
                     </div>
                 `);
             }
-            
-            const messageElement = createMessageElement(message);
-            container.append(messageElement);
+            container.append(createMessageElement(message));
         });
         
         setTimeout(scrollToBottom, 100);
@@ -380,103 +375,68 @@ $(document).ready(function() {
             case 'texto':
                 messageContent = `<p class="mb-1" style="white-space: pre-wrap;">${message.contenido}</p>`;
                 break;
-                
             case 'imagen':
                 messageContent = `
                     <div class="mb-2">
-                        <img src="${message.url_archivo}" 
-                             class="message-image"
-                             alt="${message.nombre_archivo}"
-                             onclick="openImageModal('${message.url_archivo}', '${message.nombre_archivo}')">
+                        <img src="${message.url_archivo}" class="message-image" alt="${message.nombre_archivo}" onclick="openImageModal('${message.url_archivo}', '${message.nombre_archivo}')">
                         <div class="mt-1 small">${message.nombre_archivo}</div>
-                    </div>
-                `;
+                    </div>`;
                 break;
-                
             case 'archivo':
                 const fileIcon = getFileIcon(message.nombre_archivo);
                 messageContent = `
                     <div class="mb-2">
                         <div class="message-file">
                             <div class="d-flex align-items-center">
-                                <div class="file-icon">
-                                    <i class="bi ${fileIcon}"></i>
-                                </div>
+                                <div class="file-icon"><i class="bi ${fileIcon}"></i></div>
                                 <div class="file-info">
                                     <div class="file-name">
-                                        <a href="${message.url_archivo}" download="${message.nombre_archivo}" 
-                                           class="text-decoration-none">
-                                            ${message.nombre_archivo}
-                                        </a>
+                                        <a href="${message.url_archivo}" download="${message.nombre_archivo}" class="text-decoration-none">${message.nombre_archivo}</a>
                                     </div>
                                     <div class="file-size">${message.tamano_archivo || ''}</div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
+                    </div>`;
                 break;
         }
         
         return `
             <div class="mb-2 ${messageClass}">
-                ${!isOwn ? `
-                    <small class="d-block mb-1 text-muted ms-1" style="font-size: 0.75rem;">
-                        ${message.nombre_emisor} ${message.apellido_emisor}
-                    </small>
-                ` : ''}
+                ${!isOwn ? `<small class="d-block mb-1 text-muted ms-1" style="font-size: 0.75rem;">${message.nombre_emisor} ${message.apellido_emisor}</small>` : ''}
                 <div class="message-bubble ${bubbleClass} d-inline-block">
                     ${messageContent}
-                    <div class="message-time text-end mt-1" style="font-size: 0.7rem; opacity: 0.7;">
-                        ${message.hora}
-                    </div>
+                    <div class="message-time text-end mt-1" style="font-size: 0.7rem; opacity: 0.7;">${message.hora}</div>
                 </div>
             </div>
         `;
     }
     
-    // Función global para abrir imagen en modal
     window.openImageModal = function(imageUrl, fileName) {
         $('#modal-image').attr('src', imageUrl);
         $('#download-image').attr('href', imageUrl).attr('download', fileName);
         $('#imageModal').modal('show');
     };
     
-    // Obtener ícono según tipo de archivo
     function getFileIcon(fileName) {
         const extension = fileName.split('.').pop().toLowerCase();
-        
         switch (extension) {
-            case 'pdf':
-                return 'bi-file-earmark-pdf';
-            case 'doc':
-            case 'docx':
-                return 'bi-file-earmark-word';
-            case 'xls':
-            case 'xlsx':
-                return 'bi-file-earmark-excel';
-            case 'zip':
-            case 'rar':
-                return 'bi-file-earmark-zip';
-            case 'mp3':
-                return 'bi-file-earmark-music';
-            case 'mp4':
-            case 'avi':
-            case 'mov':
-                return 'bi-file-earmark-play';
-            default:
-                return 'bi-file-earmark';
+            case 'pdf': return 'bi-file-earmark-pdf';
+            case 'doc': case 'docx': return 'bi-file-earmark-word';
+            case 'xls': case 'xlsx': return 'bi-file-earmark-excel';
+            case 'zip': case 'rar': return 'bi-file-earmark-zip';
+            case 'mp3': return 'bi-file-earmark-music';
+            case 'mp4': case 'avi': case 'mov': return 'bi-file-earmark-play';
+            default: return 'bi-file-earmark';
         }
     }
     
     // ============================================
-    // 5. ENVÍO DE MENSAJES Y ARCHIVOS
+    // 5. ENVÍO DE MENSAJES
     // ============================================
     
-    // Enviar al hacer clic en el botón
     $('#send-btn').click(sendMessage);
     
-    // Enviar con Enter
     $('#message-input').keypress(function(e) {
         if (e.which === 13 && !e.shiftKey) {
             e.preventDefault();
@@ -488,24 +448,15 @@ $(document).ready(function() {
         const chatId = currentChatId;
         const message = $('#message-input').val().trim();
         
-        if (!chatId) {
-            alert('Selecciona un chat primero');
-            return;
-        }
+        if (!chatId) { alert('Selecciona un chat primero'); return; }
+        if (selectedFiles.length === 0 && !message) { alert('Escribe un mensaje o adjunta un archivo'); return; }
         
-        if (selectedFiles.length === 0 && !message) {
-            alert('Escribe un mensaje o adjunta un archivo');
-            return;
-        }
-        
-        // Deshabilitar botones durante el envío
         $('#send-btn').prop('disabled', true);
         $('#attach-btn').prop('disabled', true);
         $('#message-input').prop('disabled', true);
         
         let fileData = null;
         
-        // Subir archivos si hay
         if (selectedFiles.length > 0) {
             try {
                 fileData = await uploadFiles(selectedFiles, chatId);
@@ -516,7 +467,6 @@ $(document).ready(function() {
             }
         }
         
-        // Enviar mensaje
         $.ajax({
             url: 'app/ajax/send_message.php',
             type: 'POST',
@@ -528,12 +478,7 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    console.log('✅ Mensaje enviado:', response);
-                    
-                    // Limpiar formulario
                     resetForm();
-                    
-                    // Recargar mensajes
                     loadMessages(chatId);
                     loadChats();
                 } else {
@@ -541,19 +486,15 @@ $(document).ready(function() {
                     resetForm();
                 }
             },
-            error: function(xhr, status, error) {
+            error: function() {
                 alert('Error de conexión');
                 resetForm();
             }
         });
     }
     
-    // Subir archivos
     async function uploadFiles(files, chatId) {
         if (files.length === 0) return null;
-        
-        // Por simplicidad, subimos solo el primer archivo
-        // Para múltiples archivos, necesitarías modificar la BD
         const file = files[0];
         const formData = new FormData();
         formData.append('file', file);
@@ -568,27 +509,19 @@ $(document).ready(function() {
                 contentType: false,
                 dataType: 'json',
                 success: function(response) {
-                    if (response.success) {
-                        resolve(response);
-                    } else {
-                        reject(response.message);
-                    }
+                    if (response.success) resolve(response);
+                    else reject(response.message);
                 },
-                error: function() {
-                    reject('Error de conexión al subir archivo');
-                }
+                error: function() { reject('Error de conexión al subir archivo'); }
             });
         });
     }
     
-    // Resetear formulario después del envío
     function resetForm() {
         $('#message-input').val('');
         $('#send-btn').prop('disabled', true);
         $('#file-preview-container').empty().hide();
         selectedFiles = [];
-        
-        // Actualizar estado de botones según el chat actual
         updateChatButtonsState();
     }
     
@@ -597,14 +530,9 @@ $(document).ready(function() {
     // ============================================
     
     function startMessageRefresh() {
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-        }
-        
+        if (refreshInterval) clearInterval(refreshInterval);
         refreshInterval = setInterval(() => {
-            if (currentChatId && lastMessageId > 0) {
-                checkNewMessages();
-            }
+            if (currentChatId && lastMessageId > 0) checkNewMessages();
         }, 5000);
     }
     
@@ -612,10 +540,7 @@ $(document).ready(function() {
         $.ajax({
             url: 'app/ajax/check_new_messages.php',
             type: 'GET',
-            data: { 
-                chat_id: currentChatId,
-                last_message_id: lastMessageId 
-            },
+            data: { chat_id: currentChatId, last_message_id: lastMessageId },
             dataType: 'json',
             success: function(response) {
                 if (response.success && response.new_messages.length > 0) {
@@ -629,17 +554,14 @@ $(document).ready(function() {
     
     function appendNewMessages(newMessages) {
         const container = $('#messages-container');
-        
         newMessages.forEach(message => {
-            const messageElement = createMessageElement(message);
-            container.append(messageElement);
+            container.append(createMessageElement(message));
         });
-        
         scrollToBottomIfNear();
     }
     
     // ============================================
-    // 7. FUNCIONES UTILITARIAS
+    // 7. FUNCIONES UTILITARIAS Y MODALES
     // ============================================
     
     function scrollToBottom() {
@@ -650,28 +572,36 @@ $(document).ready(function() {
     function scrollToBottomIfNear() {
         const container = $('#messages-container');
         const distanceFromBottom = container[0].scrollHeight - container.scrollTop() - container.height();
-        
-        if (distanceFromBottom < 150) {
-            scrollToBottom();
-        }
+        if (distanceFromBottom < 150) scrollToBottom();
     }
     
     function showError(message) {
         console.error(message);
-        // Podrías mostrar un toast aquí
     }
     
-    // ============================================
-    // 8. ACTUALIZACIONES PERIÓDICAS
-    // ============================================
-    
-    // Actualizar lista de chats cada 30 segundos
+    // Actualizar chats cada 30 segundos
     setInterval(loadChats, 30000);
     
-    // Limpiar al cerrar página
     $(window).on('beforeunload', function() {
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-        }
+        if (refreshInterval) clearInterval(refreshInterval);
+    });
+    
+    // Modal de acción especial
+    $('#save-action').click(function() {
+        const chatId = $('#current-chat-id').val();
+        Swal.fire({
+            title: 'Acción Especial',
+            text: `Se ejecutará una acción especial para el chat ${chatId}`,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: 'Ejecutar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                console.log(`🚀 Ejecutando acción especial para chat: ${chatId}`);
+                Swal.fire('¡Acción ejecutada!', `La acción para el chat ${chatId} ha sido procesada.`, 'success');
+                $('#actionModal').modal('hide');
+            }
+        });
     });
 });

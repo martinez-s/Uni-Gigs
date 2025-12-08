@@ -290,24 +290,32 @@ $nombre_usuario = $_SESSION['nombre'];
                 </div>
             </div>
             
-            <!-- Área principal del chat -->
             <div class="col-md-8 col-lg-9 p-0">
                 <div class="d-flex flex-column" style="height: 100vh;">
-                    <!-- Cabecera del chat -->
+                    <!-- Agrega este input hidden para almacenar el ID del chat actual -->
+                    <input type="hidden" id="current-chat-id">
                     <div class="p-3 border-bottom bg-white shadow-sm">
-                        <div class="d-flex align-items-center">
-                            <div class="me-3">
-                                <div id="chat-avatar" class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
-                                     style="width: 50px; height: 50px;">
-                                    <i class="bi bi-person fs-4 text-white"></i>
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <div id="chat-avatar" class="bg-secondary rounded-circle d-flex align-items-center justify-content-center" 
+                                        style="width: 50px; height: 50px;">
+                                        <i class="bi bi-person fs-4 text-white"></i>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="flex-grow-1">
-                                <h4 id="chat-title" class="mb-0">Selecciona un chat</h4>
-                                <small id="chat-status" class="text-muted">Elige una conversación para comenzar</small>
-                            </div>
+                                <div class="flex-grow-1">
+                                    <h4 id="chat-title" class="mb-0">Selecciona un chat</h4>
+                                    <small id="chat-status" class="text-muted">Elige una conversación para comenzar</small>
+                                </div>
+                        </div>
+                         <!-- Botón condicional (solo visible para solicitante) -->
+                        <div id="chat-actions" class="d-none">
+                            <button type="button" class="btn btn-warning" id="action-button" data-bs-toggle="modal" data-bs-target="#actionModal">
+                                <i class="bi "></i> Culminar Gigs
+                            </button>
                         </div>
                     </div>
+                </div>
                     
                     <!-- Contenedor de mensajes -->
                     <div id="messages-container" class="flex-grow-1 p-3 overflow-auto">
@@ -379,6 +387,35 @@ $nombre_usuario = $_SESSION['nombre'];
                     <a id="download-image" class="btn btn-primary" download>
                         <i class="bi bi-download"></i> Descargar
                     </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para acción especial -->
+    <div class="modal fade" id="actionModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Acción Especial</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> 
+                        Esta es una acción especial disponible solo para el solicitante de este chat.
+                    </div>
+                    <div id="action-content">
+                        <!-- Contenido dinámico se cargará aquí -->
+                        <p class="text-center text-muted">
+                            <i class="bi bi-hourglass-split fs-1"></i><br>
+                            Contenido en desarrollo...
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="save-action">Guardar</button>
                 </div>
             </div>
         </div>
