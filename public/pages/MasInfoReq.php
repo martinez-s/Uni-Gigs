@@ -1,30 +1,25 @@
 <?php
-// 1. INICIO DE SESIÓN
-// Debe ser lo primero en el script.
 session_start();
 
-// Variable para controlar qué ID vamos a consultar
 $id_request_seleccionado = null;
+$data = null; 
 
-// 2. LÓGICA DE OBTENCIÓN DE DATOS (POST vs SESSION)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
-    // CASO A: Venimos del formulario POST (Click en "Más información")
     
-    // Limpiamos y guardamos los IDs que vienen del formulario
     $id_request = intval($_POST['id_request']);
     $id_usuario = intval($_POST['id_usuario']);
     $id_carrera = intval($_POST['id_carrera']);
     
-    // Guardamos en sesión para mantener el estado si el usuario refresca (F5)
+
     $_SESSION['current_request_id'] = $id_request;
     $_SESSION['request_user_id'] = $id_usuario;
     $_SESSION['request_carrera_id'] = $id_carrera;
     
-    // Definimos el ID que usaremos para la consulta
+
     $id_request_seleccionado = $id_request;
 
 } elseif (isset($_SESSION['current_request_id'])) {
-    // CASO B: Recarga de página (GET) o navegación interna, usamos la sesión.
+
     $id_request_seleccionado = $_SESSION['current_request_id'];
 }
 ?>
@@ -46,70 +41,79 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
     <script src="main.js"></script>
     
     <?php
-    // Inclusión de archivos necesarios
-    include('../../conect.php'); // Asegúrate de que esta ruta sea correcta y que defina $mysqli
-    include 'NavBar.php'; // Asegúrate de que este archivo no tenga session_start()
-    
-    $data = null; // Inicializamos la variable que contendrá el resultado del request
 
-    // 3. CONSULTA SQL SEGURA (SOLO SI TENEMOS UN ID VÁLIDO)
-    if ($id_request_seleccionado) {
+include('../../conect.php');
+include 'NavBar.php'; 
+
+if ($id_request_seleccionado) {
+    
+    $sql = "SELECT 
+        r.id_requests, 
+        r.titulo, 
+        r.descripcion, 
+        r.precio, 
+        r.fecha_creacion, 
+        r.fecha_limite, 
+
+        m.nombre AS nombre_materia, 
+        tt.nombre AS tipo_trabajo_nombre,
+        c.nombre_carrera, 
+
+        u.rating, 
+        u.porcentaje_completacion, 
+        u.nombre AS nombre_usuario, 
+        u.apellido AS apellido_usuario,
+        u.url_foto_perfil, 
+
+        MIN(fr.url_foto) AS url_foto
+    FROM 
+        requests r
+    JOIN 
+        carreras c ON r.id_carrera = c.id_carrera
+    JOIN 
+        usuarios u ON r.id_usuario = u.id_usuario
+    JOIN 
+        materias m ON r.id_materia = m.id_materia
+    JOIN 
+        tipos_trabajos tt ON r.id_tipo_trabajo = tt.id_tipo_trabajo
+    LEFT JOIN 
+        fotos_requests fr ON r.id_requests = fr.id_request
+    WHERE 
+        r.id_requests = ? 
+    GROUP BY 
+        r.id_requests, r.titulo, r.descripcion, r.precio, r.fecha_creacion, r.fecha_limite, 
+        m.nombre, tt.nombre, c.nombre_carrera, 
+        u.rating, u.porcentaje_completacion, u.nombre, u.apellido, u.url_foto_perfil"
+        ;
+
+    if ($stmt = $mysqli->prepare($sql)) {
+
+        $stmt->bind_param("i", $id_request_seleccionado);
+        $stmt->execute();
+        $resultado = $stmt->get_result();
         
-        $sql = "SELECT 
-            r.id_requests, 
-            r.titulo, 
-            r.descripcion, 
-            r.precio, 
-            r.fecha_creacion, 
-            r.fecha_limite, 
-            -- Nombres completos obtenidos de tablas externas
-            m.nombre AS nombre_materia, 
-            tt.nombre AS tipo_trabajo_nombre,
-            c.nombre_carrera, 
-            -- Información del usuario
-            u.rating, 
-            u.porcentaje_completacion, 
-            u.nombre AS nombre_usuario, 
-            u.apellido AS apellido_usuario,
-            -- Foto del request (solo la primera)
-            MIN(fr.url_foto) AS url_foto
-        FROM 
-            requests r
-        JOIN 
-            carreras c ON r.id_carrera = c.id_carrera
-        JOIN 
-            usuarios u ON r.id_usuario = u.id_usuario
-        -- Nuevo JOIN para obtener el nombre de la materia
-        JOIN 
-            materias m ON r.id_materia = m.id_materia
-        -- Nuevo JOIN para obtener el nombre del tipo de trabajo
-        JOIN 
-            tipos_trabajos tt ON r.id_tipo_trabajo = tt.id_tipo_trabajo
-        LEFT JOIN 
-            fotos_requests fr ON r.id_requests = fr.id_request
-        WHERE 
-            r.id_requests = ? 
-        GROUP BY 
-            r.id_requests, r.titulo, r.descripcion, r.precio, r.fecha_creacion, r.fecha_limite, 
-            m.nombre, tt.nombre, c.nombre_carrera, 
-            u.rating, u.porcentaje_completacion, u.nombre, u.apellido"
-            ;
-        // Preparamos la consulta
-        if ($stmt = $mysqli->prepare($sql)) {
-            // Vinculamos el ID (i = integer)
-            $stmt->bind_param("i", $id_request_seleccionado);
-            $stmt->execute();
-            $resultado = $stmt->get_result();
-            
-            // Obtenemos el único registro
-            $data = $resultado->fetch_assoc();
-            $stmt->close();
-        } else {
-            // Error de conexión o de sintaxis en la consulta
-            echo "<p class='alert alert-danger'>Error al preparar la consulta: " . $mysqli->error . "</p>";
-        }
+
+        $data = $resultado->fetch_assoc();
+        $stmt->close();
+    } else {
+
+        echo "<p class='alert alert-danger'>Error al preparar la consulta: " . $mysqli->error . "</p>";
     }
-    ?>
+
+    $archivos_request = [];
+    $sql_archivos = "SELECT nombre_archivo, url_archivo, tipo_archivo FROM archivos_request WHERE id_requests = ?";
+    if (isset($mysqli) && $stmt_archivos = $mysqli->prepare($sql_archivos)) {
+        $stmt_archivos->bind_param("i", $id_request_seleccionado);
+        $stmt_archivos->execute();
+        $resultado_archivos = $stmt_archivos->get_result();
+
+        while ($archivo = $resultado_archivos->fetch_assoc()) {
+            $archivos_request[] = $archivo;
+        }
+        $stmt_archivos->close();
+    }
+}
+?>
 
 <div class="container my-5">
     
@@ -136,7 +140,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                     <div class="detail-card">
                         <span class="detail-label">Carrera</span>
                         <div class="detail-value">
-                            <span class="material-symbols-outlined text-primary" style="font-size: 18px;">school</span>
+                            <span class="material-symbols-outlined text-primary" style="font-size: 18px;">license</span>
                             <span class="text-truncate" style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['nombre_carrera']); ?></span>
                         </div>
                     </div>
@@ -147,7 +151,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                         <span class="detail-label">Materia</span>
                         <div class="detail-value">
                             <span class="material-symbols-outlined text-info" style="font-size: 18px;">book_2</span>
-                            <span class="text-truncate" style="font-size: 0.9rem;"><?php echo isset($data['materia']) ? htmlspecialchars($data['materia']) : 'General'; ?></span>
+                            <span class="text-truncate" style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['nombre_materia']); ?></span>
                         </div>
                     </div>
                 </div>
@@ -156,8 +160,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                     <div class="detail-card">
                         <span class="detail-label">Tipo</span>
                         <div class="detail-value">
-                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">work</span>
-                            <span style="font-size: 0.9rem;"><?php echo isset($data['tipo_trabajo']) ? htmlspecialchars($data['tipo_trabajo']) : 'Varios'; ?></span>
+                            <span class="material-symbols-outlined text-secondary" style="font-size: 18px;">type_specimen</span>
+                            <span style="font-size: 0.9rem;"><?php echo htmlspecialchars($data['tipo_trabajo_nombre']); ?></span>
                         </div>
                     </div>
                 </div>
@@ -201,11 +205,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
             </div>
 
             <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">DESCRIPCIÓN DEL PROYECTO</h5>
-            <div class="desc-box shadow-sm" style="min-height: 2.75rem;">
+            <div class="desc-box shadow-sm mb-4" style="min-height: 2.75rem;">
                 <?php echo nl2br(htmlspecialchars($data['descripcion'])); ?>
             </div>
 
-        </div>
+            <h5 class="fw-bold mb-3 text-secondary" style="letter-spacing: 1px; font-size: 0.8rem;">ARCHIVOS ADJUNTOS</h5>
+            <div class="desc-box shadow-sm p-3">
+                <?php if (!empty($archivos_request)): ?>
+                    <?php 
+                    $base_path = '../../'; 
+                    ?>
+                    <div class="row g-3">
+                        <?php foreach ($archivos_request as $archivo): 
+                            $nombre = htmlspecialchars($archivo['nombre_archivo']);
+                            $url_db = htmlspecialchars($archivo['url_archivo']);
+                            $tipo = $archivo['tipo_archivo'];
+                            $ruta_completa = $base_path . $url_db; 
+
+                            $icono_html = '';
+                            if (strpos($tipo, 'image/') !== false) {
+                                $icono_html = '<img src="' . $ruta_completa . '" alt="' . $nombre . '" class="img-fluid rounded" style="max-height: 100px; width: 100%; object-fit: cover;">';
+                            } elseif (strpos($tipo, 'pdf') !== false) {
+                                $icono_html = '<span class="material-symbols-outlined fs-2 text-danger">picture_as_pdf</span>';
+                            } else {
+                                $icono_html = '<span class="material-symbols-outlined fs-2 text-primary">attach_file</span>';
+                            }
+                        ?>
+                            <div class="col-6 col-md-3">
+                                <div class="card h-100 p-2 text-center border-0 shadow-sm">
+                                    <div class="d-flex justify-content-center mb-1">
+                                        <?php echo $icono_html; ?>
+                                    </div>
+                                    <p class="card-text small text-truncate mb-1" title="<?php echo $nombre; ?>"><?php echo $nombre; ?></p>
+                                    <a href="<?php echo $ruta_completa; ?>" target="_blank" class="btn btn-sm btn-outline-secondary btn-block" style="font-size: 0.8rem;">Ver/Descargar</a>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted mb-0">No se adjuntaron archivos a esta solicitud.</p>
+                <?php endif; ?>
+            </div>
+            </div>
 
         <div class="col-lg-3">
             <div class="user-card-modern">
@@ -213,17 +254,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
                     <span class="material-symbols-outlined" style="font-size: 20px;">flag</span>
                 </div>
 
-                <div class="avatar-placeholder shadow-sm">
-                    <span class="fw-bold"><?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?></span>
-                </div>
-                
+                <?php 
+                $user_photo_url = (isset($data['url_foto_perfil']) && $data['url_foto_perfil'] && $data['url_foto_perfil'] !== 'public/img/default_avatar.jpg')
+                                  ? '../../' . htmlspecialchars($data['url_foto_perfil'])
+                                  : null;
+                ?>
+                <?php if ($user_photo_url): ?>
+                    <img src="<?php echo $user_photo_url; ?>" alt="Foto de perfil de usuario" class="avatar-image shadow-sm">
+                <?php else: ?>
+                    <div class="avatar-placeholder shadow-sm">
+                        <span class="fw-bold"><?php echo strtoupper(substr($data['nombre_usuario'], 0, 1)); ?></span>
+                    </div>
+                <?php endif; ?>
                 <h6 class="fw-bold text-dark mb-1">
                     <?php echo htmlspecialchars($data['nombre_usuario']) . ' ' . htmlspecialchars($data['apellido_usuario']); ?>
                 </h6>
                 <p class="text-muted small mb-3">Solicitante</p>
                 
                 <div class="d-flex justify-content-center mb-4">
-                    <div class="star-rating-display" data-rating="<?php echo isset($data['rating']) ? htmlspecialchars($data['rating']) : 0; ?>"></div>
+                    <?php
+                    $rating = isset($data['rating']) ? floatval($data['rating']) : 0;
+                    $estrellas_llenas = floor($rating);
+                    $max_estrellas = 5;
+                    ?>
+                    <div class="star-rating d-flex align-items-center" style="font-size: 1.5rem; color: #adb5bd;"> 
+                        <?php for ($i = 1; $i <= $max_estrellas; $i++): ?>
+                            <?php if ($i <= $estrellas_llenas): ?>
+                                <i class="bi bi-star-fill mx-1" style="color: #ffc107;"></i> 
+                            <?php else: ?>
+                                <i class="bi bi-star mx-1"></i>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+                        <span class="ms-3 fw-bold fs-5 text-dark"><?php echo number_format($rating, 1); ?> / 5</span>
+                    </div>
                 </div>
                 <div class="d-flex justify-content-center mb-4">
                     <h6 style="font-size: 0.8rem;">Gigs Completados: <?php echo htmlspecialchars($data['porcentaje_completacion']); ?>%</h6>
@@ -254,7 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
         
     <?php else: ?>
         <div class="text-center py-5">
-             <div class="mb-3">
+               <div class="mb-3">
                 <span class="material-symbols-outlined text-danger" style="font-size: 64px;">error_outline</span>
             </div>
             <h4 class="text-danger">Solicitud no encontrada</h4>
@@ -263,31 +326,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['id_request'])) {
         </div>
     <?php endif; ?>
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <footer>
