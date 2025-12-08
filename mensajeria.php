@@ -229,7 +229,7 @@ $nombre_usuario = $_SESSION['nombre'];
                             $id = htmlspecialchars($carrera['id_carrera']);
                     ?>
                                 <li>
-                                    <form method="POST" action="principal.php" id="form-carrera-<?php echo $id; ?>" style="display:none;">
+                                    <form method="POST" action="public/pages/principal.php" id="form-carrera-<?php echo $id; ?>" style="display:none;">
                                         <input type="hidden" name="id_carrera_filtro" value="<?php echo $id; ?>">
                                     </form>
                                     <a class="dropdown-item" href="#" onclick="document.getElementById('form-carrera-<?php echo $id; ?>').submit(); return false;">
