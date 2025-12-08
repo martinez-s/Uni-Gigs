@@ -12,13 +12,9 @@ $(document).ready(function() {
     let isUploading = false;
     let currentChatActive = true; 
     
-    // Inicializar
     loadChats();
     updateChatButtonsState();
 
-    // ============================================
-    // 1. MANEJO DE ARCHIVOS
-    // ============================================
 
     $('#attach-btn').click(function() {
         if (!$(this).prop('disabled')) {
@@ -45,12 +41,11 @@ $(document).ready(function() {
             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             'application/vnd.ms-excel',
             'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            'text/plain',
-            'application/zip', 'application/x-rar-compressed',
+            'text/plain', , 'application/x-rar-compressed',
             'audio/mpeg', 'video/mp4', 'video/avi', 'video/quicktime'
         ];
         
-        // Validación básica de extensión si el MIME type falla
+
         if (!allowedTypes.includes(file.type) && !file.name.match(/\.(jpg|jpeg|png|gif|webp|pdf|doc|docx|xls|xlsx|txt|zip|rar|mp3|mp4|avi|mov)$/i)) {
             alert(`Tipo de archivo no permitido: "${file.name}"`);
             $(this).val('');
@@ -135,10 +130,7 @@ $(document).ready(function() {
         else if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
         else return bytes + ' bytes';
     }
-    
-    // ============================================
-    // 2. CARGAR Y MOSTRAR CHATS
-    // ============================================
+
 
     function loadChats() {
         $.ajax({
@@ -153,8 +145,6 @@ $(document).ready(function() {
                 }
             },
             error: function(xhr, status, error) {
-                console.error('❌ Error de AJAX:', { xhr, status, error });
-                // No mostrar alerta intrusiva en cada polling
             }
         });
     }
@@ -179,7 +169,7 @@ $(document).ready(function() {
             chatsList.append(chatElement);
         });
         
-        // EVENTO DE SELECCIÓN DE CHAT
+
         $('.chat-item').click(function() {
             $('.chat-item').removeClass('active-chat');
             $(this).addClass('active-chat');
@@ -190,10 +180,10 @@ $(document).ready(function() {
             otherUserPhoto = $(this).data('other-photo');
             const estado = $(this).data('estado');
             
-            // CAPTURAMOS EL ID SOLICITANTE AQUÍ
+
             const idSolicitante = $(this).data('id-solicitante');
             
-            // Pasamos todos los datos a la función principal
+
             selectChat(chatId, otherId, estado, idSolicitante);
         });
     }
@@ -201,7 +191,6 @@ $(document).ready(function() {
     function createChatElement(chat) {
         const nombreCompleto = chat.nombre_otro_usuario + ' ' + chat.apellido_otro_usuario;
         
-        // IMPORTANTE: data-id-solicitante se inserta aquí
         return `
             <div class="chat-item p-3" 
                 data-chat-id="${chat.id_chat}"
@@ -236,9 +225,7 @@ $(document).ready(function() {
         `;
     }
 
-    // ============================================
-    // 3. SELECCIÓN DE CHAT Y LÓGICA DE BOTÓN
-    // ============================================
+
 
     function updateChatButtonsState() {
         const hasChat = !!currentChatId;
@@ -264,7 +251,7 @@ $(document).ready(function() {
         updateSendButtonState();
     }
 
-    // Función modificada para aceptar idSolicitante
+    
     function selectChat(chatId, otherId, estado, idSolicitante) {
         currentChatId = chatId;
         lastMessageId = 0;
@@ -275,20 +262,17 @@ $(document).ready(function() {
         $('#current-chat-id').val(chatId);
         
         updateChatButtonsState();
+    
+        const currentUserId = parseInt(userId); 
+        const chatSolicitanteId = parseInt(idSolicitante); // 
         
-        // ==== LÓGICA DEL BOTÓN ESPECIAL ====
-        const currentUserId = parseInt(userId); // Viene de mensajeria.php
-        const chatSolicitanteId = parseInt(idSolicitante); // Viene del chat seleccionado
-        
-        // Debug temporal (puedes borrarlo luego)
-        console.log(`Chat ID: ${chatId} | Yo: ${currentUserId} | Solicitante: ${chatSolicitanteId}`);
         
         if (currentUserId === chatSolicitanteId) {
-            $('#chat-actions').removeClass('d-none'); // MOSTRAR
+            $('#chat-actions').removeClass('d-none');
         } else {
-            $('#chat-actions').addClass('d-none');    // OCULTAR
+            $('#chat-actions').addClass('d-none');    
         }
-        // ====================================
+
         
         updateChatHeader();
         loadMessages(chatId);
@@ -304,11 +288,7 @@ $(document).ready(function() {
             $('#chat-avatar').html('<i class="bi bi-person fs-4 text-white"></i>');
         }
     }
-    
-    // ============================================
-    // 4. CARGAR Y MOSTRAR MENSAJES
-    // ============================================
-    
+
     function loadMessages(chatId) {
         $.ajax({
             url: 'app/ajax/get_messages.php',
@@ -326,7 +306,7 @@ $(document).ready(function() {
                 }
             },
             error: function() {
-                // Silencio en errores de conexión para no molestar al usuario
+
             }
         });
     }
@@ -431,10 +411,7 @@ $(document).ready(function() {
         }
     }
     
-    // ============================================
-    // 5. ENVÍO DE MENSAJES
-    // ============================================
-    
+
     $('#send-btn').click(sendMessage);
     
     $('#message-input').keypress(function(e) {
@@ -525,10 +502,7 @@ $(document).ready(function() {
         updateChatButtonsState();
     }
     
-    // ============================================
-    // 6. ACTUALIZACIÓN AUTOMÁTICA
-    // ============================================
-    
+
     function startMessageRefresh() {
         if (refreshInterval) clearInterval(refreshInterval);
         refreshInterval = setInterval(() => {
@@ -559,10 +533,7 @@ $(document).ready(function() {
         });
         scrollToBottomIfNear();
     }
-    
-    // ============================================
-    // 7. FUNCIONES UTILITARIAS Y MODALES
-    // ============================================
+
     
     function scrollToBottom() {
         const container = $('#messages-container');
@@ -579,14 +550,14 @@ $(document).ready(function() {
         console.error(message);
     }
     
-    // Actualizar chats cada 30 segundos
+
     setInterval(loadChats, 30000);
     
     $(window).on('beforeunload', function() {
         if (refreshInterval) clearInterval(refreshInterval);
     });
     
-    // Modal de acción especial
+
     $('#save-action').click(function() {
         const chatId = $('#current-chat-id').val();
         Swal.fire({
@@ -598,7 +569,7 @@ $(document).ready(function() {
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
-                console.log(`🚀 Ejecutando acción especial para chat: ${chatId}`);
+                console.log(` Ejecutando acción especial para chat: ${chatId}`);
                 Swal.fire('¡Acción ejecutada!', `La acción para el chat ${chatId} ha sido procesada.`, 'success');
                 $('#actionModal').modal('hide');
             }

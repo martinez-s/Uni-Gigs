@@ -40,7 +40,7 @@ try {
     $image_extensions = ['jpg', 'jpeg', 'png', 'gif', 'webp'];
     $allowed_extensions = array_merge($image_extensions, [
         'pdf', 'doc', 'docx', 'xls', 'xlsx', 'txt', 
-        'zip', 'rar', 'mp3', 'mp4', 'avi', 'mov'
+        'mp3', 'mp4', 'avi', 'mov'
     ]);
     
     // Validar extensión
