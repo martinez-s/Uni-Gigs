@@ -14,6 +14,7 @@ if (isset($_POST['btn_finalizar'])) {
     $nombre = trim($_POST['nombre']);
     $apelli = trim($_POST['apellido']); // Ahora coincide con el HTML corregido
     $cedula = trim($_POST['cedula']);   // Ahora existe en el HTML
+    $id_carrera = intval($_POST['carrera']); // Nuevo campo carrera
     
     // --- VALIDACIONES ---
 
@@ -71,8 +72,6 @@ if (isset($_POST['btn_finalizar'])) {
     $estado = 1;
     $rating = 0;
     $porcentaje = 0.00;
-    $id_carrera = 1; // Asegúrate de que este ID exista en tu tabla carreras
-
     $sql = "INSERT INTO usuarios 
             (nombre, apellido, fecha_nacimiento, clave, correo, cedula, url_foto_perfil, estado, rating, porcentaje_completacion, id_carrera) 
             VALUES 
